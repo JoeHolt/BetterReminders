@@ -28,6 +28,7 @@ class MainTableViewController: UITableViewController {
         let c = classes![indexPath.row]
         cell.textLabel?.text = "\(c.name!)"
         cell.detailTextLabel?.text = "\(c.startTime!)-\(c.endTime!)"
+        cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
         return cell
     }
     
