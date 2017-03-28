@@ -11,9 +11,14 @@ import XCTest
 
 class BetterRemindersTests: XCTestCase {
     
+    var basicSchoolClass: JHSchoolClass!
+    var tableView = MainTableViewController()
+    
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        
+        basicSchoolClass = JHSchoolClass(name: "Test", startTime: String(), endTime: String(), day: "A")
+        
     }
     
     override func tearDown() {
@@ -21,16 +26,24 @@ class BetterRemindersTests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    func testJHSchoolClassInit() {
+        XCTAssertTrue(basicSchoolClass.day == "A" || basicSchoolClass.day == "B")
     }
     
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+    func testLoadingOfJSON() {
+        let data = tableView.loadJSON(fromFile: "TestJSON", ofType: "json")
+        XCTAssertTrue(data!["People"].arrayValue.count == 2)
+        XCTAssertTrue(data!["People"].arrayValue[0]["name"] == "Joe")
+    }
+    
+    func testParseJSON() {
+        tableView.parseScheduleJSON()
+        XCTAssertTrue(tableView.classes?.count == 10)
+    }
+    
+    func testClassesByDay() {
+        tableView.parseScheduleJSON()
+        XCTAssertTrue(tableView.classesByDay.keys.count == 2)
     }
     
 }

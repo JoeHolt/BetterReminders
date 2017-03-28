@@ -7,12 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		693484591E89C30100493CE2 /* JHSchoolClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693484581E89C30100493CE2 /* JHSchoolClass.swift */; };
+		6934845A1E89C47E00493CE2 /* JHSchoolClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693484581E89C30100493CE2 /* JHSchoolClass.swift */; };
+		6934845C1E89C9F500493CE2 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6934845B1E89C9F500493CE2 /* SwiftyJSON.swift */; };
+		6934845E1E89CD3E00493CE2 /* TestJSON.json in Resources */ = {isa = PBXBuildFile; fileRef = 6934845D1E89CD3E00493CE2 /* TestJSON.json */; };
+		6934845F1E89CD7700493CE2 /* TestJSON.json in Resources */ = {isa = PBXBuildFile; fileRef = 6934845D1E89CD3E00493CE2 /* TestJSON.json */; };
+		693484611E89D9FB00493CE2 /* JHHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693484601E89D9FB00493CE2 /* JHHelper.swift */; };
+		693484621E89E51000493CE2 /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 696BA2851E6663550002E84D /* MainTableViewController.swift */; };
+		693484631E89E55800493CE2 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6934845B1E89C9F500493CE2 /* SwiftyJSON.swift */; };
 		696BA2841E6663550002E84D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 696BA2831E6663550002E84D /* AppDelegate.swift */; };
-		696BA2861E6663550002E84D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 696BA2851E6663550002E84D /* ViewController.swift */; };
+		696BA2861E6663550002E84D /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 696BA2851E6663550002E84D /* MainTableViewController.swift */; };
 		696BA2891E6663550002E84D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 696BA2871E6663550002E84D /* Main.storyboard */; };
 		696BA28B1E6663560002E84D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 696BA28A1E6663550002E84D /* Assets.xcassets */; };
 		696BA28E1E6663560002E84D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 696BA28C1E6663560002E84D /* LaunchScreen.storyboard */; };
 		696BA2991E6663560002E84D /* BetterRemindersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 696BA2981E6663560002E84D /* BetterRemindersTests.swift */; };
+		696BA2A41E6669BE0002E84D /* Classes.json in Resources */ = {isa = PBXBuildFile; fileRef = 696BA2A31E6669BE0002E84D /* Classes.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,9 +35,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		693484581E89C30100493CE2 /* JHSchoolClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JHSchoolClass.swift; sourceTree = "<group>"; };
+		6934845B1E89C9F500493CE2 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
+		6934845D1E89CD3E00493CE2 /* TestJSON.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = TestJSON.json; sourceTree = "<group>"; };
+		693484601E89D9FB00493CE2 /* JHHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JHHelper.swift; sourceTree = "<group>"; };
 		696BA2801E6663550002E84D /* BetterReminders.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BetterReminders.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		696BA2831E6663550002E84D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		696BA2851E6663550002E84D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		696BA2851E6663550002E84D /* MainTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewController.swift; sourceTree = "<group>"; };
 		696BA2881E6663550002E84D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		696BA28A1E6663550002E84D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		696BA28D1E6663560002E84D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -36,6 +49,7 @@
 		696BA2941E6663560002E84D /* BetterRemindersTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BetterRemindersTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		696BA2981E6663560002E84D /* BetterRemindersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetterRemindersTests.swift; sourceTree = "<group>"; };
 		696BA29A1E6663560002E84D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		696BA2A31E6669BE0002E84D /* Classes.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Classes.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,11 +92,15 @@
 			isa = PBXGroup;
 			children = (
 				696BA2831E6663550002E84D /* AppDelegate.swift */,
-				696BA2851E6663550002E84D /* ViewController.swift */,
+				696BA2851E6663550002E84D /* MainTableViewController.swift */,
+				693484581E89C30100493CE2 /* JHSchoolClass.swift */,
+				693484601E89D9FB00493CE2 /* JHHelper.swift */,
 				696BA2871E6663550002E84D /* Main.storyboard */,
-				696BA28A1E6663550002E84D /* Assets.xcassets */,
 				696BA28C1E6663560002E84D /* LaunchScreen.storyboard */,
 				696BA28F1E6663560002E84D /* Info.plist */,
+				696BA2A31E6669BE0002E84D /* Classes.json */,
+				6934845B1E89C9F500493CE2 /* SwiftyJSON.swift */,
+				696BA28A1E6663550002E84D /* Assets.xcassets */,
 			);
 			path = BetterReminders;
 			sourceTree = "<group>";
@@ -90,6 +108,7 @@
 		696BA2971E6663560002E84D /* BetterRemindersTests */ = {
 			isa = PBXGroup;
 			children = (
+				6934845D1E89CD3E00493CE2 /* TestJSON.json */,
 				696BA2981E6663560002E84D /* BetterRemindersTests.swift */,
 				696BA29A1E6663560002E84D /* Info.plist */,
 			);
@@ -183,6 +202,8 @@
 			files = (
 				696BA28E1E6663560002E84D /* LaunchScreen.storyboard in Resources */,
 				696BA28B1E6663560002E84D /* Assets.xcassets in Resources */,
+				696BA2A41E6669BE0002E84D /* Classes.json in Resources */,
+				6934845F1E89CD7700493CE2 /* TestJSON.json in Resources */,
 				696BA2891E6663550002E84D /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -191,6 +212,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6934845E1E89CD3E00493CE2 /* TestJSON.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,8 +223,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				696BA2861E6663550002E84D /* ViewController.swift in Sources */,
+				696BA2861E6663550002E84D /* MainTableViewController.swift in Sources */,
+				693484591E89C30100493CE2 /* JHSchoolClass.swift in Sources */,
+				693484611E89D9FB00493CE2 /* JHHelper.swift in Sources */,
 				696BA2841E6663550002E84D /* AppDelegate.swift in Sources */,
+				6934845C1E89C9F500493CE2 /* SwiftyJSON.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -210,7 +235,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				693484621E89E51000493CE2 /* MainTableViewController.swift in Sources */,
+				6934845A1E89C47E00493CE2 /* JHSchoolClass.swift in Sources */,
 				696BA2991E6663560002E84D /* BetterRemindersTests.swift in Sources */,
+				693484631E89E55800493CE2 /* SwiftyJSON.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -410,6 +438,7 @@
 				696BA29F1E6663560002E84D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		696BA2A01E6663560002E84D /* Build configuration list for PBXNativeTarget "BetterRemindersTests" */ = {
 			isa = XCConfigurationList;
@@ -418,6 +447,7 @@
 				696BA2A21E6663560002E84D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

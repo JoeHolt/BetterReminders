@@ -1,0 +1,64 @@
+{
+  "Classes" : [
+      {
+        "name" : "AP Calculus",
+        "day" : "A",
+        "startTime" : "7:55",
+        "endTime" : "09:20",
+      },
+      {
+        "name" : "ASR",
+        "day" : "A",
+        "startTime" : "09:25",
+        "endTime" : "10:00"
+      },
+      {
+        "name" : "Economics",
+        "day" : "A",
+        "startTime" : "10:10",
+        "endTime" : "11:35"
+      },
+      {
+        "name" : "Physics",
+        "day" : "A",
+        "startTime" : "11:45",
+        "endTime" : "13:40"
+      },
+      {
+        "name" : "Team and Individual Sports",
+        "day" : "A",
+        "startTime" : "13:50",
+        "endTime" : "15:15"
+      },
+      {
+        "name" : "AP Chemistry",
+        "day" : "B",
+        "startTime" : "7:55",
+        "endTime" : "09:20"
+      },
+      {
+        "name" : "ASR",
+        "day" : "B",
+        "startTime" : "09:25",
+        "endTime" : "10:00"
+      },
+      {
+        "name" : "AP US History",
+        "day" : "B",
+        "startTime" : "10:10",
+        "endTime" : "11:35"
+      },
+      {
+        "name" : "AP Composistion",
+        "day" : "B",
+        "startTime" : "11:45",
+        "endTime" : "13:40"
+      },
+      {
+        "name" : "Spanish 4",
+        "day" : "B",
+        "startTime" : "13:50",
+        "endTime" : "15:15"
+      }
+  ]
+}
