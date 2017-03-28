@@ -8,7 +8,7 @@
 
 import Foundation
 
-class JHSchoolClass: NSObject {
+class JHSchoolClass: NSObject, NSCoding {
     var name: String!
     var startTime: String!
     var endTime: String!
@@ -21,11 +21,11 @@ class JHSchoolClass: NSObject {
         self.day = day
     }
     
-    init(coder decoder: NSCoder!) {
-        self.name = decoder.decodeObject(forKey: "name") as? String
-        self.startTime = decoder.decodeObject(forKey: "startTime") as? String
-        self.endTime = decoder.decodeObject(forKey: "endTime") as? String
-        self.day = decoder.decodeObject(forKey: "day") as? String
+    required init(coder decoder: NSCoder) {
+        self.name = decoder.decodeObject(forKey: "name") as! String
+        self.startTime = decoder.decodeObject(forKey: "startTime") as! String
+        self.endTime = decoder.decodeObject(forKey: "endTime") as! String
+        self.day = decoder.decodeObject(forKey: "day") as! String
     }
     
     func encode(with coder: NSCoder) {

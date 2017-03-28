@@ -10,6 +10,7 @@ import UIKit
 
 class MainTableViewController: UITableViewController {
     
+    let defaults = UserDefaults.standard
     var classes: [JHSchoolClass]?
     var classesByDay: [String: [JHSchoolClass]]!
     
@@ -17,7 +18,8 @@ class MainTableViewController: UITableViewController {
         super.viewDidLoad()
         
         title = "Schedule"
-        parseScheduleJSON()
+        
+        getData()
 
     }
     
@@ -67,6 +69,20 @@ class MainTableViewController: UITableViewController {
         return nil
     }
     
+    func getData() {
+        let launchedBefore = defaults.bool(forKey: "launchedBefore")
+        if !launchedBefore {
+            //First Launch
+            defaults.set(true, forKey: "launchedBefore")
+            parseScheduleJSON()
+        } else {
+            //Not first launch
+            let data = defaults.object(forKey: "classes") as! Data
+            classes = NSKeyedUnarchiver.unarchiveObject(with: data) as? [JHSchoolClass]
+        }
+        sortClassesByDay()
+    }
+    
     func parseScheduleJSON() {
         if let json = loadJSON(fromFile: "Classes", ofType: "json") {
             classes = [JHSchoolClass]()
@@ -75,8 +91,10 @@ class MainTableViewController: UITableViewController {
                     if let day = item["day"].string {
                         if let startTime = item["startTime"].string {
                             if let endTime = item["endTime"].string {
-                                classes!.append(JHSchoolClass(name: name, startTime: startTime, endTime: endTime, day: day))
-                                sortClassesByDay()
+                                let c = JHSchoolClass(name: name, startTime: startTime, endTime: endTime, day: day)
+                                classes!.append(c)
+                                let data: Data = NSKeyedArchiver.archivedData(withRootObject: classes!)
+                                defaults.set(data, forKey: "classes")
                             } else {
                                 print("Error parsing JSON")
                             }
