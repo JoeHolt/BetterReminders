@@ -25,7 +25,8 @@ class MainTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "ClassCell")
-        let c = classes![indexPath.row]
+        let index = indexForIndexPathWithManySections(indexPath: indexPath)
+        let c = classes![index]
         cell.textLabel?.text = "\(c.name!)"
         cell.detailTextLabel?.text = "\(c.startTime!)-\(c.endTime!)"
         cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
@@ -33,7 +34,7 @@ class MainTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
+        performSegue(withIdentifier: "classToTask", sender: self)
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -125,5 +126,42 @@ class MainTableViewController: UITableViewController {
             }
         }
     }
+    
+    
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let nextVC = segue.destination as! TaskTouchVC
+        let indexPath = tableView.indexPathForSelectedRow
+        let index = indexForIndexPathWithManySections(indexPath: indexPath!)
+        nextVC.clas = classes?[index]
+    }
+    
+    func indexForIndexPathWithManySections(indexPath: IndexPath) -> Int {
+        
+        let section = indexPath.section
+        let row = indexPath.row
+        
+        if section == 0 {
+            return row
+        } else {
+            var index = row
+            for x in 0...section-1 {
+                index += tableView.numberOfRows(inSection: x)
+            }
+            return index
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
 
