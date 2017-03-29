@@ -15,6 +15,7 @@
 		693484611E89D9FB00493CE2 /* JHHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693484601E89D9FB00493CE2 /* JHHelper.swift */; };
 		693484621E89E51000493CE2 /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 696BA2851E6663550002E84D /* MainTableViewController.swift */; };
 		693484631E89E55800493CE2 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6934845B1E89C9F500493CE2 /* SwiftyJSON.swift */; };
+		693484651E8B590D00493CE2 /* TaskTableVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693484641E8B590D00493CE2 /* TaskTableVC.swift */; };
 		696BA2841E6663550002E84D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 696BA2831E6663550002E84D /* AppDelegate.swift */; };
 		696BA2861E6663550002E84D /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 696BA2851E6663550002E84D /* MainTableViewController.swift */; };
 		696BA2891E6663550002E84D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 696BA2871E6663550002E84D /* Main.storyboard */; };
@@ -39,6 +40,7 @@
 		6934845B1E89C9F500493CE2 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 		6934845D1E89CD3E00493CE2 /* TestJSON.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = TestJSON.json; sourceTree = "<group>"; };
 		693484601E89D9FB00493CE2 /* JHHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JHHelper.swift; sourceTree = "<group>"; };
+		693484641E8B590D00493CE2 /* TaskTableVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskTableVC.swift; sourceTree = "<group>"; };
 		696BA2801E6663550002E84D /* BetterReminders.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BetterReminders.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		696BA2831E6663550002E84D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		696BA2851E6663550002E84D /* MainTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewController.swift; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 			children = (
 				696BA2831E6663550002E84D /* AppDelegate.swift */,
 				696BA2851E6663550002E84D /* MainTableViewController.swift */,
+				693484641E8B590D00493CE2 /* TaskTableVC.swift */,
 				693484581E89C30100493CE2 /* JHSchoolClass.swift */,
 				693484601E89D9FB00493CE2 /* JHHelper.swift */,
 				696BA2871E6663550002E84D /* Main.storyboard */,
@@ -227,6 +230,7 @@
 				693484591E89C30100493CE2 /* JHSchoolClass.swift in Sources */,
 				693484611E89D9FB00493CE2 /* JHHelper.swift in Sources */,
 				696BA2841E6663550002E84D /* AppDelegate.swift in Sources */,
+				693484651E8B590D00493CE2 /* TaskTableVC.swift in Sources */,
 				6934845C1E89C9F500493CE2 /* SwiftyJSON.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
