@@ -17,6 +17,8 @@
 		693484631E89E55800493CE2 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6934845B1E89C9F500493CE2 /* SwiftyJSON.swift */; };
 		693484671E8B5B1700493CE2 /* TaskTouchVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693484661E8B5B1700493CE2 /* TaskTouchVC.swift */; };
 		695C499A1E8B5E360094F3B1 /* TaskTouchVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693484661E8B5B1700493CE2 /* TaskTouchVC.swift */; };
+		695C499C1E8B60970094F3B1 /* JHTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 695C499B1E8B60970094F3B1 /* JHTask.swift */; };
+		695C499D1E8B60970094F3B1 /* JHTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 695C499B1E8B60970094F3B1 /* JHTask.swift */; };
 		696BA2841E6663550002E84D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 696BA2831E6663550002E84D /* AppDelegate.swift */; };
 		696BA2861E6663550002E84D /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 696BA2851E6663550002E84D /* MainTableViewController.swift */; };
 		696BA2891E6663550002E84D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 696BA2871E6663550002E84D /* Main.storyboard */; };
@@ -42,6 +44,7 @@
 		6934845D1E89CD3E00493CE2 /* TestJSON.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = TestJSON.json; sourceTree = "<group>"; };
 		693484601E89D9FB00493CE2 /* JHHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JHHelper.swift; sourceTree = "<group>"; };
 		693484661E8B5B1700493CE2 /* TaskTouchVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskTouchVC.swift; sourceTree = "<group>"; };
+		695C499B1E8B60970094F3B1 /* JHTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JHTask.swift; sourceTree = "<group>"; };
 		696BA2801E6663550002E84D /* BetterReminders.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BetterReminders.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		696BA2831E6663550002E84D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		696BA2851E6663550002E84D /* MainTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewController.swift; sourceTree = "<group>"; };
@@ -98,6 +101,7 @@
 				696BA2851E6663550002E84D /* MainTableViewController.swift */,
 				693484661E8B5B1700493CE2 /* TaskTouchVC.swift */,
 				693484581E89C30100493CE2 /* JHSchoolClass.swift */,
+				695C499B1E8B60970094F3B1 /* JHTask.swift */,
 				693484601E89D9FB00493CE2 /* JHHelper.swift */,
 				696BA2871E6663550002E84D /* Main.storyboard */,
 				696BA28C1E6663560002E84D /* LaunchScreen.storyboard */,
@@ -229,6 +233,7 @@
 			files = (
 				696BA2861E6663550002E84D /* MainTableViewController.swift in Sources */,
 				693484591E89C30100493CE2 /* JHSchoolClass.swift in Sources */,
+				695C499C1E8B60970094F3B1 /* JHTask.swift in Sources */,
 				693484611E89D9FB00493CE2 /* JHHelper.swift in Sources */,
 				696BA2841E6663550002E84D /* AppDelegate.swift in Sources */,
 				6934845C1E89C9F500493CE2 /* SwiftyJSON.swift in Sources */,
@@ -244,6 +249,7 @@
 				693484621E89E51000493CE2 /* MainTableViewController.swift in Sources */,
 				6934845A1E89C47E00493CE2 /* JHSchoolClass.swift in Sources */,
 				696BA2991E6663560002E84D /* BetterRemindersTests.swift in Sources */,
+				695C499D1E8B60970094F3B1 /* JHTask.swift in Sources */,
 				693484631E89E55800493CE2 /* SwiftyJSON.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

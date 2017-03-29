@@ -16,7 +16,7 @@ class BetterRemindersTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        
+        tableView.forceLoadData = true
         basicSchoolClass = JHSchoolClass(name: "Test", startTime: String(), endTime: String(), day: "A")
         
     }
@@ -41,9 +41,7 @@ class BetterRemindersTests: XCTestCase {
         XCTAssertTrue(tableView.classes?.count == 10)
     }
     
-    func testClassesByDay() {
-        tableView.parseScheduleJSON()
-        XCTAssertTrue(tableView.classesByDay.keys.count == 2)
-    }
+   
+    
     
 }

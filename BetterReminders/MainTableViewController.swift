@@ -13,6 +13,7 @@ class MainTableViewController: UITableViewController {
     let defaults = UserDefaults.standard
     var classes: [JHSchoolClass]?
     var classesByDay: [String: [JHSchoolClass]]!
+    var forceLoadData: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -73,7 +74,7 @@ class MainTableViewController: UITableViewController {
     
     func getData() {
         let launchedBefore = defaults.bool(forKey: "launchedBefore")
-        if !launchedBefore {
+        if !launchedBefore || forceLoadData == true {
             //First Launch
             defaults.set(true, forKey: "launchedBefore")
             parseScheduleJSON()
@@ -151,15 +152,6 @@ class MainTableViewController: UITableViewController {
             return index
         }
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     
     
