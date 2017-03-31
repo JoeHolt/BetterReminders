@@ -131,7 +131,7 @@ class MainTableViewController: UITableViewController {
     
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let nextVC = segue.destination as! TaskTouchVC
+        let nextVC = segue.destination as! TaskVC
         let indexPath = tableView.indexPathForSelectedRow
         let index = indexForIndexPathWithManySections(indexPath: indexPath!)
         nextVC.clas = classes?[index]

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TaskTouchVC: UITableViewController {
+class TaskVC: UITableViewController {
     
     var clas: JHSchoolClass!
     
@@ -21,12 +21,19 @@ class TaskTouchVC: UITableViewController {
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 0
+        return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 0
+        return clas.tasks.count
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "taskCell")
+        cell.textLabel?.text = clas.tasks[indexPath.row].name
+        cell.detailTextLabel?.text = "\(clas.tasks[indexPath.row].dueDate)"
+        return cell
     }
 
     

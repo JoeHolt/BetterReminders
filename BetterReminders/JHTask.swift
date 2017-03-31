@@ -8,32 +8,33 @@
 
 import UIKit
 
-class JHTask: NSCoder {
+//@objc(JHTask)
+class JHTask: NSObject, NSCoding {
     
     var name: String!
     var completed: Bool!
     var dueDate: String!
-    var timeToComplete: String!
+    var estimatedTimeToComplete: String!
     
-    init(name: String, completed: Bool, dueDate: String, timeToComplete: String) {
+    init(name: String, completed: Bool, dueDate: String, estimatedTimeToComplete: String) {
         self.name = name
         self.completed = completed
         self.dueDate = dueDate
-        self.timeToComplete = timeToComplete
+        self.estimatedTimeToComplete = estimatedTimeToComplete
     }
     
     required init(coder decoder: NSCoder) {
         self.name = decoder.decodeObject(forKey: "name") as! String
         self.completed = decoder.decodeBool(forKey: "completed")
         self.dueDate = decoder.decodeObject(forKey: "dueDate") as! String
-        self.timeToComplete = decoder.decodeObject(forKey: "timeToCopmlete") as! String
+        self.estimatedTimeToComplete = decoder.decodeObject(forKey: "estimatedTimeToComplete") as! String
     }
     
     func encode(with coder: NSCoder) {
         coder.encode(name, forKey: "name")
         coder.encode(completed, forKey: "completed")
         coder.encode(dueDate, forKey: "dueDate")
-        coder.encode(timeToComplete, forKey: "timeToComplete")
+        coder.encode(estimatedTimeToComplete, forKey: "estimatedTimeToComplete")
     }
     
     

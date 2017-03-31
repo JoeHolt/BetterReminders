@@ -42,10 +42,10 @@
             </objects>
             <point key="canvasLocation" x="906" y="44"/>
         </scene>
-        <!--Task TouchVC-->
+        <!--TaskVC-->
         <scene sceneID="ZeW-zZ-Mog">
             <objects>
-                <tableViewController id="gtQ-4B-A9p" customClass="TaskTouchVC" customModule="BetterReminders" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="gtQ-4B-A9p" customClass="TaskVC" customModule="BetterReminders" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="uuz-Zu-dtf">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
