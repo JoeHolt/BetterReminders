@@ -43,30 +43,32 @@
             <point key="canvasLocation" x="906" y="44"/>
         </scene>
         <!--Add PopoverVC-->
-        <scene sceneID="U98-um-GVS">
+        <scene sceneID="8Dr-Ml-8mm">
             <objects>
-                <viewController storyboardIdentifier="popoverAdd" id="9ZF-cb-DeF" customClass="AddPopoverVC" customModule="BetterReminders" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="1rf-Uj-sWL"/>
-                        <viewControllerLayoutGuide type="bottom" id="Hyo-IR-nta"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="51m-1R-umO">
+                <tableViewController storyboardIdentifier="popoverAdd" id="M4U-y3-ESM" customClass="AddPopoverVC" customModule="BetterReminders" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="lLT-ma-uB5">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3TN-J2-kDB">
-                                <rect key="frame" x="164" y="318" width="46" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                            </button>
-                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="9YC-YF-40g"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Alh-V8-pDC" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="popCell" id="gH9-JP-NuD">
+                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="gH9-JP-NuD" id="Cib-TZ-jft">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="M4U-y3-ESM" id="eQ6-Uz-GCN"/>
+                            <outlet property="delegate" destination="M4U-y3-ESM" id="4Es-hf-t2b"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="G17-QA-AiZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1630" y="769"/>
+            <point key="canvasLocation" x="1831" y="784"/>
         </scene>
         <!--TaskVC-->
         <scene sceneID="ZeW-zZ-Mog">
