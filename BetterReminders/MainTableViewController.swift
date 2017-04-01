@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MainTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UIAdaptivePresentationControllerDelegate {
+class MainTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UIAdaptivePresentationControllerDelegate, AddClassDelegate {
     
     let defaults = UserDefaults.standard
     var classes: [JHSchoolClass]?
@@ -53,6 +53,13 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         return classesByDay[days[section]]!.count
     }
     
+    func didAddNewClass() {
+        print("Added New Class")
+    }
+    
+    func didCancelAddNewClass() {
+        //nothing
+    }
     
     func loadJSON(fromFile file: String, ofType type: String) -> JSON? {
         if let path = Bundle.main.path(forResource: file, ofType: type) {
@@ -79,7 +86,8 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     func addButtonSelected() {
         let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyBoard.instantiateViewController(withIdentifier: "popoverAdd")
+        let vc = storyBoard.instantiateViewController(withIdentifier: "popoverAdd") as! AddPopoverVC
+        vc.delegate = self
         let nav = UINavigationController(rootViewController: vc)
         nav.modalPresentationStyle = .popover
         if let presentationController = nav.popoverPresentationController {
@@ -88,7 +96,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             presentationController.sourceView = self.view
             let width = self.view.bounds.width - 76
             let height = UIScreen.main.bounds.height - 150
-            presentationController.sourceRect = CGRect(x: (self.view.bounds.width - width)/2, y: 0.0, width: width, height: height)
+            presentationController.sourceRect = CGRect(x: (self.view.bounds.width - width)/2, y: 0.0, width: width, height: height - 300)
             self.present(nav, animated: true, completion: nil)
         }
     }
