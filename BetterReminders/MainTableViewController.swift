@@ -27,10 +27,13 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "ClassCell")
-        let index = indexForIndexPathWithManySections(indexPath: indexPath)
-        let c = classes![index]
+        //let index = indexForIndexPathWithManySections(indexPath: indexPath)
+        let day: String = Array(classesByDay.keys)[indexPath.section]
+        let c = (classesByDay[day]?[indexPath.row])! as JHSchoolClass
         cell.textLabel?.text = "\(c.name!)"
-        cell.detailTextLabel?.text = "\(c.startTime!)-\(c.endTime!)"
+        let outputFormatter = DateFormatter()
+        outputFormatter.timeStyle = .short
+        cell.detailTextLabel?.text = "\(outputFormatter.string(from: c.startDate))-\(outputFormatter.string(from: c.endDate))"
         cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
         return cell
     }
@@ -54,7 +57,8 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     }
     
     func didAddNewClass() {
-        print("Added New Class")
+        getData()
+        tableView.reloadData()
     }
     
     func didCancelAddNewClass() {
@@ -127,7 +131,8 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             let data = defaults.object(forKey: "classes") as! Data
             classes = NSKeyedUnarchiver.unarchiveObject(with: data) as? [JHSchoolClass]
         }
-        sortClassesByDay()
+        classes = sortClassesByStartTime(classes: classes!)
+        classesByDay = sortClassesByDay(classes: classes!)
         classes?[0].tasks = [JHTask(name: "HW", completed: false, dueDate: "1/1/2018", estimatedTimeToComplete: "1:44")]
     }
     
@@ -139,7 +144,9 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
                     if let day = item["day"].string {
                         if let startTime = item["startTime"].string {
                             if let endTime = item["endTime"].string {
-                                let c = JHSchoolClass(name: name, startTime: startTime, endTime: endTime, day: day)
+                                let startDate: Date = dateFromString(time: startTime)
+                                let endDate: Date = dateFromString(time: endTime)
+                                let c = JHSchoolClass(name: name, startDate: startDate, endDate: endDate, day: day)
                                 classes!.append(c)
                                 let data: Data = NSKeyedArchiver.archivedData(withRootObject: classes!)
                                 defaults.set(data, forKey: "classes")
@@ -161,19 +168,23 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         }
     }
     
-    func sortClassesByDay() {
+    func sortClassesByDay(classes: [JHSchoolClass]) -> [String: [JHSchoolClass]] {
         //Organizes classes into which class scheduele day in order for tableView organization
         classesByDay = [String: [JHSchoolClass]]()
-        for c in classes! {
+        for c in classes {
             if classesByDay[c.day] == nil {
                 classesByDay[c.day] = [c]
             } else {
                 classesByDay[c.day]?.append(c)
             }
         }
+        return classesByDay
     }
     
-    
+    func sortClassesByStartTime(classes: [JHSchoolClass]) -> [JHSchoolClass] {
+        let newClasses = classes.sorted(by: { $0.startDate.compare($1.startDate) == .orderedAscending })
+        return newClasses
+    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let nextVC = segue.destination as! TaskVC

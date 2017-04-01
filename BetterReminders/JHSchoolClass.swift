@@ -11,22 +11,26 @@ import Foundation
 @objc(JHSchoolClass)
 class JHSchoolClass: NSObject, NSCoding {
     var name: String!
-    var startTime: String!
-    var endTime: String!
+    var startDate: Date!
+    var endDate: Date!
     var day: String!
     var tasks: [JHTask] = []
     
-    init(name: String, startTime: String, endTime: String, day: String) {
+    override var description: String {
+        return name
+    }
+    
+    init(name: String, startDate: Date, endDate: Date, day: String) {
         self.name = name
-        self.startTime = startTime
-        self.endTime = endTime
+        self.startDate = startDate
+        self.endDate = endDate
         self.day = day
     }
     
     required init(coder decoder: NSCoder) {
         self.name = decoder.decodeObject(forKey: "name") as! String
-        self.startTime = decoder.decodeObject(forKey: "startTime") as! String
-        self.endTime = decoder.decodeObject(forKey: "endTime") as! String
+        self.startDate = decoder.decodeObject(forKey: "startDate") as! Date
+        self.endDate = decoder.decodeObject(forKey: "endDate") as! Date
         self.day = decoder.decodeObject(forKey: "day") as! String
         if decoder.decodeObject(forKey: "tasks") as? [JHTask] != nil {
             self.tasks = decoder.decodeObject(forKey: "tasks") as! [JHTask]
@@ -37,8 +41,8 @@ class JHSchoolClass: NSObject, NSCoding {
     
     func encode(with coder: NSCoder) {
         coder.encode(name, forKey: "name")
-        coder.encode(startTime, forKey: "startTime")
-        coder.encode(endTime, forKey: "endTime")
+        coder.encode(startDate, forKey: "startDate")
+        coder.encode(endDate, forKey: "endDate")
         coder.encode(day, forKey: "day")
         coder.encode(tasks, forKey: "tasks")
     }

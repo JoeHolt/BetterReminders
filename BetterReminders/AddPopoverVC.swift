@@ -29,7 +29,7 @@ class AddPopoverVC: UITableViewController {
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: .done, target: self, action: #selector(save))
         
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancle", style: .plain, target: self, action: #selector(cancle))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancel))
         
         
     }
@@ -39,36 +39,37 @@ class AddPopoverVC: UITableViewController {
         let day: String!
         let startTime: String!
         let endTime: String!
-        if let newName = classNameTF.text {
-            name = newName
+        if !(classNameTF.text?.trimmingCharacters(in: .whitespaces).isEmpty)! {
+            name = classNameTF.text
         } else {
             name = "Untitled"
         }
-        if let newDay = dayTF.text {
-            day = newDay
+        if !(dayTF.text?.trimmingCharacters(in: .whitespaces).isEmpty)! {
+            day = dayTF.text
         } else {
             day = "A"
         }
-        if let newStartTime = startTF.text {
-            startTime = newStartTime
+        if !(startTF.text?.trimmingCharacters(in: .whitespaces).isEmpty)! {
+            startTime = startTF.text
         } else {
             startTime = "7:55"
         }
-        if let newEndTime = endTF.text {
-            endTime = newEndTime
+        if !(endTF.text?.trimmingCharacters(in: .whitespaces).isEmpty)! {
+            endTime = endTF.text
         } else {
             endTime = "8:55"
         }
-        let newClass = JHSchoolClass(name: name, startTime: startTime, endTime: endTime, day: day)
+        let newClass = JHSchoolClass(name: name, startDate: dateFromString(time: startTime), endDate: dateFromString(time: endTime), day: day)
         var data = UserDefaults.standard.object(forKey: "classes") as! Data
         var classes = NSKeyedUnarchiver.unarchiveObject(with: data) as? [JHSchoolClass]
         classes?.append(newClass)
         data = NSKeyedArchiver.archivedData(withRootObject: classes!)
-        //UserDefaults.standard.set(data, forKey: "classes")
+        UserDefaults.standard.set(data, forKey: "classes")
         delegate?.didAddNewClass()
+        dismiss(animated: true, completion: nil)
     }
     
-    func cancle() {
+    func cancel() {
         delegate?.didCancelAddNewClass()
         dismiss(animated: true, completion: nil)
     }

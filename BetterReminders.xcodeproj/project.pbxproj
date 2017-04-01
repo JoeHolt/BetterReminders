@@ -15,7 +15,6 @@
 		693484671E8B5B1700493CE2 /* TaskVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693484661E8B5B1700493CE2 /* TaskVC.swift */; };
 		695C499C1E8B60970094F3B1 /* JHTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 695C499B1E8B60970094F3B1 /* JHTask.swift */; };
 		695C49A61E8F30C70094F3B1 /* AddPopoverVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 695C49A51E8F30C70094F3B1 /* AddPopoverVC.swift */; };
-		695C49A71E8F30C70094F3B1 /* AddPopoverVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 695C49A51E8F30C70094F3B1 /* AddPopoverVC.swift */; };
 		696BA2841E6663550002E84D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 696BA2831E6663550002E84D /* AppDelegate.swift */; };
 		696BA2861E6663550002E84D /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 696BA2851E6663550002E84D /* MainTableViewController.swift */; };
 		696BA2891E6663550002E84D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 696BA2871E6663550002E84D /* Main.storyboard */; };
@@ -245,7 +244,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				695C49A71E8F30C70094F3B1 /* AddPopoverVC.swift in Sources */,
 				696BA2991E6663560002E84D /* BetterRemindersTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

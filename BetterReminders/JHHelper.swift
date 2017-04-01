@@ -35,3 +35,11 @@ extension String {
     }
     
 }
+
+func dateFromString(time: String) -> Date {
+    
+    let inputFormatter = DateFormatter()
+    inputFormatter.dateFormat = "k:mm"
+    return inputFormatter.date(from: time)!
+    
+}
