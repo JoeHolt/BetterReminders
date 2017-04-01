@@ -42,6 +42,32 @@
             </objects>
             <point key="canvasLocation" x="906" y="44"/>
         </scene>
+        <!--Add PopoverVC-->
+        <scene sceneID="U98-um-GVS">
+            <objects>
+                <viewController storyboardIdentifier="popoverAdd" id="9ZF-cb-DeF" customClass="AddPopoverVC" customModule="BetterReminders" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="1rf-Uj-sWL"/>
+                        <viewControllerLayoutGuide type="bottom" id="Hyo-IR-nta"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="51m-1R-umO">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3TN-J2-kDB">
+                                <rect key="frame" x="164" y="318" width="46" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="9YC-YF-40g"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Alh-V8-pDC" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1630" y="769"/>
+        </scene>
         <!--TaskVC-->
         <scene sceneID="ZeW-zZ-Mog">
             <objects>

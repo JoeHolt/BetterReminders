@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MainTableViewController: UITableViewController {
+class MainTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UIAdaptivePresentationControllerDelegate {
     
     let defaults = UserDefaults.standard
     var classes: [JHSchoolClass]?
@@ -21,6 +21,7 @@ class MainTableViewController: UITableViewController {
         title = "Schedule"
         
         getData()
+        setUp()
 
     }
     
@@ -72,6 +73,41 @@ class MainTableViewController: UITableViewController {
         return nil
     }
     
+    func setUp() {
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add, target: self, action: #selector(addButtonSelected))
+    }
+    
+    func addButtonSelected() {
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyBoard.instantiateViewController(withIdentifier: "popoverAdd")
+        let nav = UINavigationController(rootViewController: vc)
+        nav.modalPresentationStyle = .popover
+        if let presentationController = nav.popoverPresentationController {
+            presentationController.delegate = self
+            presentationController.permittedArrowDirections = UIPopoverArrowDirection(rawValue: 0)
+            presentationController.sourceView = self.view
+            let width = self.view.bounds.width - 76
+            let height = UIScreen.main.bounds.height - 150
+            presentationController.sourceRect = CGRect(x: (self.view.bounds.width - width)/2, y: 0.0, width: width, height: height)
+            self.present(nav, animated: true, completion: nil)
+        }
+    }
+    
+    func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
+        let navigationController = UINavigationController(rootViewController: controller.presentedViewController)
+        let btnDone = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(MainTableViewController.dismissView))
+        navigationController.topViewController?.navigationItem.rightBarButtonItem = btnDone
+        return navigationController
+    }
+    
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return UIModalPresentationStyle.none
+    }
+    
+    func dismissView() {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
     func getData() {
         let launchedBefore = defaults.bool(forKey: "launchedBefore")
         if !launchedBefore || forceLoadData == true {
@@ -84,6 +120,7 @@ class MainTableViewController: UITableViewController {
             classes = NSKeyedUnarchiver.unarchiveObject(with: data) as? [JHSchoolClass]
         }
         sortClassesByDay()
+        classes?[0].tasks = [JHTask(name: "HW", completed: false, dueDate: "1/1/2018", estimatedTimeToComplete: "1:44")]
     }
     
     func parseScheduleJSON() {
