@@ -27,9 +27,8 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "ClassCell")
-        //let index = indexForIndexPathWithManySections(indexPath: indexPath)
-        let day: String = Array(classesByDay.keys)[indexPath.section]
-        let c = (classesByDay[day]?[indexPath.row])! as JHSchoolClass
+        let newKey = Array(classesByDay.keys).reversed()[indexPath.section]
+        let c = (classesByDay[newKey]?[indexPath.row])! as JHSchoolClass
         cell.textLabel?.text = "\(c.name!)"
         let outputFormatter = DateFormatter()
         outputFormatter.timeStyle = .short
