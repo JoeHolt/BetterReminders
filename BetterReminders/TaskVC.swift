@@ -17,6 +17,8 @@ class TaskVC: UITableViewController {
 
         title = clas.name
         
+        setUp()
+        
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -38,6 +40,18 @@ class TaskVC: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    func addTask() {
+        //Adds a new task to the given class
+        //Add a popover
+    }
+    
+    func setUp() {
+        //General UI set up at vc launch
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTask))
+        
     }
 
     
