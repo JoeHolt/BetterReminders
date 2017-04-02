@@ -27,7 +27,7 @@ class JHTask: NSObject, NSCoding {
     
     required init(coder decoder: NSCoder) {
         self.name = decoder.decodeObject(forKey: "name") as! String
-        self.completed = decoder.decodeBool(forKey: "completed")
+        self.completed = decoder.decodeObject(forKey: "completed") as! Bool
         self.dueDate = decoder.decodeObject(forKey: "dueDate") as! String
         self.estimatedTimeToComplete = decoder.decodeObject(forKey: "estimatedTimeToComplete") as! String
     }
