@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MainTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UIAdaptivePresentationControllerDelegate, AddClassDelegate {
+class MainTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UIAdaptivePresentationControllerDelegate, AddClassDelegate, UIViewControllerPreviewingDelegate {
     
     let defaults = UserDefaults.standard
     var classes: [JHSchoolClass]?
@@ -85,6 +85,32 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     func setUp() {
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add, target: self, action: #selector(addButtonSelected))
+        
+        //Register view for 3D touch preview
+        registerForPreviewing(with: self, sourceView: view)
+    }
+    
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
+        if let indexPath = tableView.indexPathForRow(at: location) {
+            previewingContext.sourceRect = tableView.rectForRow(at: indexPath)
+            
+            let vc = storyboard?.instantiateViewController(withIdentifier: "TaskVC") as! TaskVC
+            vc.clas = classes?[indexForIndexPathWithManySections(indexPath: indexPath)]
+            let navVC = UINavigationController(rootViewController: vc)
+            navVC.title = "\(vc.clas.name)"
+            
+            return navVC
+        }
+        return nil
+    }
+    
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
+        let navVC = viewControllerToCommit as! UINavigationController
+        let vc = navVC.viewControllers[0] as! TaskVC
+        let clas = vc.clas
+        let newVC = storyboard?.instantiateViewController(withIdentifier: "TaskVC") as! TaskVC
+        newVC.clas = clas
+        self.navigationController?.pushViewController(newVC, animated: true)
     }
     
     func addButtonSelected() {
