@@ -27,8 +27,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "ClassCell")
-        let newKey = Array(classesByDay.keys).reversed()[indexPath.section]
-        let c = (classesByDay[newKey]?[indexPath.row])! as JHSchoolClass
+        let c = classGivenIndexPath(indexPath: indexPath)
         cell.textLabel?.text = "\(c.name!)"
         let outputFormatter = DateFormatter()
         outputFormatter.timeStyle = .short
@@ -123,7 +122,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             presentationController.delegate = self
             presentationController.permittedArrowDirections = UIPopoverArrowDirection(rawValue: 0)
             presentationController.sourceView = self.view
-            let width = self.view.bounds.width - 76
+            let width = self.view.bounds.width - 30
             let height = UIScreen.main.bounds.height - 150
             presentationController.sourceRect = CGRect(x: (self.view.bounds.width - width)/2, y: 0.0, width: width, height: height - 300)
             self.present(nav, animated: true, completion: nil)
@@ -214,8 +213,13 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let nextVC = segue.destination as! TaskVC
         let indexPath = tableView.indexPathForSelectedRow
-        let index = indexForIndexPathWithManySections(indexPath: indexPath!)
-        nextVC.clas = classes?[index]
+        nextVC.clas = classGivenIndexPath(indexPath: indexPath!)
+    }
+    
+    func classGivenIndexPath(indexPath: IndexPath) -> JHSchoolClass {
+        let day = Array(classesByDay.keys).reversed()[(indexPath.section)] as String
+        let clas = classesByDay[day]?[(indexPath.row)]
+        return clas!
     }
     
     func indexForIndexPathWithManySections(indexPath: IndexPath) -> Int {
