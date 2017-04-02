@@ -54,6 +54,31 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         return classesByDay[days[section]]!.count
     }
     
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let ac = UIAlertController(title: "Delete Class", message: "Are you sure you would like to delete this class? All of the classes tasks will also be deleted.", preferredStyle: .actionSheet)
+            ac.addAction(UIAlertAction(title: "Delete Class", style: .destructive, handler: {
+                action in
+                //Deletes class at index path and then reloads data
+                //Finds the class in classesByDay structure then deletes in from classes array, could be redone for betterr reading and efficency
+                let clas = self.classGivenIndexPath(indexPath: indexPath)
+                var i = 0
+                for c in self.classes! {
+                    if c == clas {
+                        self.classes?.remove(at: i)
+                        break
+                    }
+                    i += 1
+                }
+                self.refreshData()
+                self.tableView.reloadData()
+            }))
+            ac.addAction(UIAlertAction(title: "Cancle", style: .cancel, handler: nil))
+            present(ac, animated: true, completion: nil)
+        }
+    }
+
+    
     func didAddNewClass() {
         //New class added from popover view controller
         getData()
@@ -151,6 +176,12 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         classes?[0].tasks = [JHTask(name: "HW", completed: false, dueDate: "1/1/2018", estimatedTimeToComplete: "1:44")]
     }
     
+    func refreshData() {
+        //Refreshs classes
+        classes = sortClassesByStartTime(classes: classes!)
+        classesByDay = sortClassesByDay(classes: classes!)
+    }
+    
     func loadJSON(fromFile file: String, ofType type: String) -> JSON? {
         //Loads the school scheduele JSON containing class info from the main bundle
         if let path = Bundle.main.path(forResource: file, ofType: type) {
@@ -226,9 +257,13 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     func classGivenIndexPath(indexPath: IndexPath) -> JHSchoolClass {
         //Hacky method to return the class of a given indexPath on the table view from classesByDay
-        let day = Array(classesByDay.keys).reversed()[(indexPath.section)] as String
+        let day = dayGivenIndexPath(indexPath: indexPath)
         let clas = classesByDay[day]?[(indexPath.row)]
         return clas!
+    }
+    
+    func dayGivenIndexPath(indexPath: IndexPath) -> String {
+        return Array(classesByDay.keys).reversed()[(indexPath.section)] as String
     }
     
     func indexForIndexPathWithManySections(indexPath: IndexPath) -> Int {
