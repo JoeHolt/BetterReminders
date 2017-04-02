@@ -94,7 +94,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             previewingContext.sourceRect = tableView.rectForRow(at: indexPath)
             
             let vc = storyboard?.instantiateViewController(withIdentifier: "TaskVC") as! TaskVC
-            vc.clas = classes?[indexForIndexPathWithManySections(indexPath: indexPath)]
+            vc.clas = classGivenIndexPath(indexPath: indexPath)
             let navVC = UINavigationController(rootViewController: vc)
             navVC.title = "\(vc.clas.name)"
             
