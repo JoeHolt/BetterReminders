@@ -70,6 +70,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
                     }
                     i += 1
                 }
+                self.saveClasses()
                 self.refreshData()
                 self.tableView.reloadData()
             }))
@@ -82,6 +83,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     func didAddNewClass() {
         //New class added from popover view controller
         getData()
+        self.saveClasses()
         tableView.reloadData()
     }
     
@@ -168,8 +170,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             parseScheduleJSON()
         } else {
             //Not first launch
-            let data = defaults.object(forKey: "classes") as! Data
-            classes = NSKeyedUnarchiver.unarchiveObject(with: data) as? [JHSchoolClass]
+            loadClasses()
         }
         classes = sortClassesByStartTime(classes: classes!)
         classesByDay = sortClassesByDay(classes: classes!)
@@ -216,8 +217,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
                                 let endDate: Date = dateFromString(time: endTime)
                                 let c = JHSchoolClass(name: name, startDate: startDate, endDate: endDate, day: day)
                                 classes!.append(c)
-                                let data: Data = NSKeyedArchiver.archivedData(withRootObject: classes!)
-                                defaults.set(data, forKey: "classes")
+                                saveClasses()
                             } else {
                                 print("Error parsing JSON")
                             }
@@ -263,7 +263,20 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     }
     
     func dayGivenIndexPath(indexPath: IndexPath) -> String {
+        //Day given an index path of a class
         return Array(classesByDay.keys).reversed()[(indexPath.section)] as String
+    }
+    
+    func loadClasses() {
+        //Loads classes from defaults
+        let data = defaults.object(forKey: "classes") as! Data
+        classes = NSKeyedUnarchiver.unarchiveObject(with: data) as? [JHSchoolClass]
+    }
+    
+    func saveClasses() {
+        //Save classes from defaults
+        let data: Data = NSKeyedArchiver.archivedData(withRootObject: classes!)
+        defaults.set(data, forKey: "classes")
     }
     
     func indexForIndexPathWithManySections(indexPath: IndexPath) -> Int {
