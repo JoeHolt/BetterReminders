@@ -35,6 +35,7 @@ class AddPopoverVC: UITableViewController {
     }
     
     func save() {
+        //Saves a new class from provided information in popover
         let name: String!
         let day: String!
         let startTime: String!

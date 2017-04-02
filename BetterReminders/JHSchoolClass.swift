@@ -10,6 +10,9 @@ import Foundation
 
 @objc(JHSchoolClass)
 class JHSchoolClass: NSObject, NSCoding {
+    
+    // Class
+    
     var name: String!
     var startDate: Date!
     var endDate: Date!

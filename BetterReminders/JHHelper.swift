@@ -9,7 +9,7 @@
 import Foundation
 
 extension String {
-    
+    //Returns the charachter at a given index from a string
     var length: Int {
         return self.characters.count
     }

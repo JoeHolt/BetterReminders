@@ -55,15 +55,104 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     }
     
     func didAddNewClass() {
+        //New class added from popover view controller
         getData()
         tableView.reloadData()
     }
     
     func didCancelAddNewClass() {
-        //nothing
+        //Cancled creation of new class from popover view contorller
+    }
+    
+    func setUp() {
+        //General code to set up app when launched
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add, target: self, action: #selector(addButtonSelected))
+        
+        //Register view for 3D touch preview
+        registerForPreviewing(with: self, sourceView: view)
+    }
+    
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
+        // Peek and pop - Present a VC preview when force touching it
+        if let indexPath = tableView.indexPathForRow(at: location) {
+            previewingContext.sourceRect = tableView.rectForRow(at: indexPath)
+            
+            let vc = storyboard?.instantiateViewController(withIdentifier: "TaskVC") as! TaskVC
+            vc.clas = classGivenIndexPath(indexPath: indexPath)
+            let navVC = UINavigationController(rootViewController: vc)
+            navVC.title = "\(vc.clas.name)"
+            
+            return navVC
+        }
+        return nil
+    }
+    
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
+        // Peek and pop - Presents the view contorller when popping - hacky implementation
+        let navVC = viewControllerToCommit as! UINavigationController
+        let vc = navVC.viewControllers[0] as! TaskVC
+        let clas = vc.clas
+        let newVC = storyboard?.instantiateViewController(withIdentifier: "TaskVC") as! TaskVC
+        newVC.clas = clas
+        self.navigationController?.pushViewController(newVC, animated: true)
+    }
+    
+    func addButtonSelected() {
+        //Creates and presents a popover view controller for adding a new class
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyBoard.instantiateViewController(withIdentifier: "popoverAdd") as! AddPopoverVC
+        vc.delegate = self
+        let nav = UINavigationController(rootViewController: vc)
+        nav.modalPresentationStyle = .popover
+        if let presentationController = nav.popoverPresentationController {
+            presentationController.delegate = self
+            presentationController.permittedArrowDirections = UIPopoverArrowDirection(rawValue: 0)
+            presentationController.sourceView = self.view
+            let width = self.view.bounds.width - 30
+            let height = UIScreen.main.bounds.height - 150
+            presentationController.sourceRect = CGRect(x: (self.view.bounds.width - width)/2, y: 0.0, width: width, height: height - 300)
+            self.present(nav, animated: true, completion: nil)
+        }
+    }
+    
+    func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
+        //Gives the view controller to be displayed in the popover view contorller
+        let navigationController = UINavigationController(rootViewController: controller.presentedViewController)
+        let btnDone = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(MainTableViewController.dismissView))
+        navigationController.topViewController?.navigationItem.rightBarButtonItem = btnDone
+        return navigationController
+    }
+    
+    func dismissView() {
+        //Called from presentationController:controller:viewControllerForAdaptivePresentationStyle
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        //.none sets the popover style as an actual popover rather than a full screen view
+        return UIModalPresentationStyle.none
+    }
+    
+    func getData() {
+        //Gets data, either from JSON or NSUserDefaults depending on launch
+        let launchedBefore = defaults.bool(forKey: "launchedBefore")
+        if !launchedBefore || forceLoadData == true {
+            //First Launch
+            defaults.set(true, forKey: "launchedBefore")
+            parseScheduleJSON()
+        } else {
+            //Not first launch
+            let data = defaults.object(forKey: "classes") as! Data
+            classes = NSKeyedUnarchiver.unarchiveObject(with: data) as? [JHSchoolClass]
+        }
+        classes = sortClassesByStartTime(classes: classes!)
+        classesByDay = sortClassesByDay(classes: classes!)
+        classes?[0].tasks = [JHTask(name: "HW", completed: false, dueDate: "1/1/2018", estimatedTimeToComplete: "1:44")]
     }
     
     func loadJSON(fromFile file: String, ofType type: String) -> JSON? {
+        //Loads the school scheduele JSON containing class info from the main bundle
         if let path = Bundle.main.path(forResource: file, ofType: type) {
             do {
                 let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .alwaysMapped)
@@ -82,85 +171,9 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         return nil
     }
     
-    func setUp() {
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add, target: self, action: #selector(addButtonSelected))
-        
-        //Register view for 3D touch preview
-        registerForPreviewing(with: self, sourceView: view)
-    }
-    
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
-        if let indexPath = tableView.indexPathForRow(at: location) {
-            previewingContext.sourceRect = tableView.rectForRow(at: indexPath)
-            
-            let vc = storyboard?.instantiateViewController(withIdentifier: "TaskVC") as! TaskVC
-            vc.clas = classGivenIndexPath(indexPath: indexPath)
-            let navVC = UINavigationController(rootViewController: vc)
-            navVC.title = "\(vc.clas.name)"
-            
-            return navVC
-        }
-        return nil
-    }
-    
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
-        let navVC = viewControllerToCommit as! UINavigationController
-        let vc = navVC.viewControllers[0] as! TaskVC
-        let clas = vc.clas
-        let newVC = storyboard?.instantiateViewController(withIdentifier: "TaskVC") as! TaskVC
-        newVC.clas = clas
-        self.navigationController?.pushViewController(newVC, animated: true)
-    }
-    
-    func addButtonSelected() {
-        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyBoard.instantiateViewController(withIdentifier: "popoverAdd") as! AddPopoverVC
-        vc.delegate = self
-        let nav = UINavigationController(rootViewController: vc)
-        nav.modalPresentationStyle = .popover
-        if let presentationController = nav.popoverPresentationController {
-            presentationController.delegate = self
-            presentationController.permittedArrowDirections = UIPopoverArrowDirection(rawValue: 0)
-            presentationController.sourceView = self.view
-            let width = self.view.bounds.width - 30
-            let height = UIScreen.main.bounds.height - 150
-            presentationController.sourceRect = CGRect(x: (self.view.bounds.width - width)/2, y: 0.0, width: width, height: height - 300)
-            self.present(nav, animated: true, completion: nil)
-        }
-    }
-    
-    func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
-        let navigationController = UINavigationController(rootViewController: controller.presentedViewController)
-        let btnDone = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(MainTableViewController.dismissView))
-        navigationController.topViewController?.navigationItem.rightBarButtonItem = btnDone
-        return navigationController
-    }
-    
-    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
-        return UIModalPresentationStyle.none
-    }
-    
-    func dismissView() {
-        self.dismiss(animated: true, completion: nil)
-    }
-    
-    func getData() {
-        let launchedBefore = defaults.bool(forKey: "launchedBefore")
-        if !launchedBefore || forceLoadData == true {
-            //First Launch
-            defaults.set(true, forKey: "launchedBefore")
-            parseScheduleJSON()
-        } else {
-            //Not first launch
-            let data = defaults.object(forKey: "classes") as! Data
-            classes = NSKeyedUnarchiver.unarchiveObject(with: data) as? [JHSchoolClass]
-        }
-        classes = sortClassesByStartTime(classes: classes!)
-        classesByDay = sortClassesByDay(classes: classes!)
-        classes?[0].tasks = [JHTask(name: "HW", completed: false, dueDate: "1/1/2018", estimatedTimeToComplete: "1:44")]
-    }
-    
     func parseScheduleJSON() {
+        //Parses JSON of school classes in the app bundle
+        //Used for easy adding of classes -- Wont be used in final user version
         if let json = loadJSON(fromFile: "Classes", ofType: "json") {
             classes = [JHSchoolClass]()
             for item in json["Classes"].arrayValue {
@@ -206,23 +219,22 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     }
     
     func sortClassesByStartTime(classes: [JHSchoolClass]) -> [JHSchoolClass] {
+        // Sorts classes by startDate method
         let newClasses = classes.sorted(by: { $0.startDate.compare($1.startDate) == .orderedAscending })
         return newClasses
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let nextVC = segue.destination as! TaskVC
-        let indexPath = tableView.indexPathForSelectedRow
-        nextVC.clas = classGivenIndexPath(indexPath: indexPath!)
-    }
-    
     func classGivenIndexPath(indexPath: IndexPath) -> JHSchoolClass {
+        //Hacky method to return the class of a given indexPath on the table view from classesByDay
         let day = Array(classesByDay.keys).reversed()[(indexPath.section)] as String
         let clas = classesByDay[day]?[(indexPath.row)]
         return clas!
     }
     
     func indexForIndexPathWithManySections(indexPath: IndexPath) -> Int {
+        //Returns the "cell number" for a cell with multiple sections
+        //ie: cell with section 0 containing 3 cells and section 1 containing 2 cells, this func
+        //would return 5 for the index path of the second cell in section 1.(3 cells in 0 + 2 in 1)
         
         let section = indexPath.section
         let row = indexPath.row
@@ -238,6 +250,11 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         }
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let nextVC = segue.destination as! TaskVC
+        let indexPath = tableView.indexPathForSelectedRow
+        nextVC.clas = classGivenIndexPath(indexPath: indexPath!)
+    }
     
     
 }

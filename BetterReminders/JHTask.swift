@@ -11,6 +11,8 @@ import UIKit
 //@objc(JHTask)
 class JHTask: NSObject, NSCoding {
     
+    //Class reminder
+    
     var name: String!
     var completed: Bool!
     var dueDate: String!
