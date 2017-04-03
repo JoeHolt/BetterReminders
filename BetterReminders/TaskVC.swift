@@ -12,6 +12,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     
     var classes: [JHSchoolClass]!
     var clas: JHSchoolClass!
+    var tasksToDisplay: [JHTask]!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,25 +30,33 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return clas.tasks.count
+        return tasksToDisplay.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "taskCell")
-        cell.textLabel?.text = clas.tasks[indexPath.row].name
+        cell.textLabel?.text = tasksToDisplay[indexPath.row].name
         let outputFormatter = DateFormatter()
         outputFormatter.dateStyle = .full
-        cell.detailTextLabel?.text = outputFormatter.string(from: clas.tasks[indexPath.row].dueDate!)
+        cell.detailTextLabel?.text = outputFormatter.string(from: tasksToDisplay[indexPath.row].dueDate!)
         return cell
-    }
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             deleteTask(at: indexPath)
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let task = tasksToDisplay[indexPath.row]
+        task.completed = !task.completed
+        let cell = tableView.cellForRow(at: indexPath)
+        if cell?.accessoryType == UITableViewCellAccessoryType.none {
+            cell?.accessoryType = UITableViewCellAccessoryType.checkmark
+        } else {
+            cell?.accessoryType = UITableViewCellAccessoryType.none
         }
     }
     
@@ -114,8 +123,15 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     
     func setUp() {
         //General UI set up at vc launch
-        
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTask))
+        
+        //Get array of tasks to display
+        tasksToDisplay = [JHTask]()
+        for t in clas.tasks {
+            if !t.completed {
+                tasksToDisplay.append(t)
+            }
+        }
         
     }
 
