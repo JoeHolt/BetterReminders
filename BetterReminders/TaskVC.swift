@@ -140,6 +140,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     }
     
     func changeDisplayType() {
+        //Changes display type of classes displayed
         if displayType == .NotCompleted {
             displayType = .All
         } else {

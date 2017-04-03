@@ -54,36 +54,56 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         return classesByDay[days[section]]!.count
     }
     
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            let ac = UIAlertController(title: "Delete Class", message: "Are you sure you would like to delete \(classGivenIndexPath(indexPath: indexPath).name!)? All of the classes tasks will also be deleted.", preferredStyle: .actionSheet)
-            ac.addAction(UIAlertAction(title: "Delete Class", style: .destructive, handler: {
-                action in
-                //Deletes class at index path and then reloads data
-                //Finds the class in classesByDay structure then deletes in from classes array, could be redone for betterr reading and efficency
-                let clas = self.classGivenIndexPath(indexPath: indexPath)
-                var i = 0
-                for c in self.classes! {
-                    if c == clas {
-                        self.classes?.remove(at: i)
-                        break
-                    }
-                    i += 1
-                }
-                self.saveClasses()
-                self.refreshData()
-                self.tableView.reloadData()
-            }))
-            ac.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-            present(ac, animated: true, completion: nil)
-        }
+    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete", handler: {_,_ in 
+            self.deleteClass(at: indexPath)
+        })
+        let editAction = UITableViewRowAction(style: .normal, title: "Edit", handler: {
+            _,_ in
+            self.editClass(at: indexPath)
+        })
+        editAction.backgroundColor = UIColor.blue
+        return [deleteAction, editAction]
     }
-
+    
+    func editClass(at indexPath: IndexPath) {
+        //Edit class
+        displayClassCreationPopup(editing: true, forClass: classGivenIndexPath(indexPath: indexPath))
+    }
+    
+    func deleteClass(at indexPath: IndexPath) {
+        //Confirm with user then delete class
+        let ac = UIAlertController(title: "Delete Class", message: "Are you sure you would like to delete \(self.classGivenIndexPath(indexPath: indexPath).name!)? All of the classes tasks will also be deleted.", preferredStyle: .actionSheet)
+        ac.addAction(UIAlertAction(title: "Delete Class", style: .destructive, handler: {
+            action in
+            //Deletes class at index path and then reloads data
+            //Finds the class in classesByDay structure then deletes in from classes array, could be redone for betterr reading and efficency
+            let clas = self.classGivenIndexPath(indexPath: indexPath)
+            var i = 0
+            for c in self.classes! {
+                if c == clas {
+                    self.classes?.remove(at: i)
+                    break
+                }
+                i += 1
+            }
+            self.saveClasses()
+            self.refreshData()
+            self.tableView.reloadData()
+        }))
+        ac.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        self.present(ac, animated: true, completion: nil)
+    }
     
     func didAddNewClass() {
         //New class added from popover view controller
         getData()
-        self.saveClasses()
+        tableView.reloadData()
+    }
+    
+    func didFinishEditing() {
+         //Finished editing a class
+        getData()
         tableView.reloadData()
     }
     
@@ -126,10 +146,17 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     }
     
     func addButtonSelected() {
-        //Creates and presents a popover view controller for adding a new class
+        //Add button selected in nav bar
+        displayClassCreationPopup()
+    }
+    
+    func displayClassCreationPopup(editing: Bool = false, forClass: JHSchoolClass? = nil) {
+        //Instantiate and display popup for creating/editing a class
         let storyBoard = UIStoryboard(name: "Main", bundle: nil)
         let vc = storyBoard.instantiateViewController(withIdentifier: "popoverClassAdd") as! ClassPopoverVC
         vc.delegate = self
+        vc.forEditing = editing
+        vc.editClass = forClass
         let nav = UINavigationController(rootViewController: vc)
         nav.modalPresentationStyle = .popover
         if let presentationController = nav.popoverPresentationController {
@@ -267,25 +294,6 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         //Save classes from defaults
         let data: Data = NSKeyedArchiver.archivedData(withRootObject: classes!)
         defaults.set(data, forKey: "classes")
-    }
-    
-    func indexForIndexPathWithManySections(indexPath: IndexPath) -> Int {
-        //Returns the "cell number" for a cell with multiple sections
-        //ie: cell with section 0 containing 3 cells and section 1 containing 2 cells, this func
-        //would return 5 for the index path of the second cell in section 1.(3 cells in 0 + 2 in 1)
-        
-        let section = indexPath.section
-        let row = indexPath.row
-        
-        if section == 0 {
-            return row
-        } else {
-            var index = row
-            for x in 0...section-1 {
-                index += tableView.numberOfRows(inSection: x)
-            }
-            return index
-        }
     }
     
     func classGivenIndexPath(indexPath: IndexPath) -> JHSchoolClass {
