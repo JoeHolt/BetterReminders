@@ -135,7 +135,6 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     
     @objc func navBarLongPress(sender: UILongPressGestureRecognizer? = nil) {
         if sender?.state == UIGestureRecognizerState.began {
-            print("Changing display type...")
             changeDisplayType()
         }
     }
@@ -150,6 +149,13 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     }
     
     func loadTasks() {
+        //Get array of incompleted tasks
+        incompletedTasks = [JHTask]()
+        for t in clas.tasks {
+            if !t.completed {
+                incompletedTasks.append(t)
+            }
+        }
         //Get tasks to be displayed
         if displayType == .NotCompleted {
             tasks = incompletedTasks
@@ -166,13 +172,6 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         longPress.delegate = self
         navigationController?.navigationBar.addGestureRecognizer(longPress)
         
-        //Get array of incompleted tasks
-        incompletedTasks = [JHTask]()
-        for t in clas.tasks {
-            if !t.completed {
-                incompletedTasks.append(t)
-            }
-        }
         loadTasks()
         
     }
