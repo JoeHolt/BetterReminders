@@ -128,7 +128,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     func addButtonSelected() {
         //Creates and presents a popover view controller for adding a new class
         let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyBoard.instantiateViewController(withIdentifier: "popoverAdd") as! AddPopoverVC
+        let vc = storyBoard.instantiateViewController(withIdentifier: "popoverClassAdd") as! ClassPopoverVC
         vc.delegate = self
         let nav = UINavigationController(rootViewController: vc)
         nav.modalPresentationStyle = .popover
@@ -174,7 +174,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         }
         classes = sortClassesByStartTime(classes: classes!)
         classesByDay = sortClassesByDay(classes: classes!)
-        classes?[0].tasks = [JHTask(name: "HW", completed: false, dueDate: "1/1/2018", estimatedTimeToComplete: "1:44")]
+        //classes?[0].tasks = [JHTask(name: "HW", completed: false, dueDate: "1/1/2018", estimatedTimeToComplete: "1:44")]
     }
     
     func refreshData() {
@@ -255,17 +255,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         return newClasses
     }
     
-    func classGivenIndexPath(indexPath: IndexPath) -> JHSchoolClass {
-        //Hacky method to return the class of a given indexPath on the table view from classesByDay
-        let day = dayGivenIndexPath(indexPath: indexPath)
-        let clas = classesByDay[day]?[(indexPath.row)]
-        return clas!
-    }
     
-    func dayGivenIndexPath(indexPath: IndexPath) -> String {
-        //Day given an index path of a class
-        return Array(classesByDay.keys).reversed()[(indexPath.section)] as String
-    }
     
     func loadClasses() {
         //Loads classes from defaults
@@ -298,10 +288,23 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         }
     }
     
+    func classGivenIndexPath(indexPath: IndexPath) -> JHSchoolClass {
+        //Hacky method to return the class of a given indexPath on the table view from classesByDay
+        let day = dayGivenIndexPath(indexPath: indexPath)
+        let clas = classesByDay[day]?[(indexPath.row)]
+        return clas!
+    }
+    
+    func dayGivenIndexPath(indexPath: IndexPath) -> String {
+        //Day given an index path of a class
+        return Array(classesByDay.keys).reversed()[(indexPath.section)] as String
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let nextVC = segue.destination as! TaskVC
         let indexPath = tableView.indexPathForSelectedRow
         nextVC.clas = classGivenIndexPath(indexPath: indexPath!)
+        nextVC.classes = classes
     }
     
     

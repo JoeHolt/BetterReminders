@@ -13,7 +13,7 @@ import UIKit
     func didCancelAddNewClass()
 }
 
-class AddPopoverVC: UITableViewController {
+class ClassPopoverVC: UITableViewController {
 
     @IBOutlet weak var classNameTF: UITextField!
     @IBOutlet weak var dayTF: UITextField!

@@ -8,8 +8,9 @@
 
 import UIKit
 
-class TaskVC: UITableViewController {
+class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationControllerDelegate {
     
+    var classes: [JHSchoolClass]!
     var clas: JHSchoolClass!
     
     override func viewDidLoad() {
@@ -42,9 +43,54 @@ class TaskVC: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
+    func didAddTask() {
+        //Task was added
+        saveClasses()
+        tableView.reloadData()
+    }
+    
+    func saveClasses() {
+        //Save classes from defaults
+        let data: Data = NSKeyedArchiver.archivedData(withRootObject: classes!)
+        UserDefaults.standard.set(data, forKey: "classes")
+    }
+    
     func addTask() {
         //Adds a new task to the given class
         //Add a popover
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyBoard.instantiateViewController(withIdentifier: "popoverTaskAdd") as! TaskPopoverVC
+        vc.delegate = self
+        vc.clas = clas
+        let nav = UINavigationController(rootViewController: vc)
+        nav.modalPresentationStyle = .popover
+        if let presentationController = nav.popoverPresentationController {
+            presentationController.delegate = self
+            presentationController.permittedArrowDirections = UIPopoverArrowDirection(rawValue: 0)
+            presentationController.sourceView = self.view
+            let width = self.view.bounds.width - 30
+            let height = UIScreen.main.bounds.height - 150
+            presentationController.sourceRect = CGRect(x: (self.view.bounds.width - width)/2, y: 0.0, width: width, height: height - 300)
+            self.present(nav, animated: true, completion: nil)
+        }
+    }
+    
+    func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
+        //Gives the view controller to be displayed in the popover view contorller
+        let navigationController = UINavigationController(rootViewController: controller.presentedViewController)
+        let btnDone = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(MainTableViewController.dismissView))
+        navigationController.topViewController?.navigationItem.rightBarButtonItem = btnDone
+        return navigationController
+    }
+    
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        //.none sets the popover style as an actual popover rather than a full screen view
+        return UIModalPresentationStyle.none
+    }
+    
+    func dismissView() {
+        //dismiss popover
+        self.dismiss(animated: true, completion: nil)
     }
     
     func setUp() {

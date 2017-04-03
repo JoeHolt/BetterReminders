@@ -15,10 +15,10 @@ class JHTask: NSObject, NSCoding {
     
     var name: String!
     var completed: Bool!
-    var dueDate: String!
-    var estimatedTimeToComplete: String!
+    var dueDate: Date!
+    var estimatedTimeToComplete: Date!
     
-    init(name: String, completed: Bool, dueDate: String, estimatedTimeToComplete: String) {
+    init(name: String, completed: Bool, dueDate: Date, estimatedTimeToComplete: Date) {
         self.name = name
         self.completed = completed
         self.dueDate = dueDate
@@ -28,8 +28,8 @@ class JHTask: NSObject, NSCoding {
     required init(coder decoder: NSCoder) {
         self.name = decoder.decodeObject(forKey: "name") as! String
         self.completed = decoder.decodeObject(forKey: "completed") as! Bool
-        self.dueDate = decoder.decodeObject(forKey: "dueDate") as! String
-        self.estimatedTimeToComplete = decoder.decodeObject(forKey: "estimatedTimeToComplete") as! String
+        self.dueDate = decoder.decodeObject(forKey: "dueDate") as! Date
+        self.estimatedTimeToComplete = decoder.decodeObject(forKey: "estimatedTimeToComplete") as! Date
     }
     
     func encode(with coder: NSCoder) {
