@@ -45,8 +45,25 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            deleteTask(at: indexPath)
+        }
+    }
+    
+    func deleteTask(at indexPath: IndexPath) {
+        //Delete task from model and UI
+        clas.removeTask(at: indexPath.row)
+        reloadTasks()
+    }
+    
     func didAddTask() {
         //Task was added
+        reloadTasks()
+    }
+    
+    func reloadTasks() {
+        //Reloads and saves tasks
         saveClasses()
         tableView.reloadData()
     }

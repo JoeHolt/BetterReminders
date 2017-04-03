@@ -55,7 +55,7 @@ class TaskPopoverVC: UITableViewController {
         let ttc = timeToFinishDP.date
         let completed = false
         let newTask = JHTask(name: name, completed: completed, dueDate: dueDate, estimatedTimeToComplete: ttc)
-        clas.tasks.append(newTask)
+        clas.addTask(task: newTask)
         delegate?.didAddTask()
         dismiss(animated: true, completion: nil)
     }

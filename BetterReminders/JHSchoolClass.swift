@@ -50,5 +50,17 @@ class JHSchoolClass: NSObject, NSCoding {
         coder.encode(tasks, forKey: "tasks")
     }
     
+    func addTask(task: JHTask, atStart: Bool = false) {
+        if atStart {
+            tasks.insert(task, at: 0)
+        } else {
+            tasks.append(task)
+        }
+    }
+    
+    func removeTask(at index: Int) {
+        tasks.remove(at: index)
+    }
+    
     
 }
