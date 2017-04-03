@@ -37,7 +37,7 @@ extension String {
 }
 
 func dateFromString(time: String) -> Date {
-    
+    //String must be in hh:mm a format
     let inputFormatter = DateFormatter()
     inputFormatter.dateFormat = "hh:mm a"
     return inputFormatter.date(from: time)!

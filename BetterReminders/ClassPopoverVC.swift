@@ -101,7 +101,7 @@ class ClassPopoverVC: UITableViewController {
             if let editClassInitial = editClass {
                 var i = 0
                 for c in classes {
-                    if editClassInitial.name == c.name {
+                    if editClassInitial.id == c.id {
                         classes[i] = newClass
                     }
                     i += 1
