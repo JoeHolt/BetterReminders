@@ -56,7 +56,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            let ac = UIAlertController(title: "Delete Class", message: "Are you sure you would like to delete this class? All of the classes tasks will also be deleted.", preferredStyle: .actionSheet)
+            let ac = UIAlertController(title: "Delete Class", message: "Are you sure you would like to delete \(classGivenIndexPath(indexPath: indexPath).name!)? All of the classes tasks will also be deleted.", preferredStyle: .actionSheet)
             ac.addAction(UIAlertAction(title: "Delete Class", style: .destructive, handler: {
                 action in
                 //Deletes class at index path and then reloads data
@@ -74,7 +74,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
                 self.refreshData()
                 self.tableView.reloadData()
             }))
-            ac.addAction(UIAlertAction(title: "Cancle", style: .cancel, handler: nil))
+            ac.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             present(ac, animated: true, completion: nil)
         }
     }
