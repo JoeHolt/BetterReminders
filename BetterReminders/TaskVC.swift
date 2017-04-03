@@ -35,7 +35,9 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "taskCell")
         cell.textLabel?.text = clas.tasks[indexPath.row].name
-        cell.detailTextLabel?.text = "\(clas.tasks[indexPath.row].dueDate!)"
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateStyle = .full
+        cell.detailTextLabel?.text = outputFormatter.string(from: clas.tasks[indexPath.row].dueDate!)
         return cell
     }
     
