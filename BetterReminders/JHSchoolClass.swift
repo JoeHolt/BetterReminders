@@ -17,6 +17,7 @@ class JHSchoolClass: NSObject, NSCoding {
     var startDate: Date!
     var endDate: Date!
     var day: String!
+    var notifyAtEnd: Bool!
     var tasks: [JHTask] = []
     var id: Int!
     
@@ -24,11 +25,12 @@ class JHSchoolClass: NSObject, NSCoding {
         return name
     }
     
-    init(name: String, startDate: Date, endDate: Date, day: String) {
+    init(name: String, startDate: Date, endDate: Date, day: String, notify: Bool = true) {
         self.name = name
         self.startDate = startDate
         self.endDate = endDate
         self.day = day
+        self.notifyAtEnd = notify
         self.id = Int(arc4random_uniform(999999999))
     }
     
@@ -38,6 +40,7 @@ class JHSchoolClass: NSObject, NSCoding {
         self.endDate = decoder.decodeObject(forKey: "endDate") as! Date
         self.day = decoder.decodeObject(forKey: "day") as! String
         self.id = decoder.decodeObject(forKey: "id") as! Int
+        self.notifyAtEnd = decoder.decodeObject(forKey: "notifyAtEnd") as! Bool
         if decoder.decodeObject(forKey: "tasks") as? [JHTask] != nil {
             self.tasks = decoder.decodeObject(forKey: "tasks") as! [JHTask]
         } else {
@@ -52,6 +55,7 @@ class JHSchoolClass: NSObject, NSCoding {
         coder.encode(day, forKey: "day")
         coder.encode(tasks, forKey: "tasks")
         coder.encode(id, forKey: "id")
+        coder.encode(id, forKey: "notifyAtEnd")
     }
     
     func addTask(task: JHTask, atStart: Bool = false) {

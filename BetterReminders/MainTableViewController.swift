@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import UserNotifications
+import UserNotificationsUI
 
 class MainTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UIAdaptivePresentationControllerDelegate, AddClassDelegate, UIViewControllerPreviewingDelegate {
     
@@ -14,6 +16,8 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     var classes: [JHSchoolClass]?
     var classesByDay: [String: [JHSchoolClass]]!
     var forceLoadData: Bool = false
+    var notificationsEnabled: Bool = true
+    var center = UNUserNotificationCenter.current()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,6 +26,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         
         getData()
         setUp()
+        
 
     }
     
@@ -64,6 +69,65 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         })
         editAction.backgroundColor = UIColor.blue
         return [deleteAction, editAction]
+    }
+    
+    func setUpNotifications() {
+        //Test Notification
+        //let testDate = Date()
+        //let newDate = Calendar.current.date(byAdding: .second, value: 4, to: testDate)
+        //createNotificationWithTextField(title: "Test Notification", body: "Please by a text field", launchDate: newDate!, repeats: false, requestId: "id1", actionId: "id2", textTitle: "This is the text box", textButtonTitle: "Save", textPlaceholder: "Placeholder", catagotyId: "id3", center: center)
+        
+        //Set notifications for the end of each class, each week day
+        let dates = getClassEndDatesForWeek()
+        for date in dates {
+            center.removeAllPendingNotificationRequests()
+            createNotificationWithTextField(title: "Class Finished", body: "Was there any homework?", launchDate: date, repeats: true, requestId: "classFinshedRequest", actionId: "classFinshedAction", textTitle: "TextTitle", textButtonTitle: "Save", textPlaceholder: "Read TextBook", catagotyId: "classFinishedCatagory", center: center)
+        }
+    }
+    
+    func getClassEndDatesForWeek() -> [Date] {
+        //Returns the endtimes of each class for each work day
+        var classEndDatesForWeek = [Date]()
+        let endTimes = getEndTimes()
+        let daysOfWeek = getDaysOfWeek()
+        for day in daysOfWeek {
+            for time in endTimes {
+                var dateComponents = DateComponents()
+                let weekDay = Calendar.current.component(.weekday, from: day)
+                let hour = Calendar.current.component(.hour, from: time)
+                let minute = Calendar.current.component(.minute, from: time)
+                dateComponents.weekday = weekDay
+                dateComponents.hour = hour
+                dateComponents.minute = minute
+                let date = Calendar.current.date(from: dateComponents)
+                classEndDatesForWeek.append(date!)
+            }
+        }
+        return classEndDatesForWeek
+    }
+    
+    func getEndTimes() -> [Date] {
+        //Returns an array of the end times
+        var endTimes = [Date]()
+        for c in classes! {
+            if !endTimes.contains(c.endDate) {
+                endTimes.append(c.endDate)
+            }
+        }
+        return endTimes
+    }
+    
+    func getDaysOfWeek() -> [Date] {
+        //Returns an array of dates for week days
+        let weekDayInts = [2,3,4,5,6]
+        var daysOfWeek = [Date]()
+        for x in weekDayInts {
+            var dateComponents = DateComponents()
+            dateComponents.weekday = x
+            daysOfWeek.append(Calendar.current.date(from: dateComponents)!)
+        }
+        
+        return daysOfWeek
     }
     
     func editClass(at indexPath: IndexPath) {
@@ -195,6 +259,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             //First Launch
             defaults.set(true, forKey: "launchedBefore")
             parseScheduleJSON()
+            setUpNotifications()
         } else {
             //Not first launch
             loadClasses()
