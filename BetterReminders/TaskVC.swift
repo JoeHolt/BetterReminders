@@ -8,17 +8,23 @@
 
 import UIKit
 
-class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationControllerDelegate {
+enum TaskViewType {
+    case NotCompleted
+    case All
+}
+
+class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate {
     
     var classes: [JHSchoolClass]!
     var clas: JHSchoolClass!
-    var tasksToDisplay: [JHTask]!
+    var incompletedTasks: [JHTask]!
+    var displayType: TaskViewType = .NotCompleted
+    var tasks: [JHTask]!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        title = clas.name
         
+        title = clas.name
         setUp()
         
     }
@@ -30,15 +36,19 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return tasksToDisplay.count
+        return tasks.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let task = tasks[indexPath.row]
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "taskCell")
-        cell.textLabel?.text = tasksToDisplay[indexPath.row].name
+        cell.textLabel?.text = task.name
         let outputFormatter = DateFormatter()
         outputFormatter.dateStyle = .full
-        cell.detailTextLabel?.text = outputFormatter.string(from: tasksToDisplay[indexPath.row].dueDate!)
+        cell.detailTextLabel?.text = outputFormatter.string(from: task.dueDate!)
+        if task.completed == true {
+            cell.accessoryType = .checkmark
+        }
         return cell
     }
     
@@ -50,7 +60,8 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let task = tasksToDisplay[indexPath.row]
+        
+        let task = tasks[indexPath.row]
         task.completed = !task.completed
         let cell = tableView.cellForRow(at: indexPath)
         if cell?.accessoryType == UITableViewCellAccessoryType.none {
@@ -74,6 +85,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     func reloadTasks() {
         //Reloads and saves tasks
         saveClasses()
+        loadTasks()
         tableView.reloadData()
     }
     
@@ -121,17 +133,47 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         self.dismiss(animated: true, completion: nil)
     }
     
+    @objc func navBarLongPress(sender: UILongPressGestureRecognizer? = nil) {
+        if sender?.state == UIGestureRecognizerState.began {
+            print("Changing display type...")
+            changeDisplayType()
+        }
+    }
+    
+    func changeDisplayType() {
+        if displayType == .NotCompleted {
+            displayType = .All
+        } else {
+            displayType = .NotCompleted
+        }
+        reloadTasks()
+    }
+    
+    func loadTasks() {
+        //Get tasks to be displayed
+        if displayType == .NotCompleted {
+            tasks = incompletedTasks
+        } else {
+            tasks = clas.tasks
+        }
+    }
+    
     func setUp() {
         //General UI set up at vc launch
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTask))
+        let button = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTask))
+        navigationItem.rightBarButtonItem = button
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(navBarLongPress(sender:)))
+        longPress.delegate = self
+        navigationController?.navigationBar.addGestureRecognizer(longPress)
         
-        //Get array of tasks to display
-        tasksToDisplay = [JHTask]()
+        //Get array of incompleted tasks
+        incompletedTasks = [JHTask]()
         for t in clas.tasks {
             if !t.completed {
-                tasksToDisplay.append(t)
+                incompletedTasks.append(t)
             }
         }
+        loadTasks()
         
     }
 
