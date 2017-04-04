@@ -12,9 +12,11 @@ import UserNotifications
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 
-    var window: UIWindow?
     let center = UNUserNotificationCenter.current()
-
+    let notificationArgs: [String] = []
+    var window: UIWindow?
+    var tasksToAdd = [JHTask]()
+    var args: [String: String] = ["class" : "","name": "","dueDate": "","timeToComplete": ""]
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         center.delegate = self
@@ -26,9 +28,42 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if response.actionIdentifier == "classFinshedAction" { //Action id
             //Class finished notiication response
             let response = response as! UNTextInputNotificationResponse
-            print(response.userText)
+            parseNotificationString(string: response.userText)
         }
         completionHandler()
+    }
+    
+    func parseNotificationString(string: String) -> [String: String]{
+        //notification is in the format of: arg0="content" arg1="Content" arg2="content" etc
+        //Returns a dictionary with the args as keys and the value as the content
+        var body: String = ""
+        var argActive = false   //Sets if argument is been parsed
+        var firstQuote = true   //Shows if first quote in block has passed
+        var argStr = ""
+        for char in Array(string.characters) {
+            if argActive == false {
+                if char != "=" {
+                    argStr = argStr + String(char)
+                } else {
+                    argActive = true
+                }
+            } else {
+                if char == "\"" {
+                    if firstQuote {
+                        firstQuote = false
+                    } else {
+                        firstQuote = true
+                        argActive = false
+                        args[argStr.trimmingCharacters(in: .whitespaces)] = body
+                        body = ""
+                        argStr = ""
+                    }
+                } else {
+                    body += String(char)
+                }
+            }
+        }
+        return args
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

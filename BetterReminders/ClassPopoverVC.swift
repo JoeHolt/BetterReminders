@@ -42,7 +42,7 @@ class ClassPopoverVC: UITableViewController {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancel))
         
         //Load classes
-        var data = UserDefaults.standard.object(forKey: "classes") as! Data
+        let data = UserDefaults.standard.object(forKey: "classes") as! Data
         classes = NSKeyedUnarchiver.unarchiveObject(with: data) as? [JHSchoolClass]
         
         //Set up based on if editing

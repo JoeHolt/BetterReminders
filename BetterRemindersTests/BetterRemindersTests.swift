@@ -13,6 +13,7 @@ class BetterRemindersTests: XCTestCase {
     
     var basicSchoolClass: JHSchoolClass!
     var tableView = MainTableViewController()
+    var delegate = AppDelegate()
     
     override func setUp() {
         super.setUp()
@@ -76,6 +77,16 @@ class BetterRemindersTests: XCTestCase {
         tableView.parseScheduleJSON()
         let arr = tableView.getClassEndDatesForWeek()
         XCTAssertTrue(arr.count == 25, "Incorrect number of Dates created per day for a week")
+    }
+    
+    func testStringParser() {
+        let string = "class=\"AP Calculus\" name=\"Read\" dueDate=\"04/15/2017\" timeToComplete=\"01:15\""
+        let values: [String: String] = delegate.parseNotificationString(string: string)
+        XCTAssertTrue(values["class"] == "AP Calculus", "class arg has \"\(values["class"])\" as content when it should have \"AP Calculus\"")
+        XCTAssertTrue(values["name"] == "Read", "name arg has \"\(values["name"])\" as content when it should have \"Read\"")
+        XCTAssertTrue(values["dueDate"] == "04/15/2017", "dueDate arg has \"\(values["dueDate"])\" as content when it should have \"04/15/2017\"")
+        XCTAssertTrue(values["timeToComplete"] == "01:15", "timeToComplete arg has \"\(values["timeToComplete"])\" as content when it should have \"01:15\"")
+        
     }
     
    
