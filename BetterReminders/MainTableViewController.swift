@@ -10,7 +10,7 @@ import UIKit
 import UserNotifications
 import UserNotificationsUI
 
-class MainTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UIAdaptivePresentationControllerDelegate, AddClassDelegate, UIViewControllerPreviewingDelegate {
+class MainTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UIAdaptivePresentationControllerDelegate, AddClassDelegate, UIViewControllerPreviewingDelegate, UIGestureRecognizerDelegate {
     
     let defaults = UserDefaults.standard
     var classes: [JHSchoolClass]?
@@ -200,9 +200,40 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add, target: self, action: #selector(addButtonSelected))
         
+        //Long press nav bar
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(navBarLongPress(sender:)))
+        longPress.delegate = self
+        navigationController?.navigationBar.addGestureRecognizer(longPress)
+        
         //Register view for 3D touch preview
         registerForPreviewing(with: self, sourceView: view)
         
+    }
+    
+    func navBarLongPress(sender: UILongPressGestureRecognizer) {
+        if sender.state == .began {
+            let formatter = DateFormatter()
+            formatter.timeStyle = .short
+            var message = "Unknown"
+            if getTotalTimeToComplete() != (0, 0) {
+                let (hour, minute) = getTotalTimeToComplete()
+                var hourText = "hours"
+                var minuteText = "minutes"
+                if hour == 1 {
+                    hourText = "hour"
+                }
+                if minute == 1 {
+                    minuteText = "minute"
+                }
+                message = "\(hour) \(hourText) \(minute) \(minuteText)"
+            } else {
+                message = "You're done!"
+            }
+            let ac = UIAlertController(title: "Estimated Time to Complete HW", message: message, preferredStyle: .alert)
+            let action = UIAlertAction(title: "Fuck", style: .default, handler: { _ in })
+            ac.addAction(action)
+            present(ac, animated: true, completion: nil)
+        }
     }
     
     func setUpNotifications() {
@@ -448,6 +479,21 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         let indexPath = tableView.indexPathForSelectedRow
         nextVC.clas = classGivenIndexPath(indexPath: indexPath!)
         nextVC.classes = classes
+    }
+    
+    func getTotalTimeToComplete() -> (Int, Int) {
+        var timeMinutes = 0
+        var timeHours = 0
+        for c in classes! {
+            for t in c.tasks {
+                if t.completed == false {
+                    let tComps = Calendar.current.dateComponents(in: .current, from: t.estimatedTimeToComplete)
+                    timeHours += tComps.hour!
+                    timeMinutes += tComps.minute!
+                }
+            }
+        }
+        return (timeHours, timeMinutes)
     }
     
     
