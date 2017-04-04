@@ -86,6 +86,31 @@ class BetterRemindersTests: XCTestCase {
         XCTAssertTrue(values["name"] == "Read", "name arg has \"\(values["name"])\" as content when it should have \"Read\"")
         XCTAssertTrue(values["dueDate"] == "04/15/2017", "dueDate arg has \"\(values["dueDate"])\" as content when it should have \"04/15/2017\"")
         XCTAssertTrue(values["timeToComplete"] == "01:15", "timeToComplete arg has \"\(values["timeToComplete"])\" as content when it should have \"01:15\"")
+    }
+    
+    func testCreateTaskFromArgs() {
+        let args = [
+            "class": "Physics",
+            "name": "Homework",
+            "dueDate": "04/21/2017",
+            "timeToComplete" : "01:19"
+        ]
+        let (task, clas) = delegate.createTaskFromArgs(args: args)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM/dd/yyyy"
+        let cDueDate = dateFormatter.date(from: "04/21/2017")
+        XCTAssertTrue(task.name == "Homework", "Task name is \(task.name), it should be Homework")
+        XCTAssertTrue(clas == "Physics", "Class name is \(clas), it should be Physics")
+        let df = DateFormatter()
+        df.dateStyle = .short
+        XCTAssertTrue(cDueDate == task.dueDate, "Due date is \(df.string(from: task.dueDate)), should be 04/21/2017")
+        let df3 = DateFormatter()
+        df3.dateFormat = "hh:mm"
+        let cTTC = df3.date(from: "01:19")
+        let df2 = DateFormatter()
+        df2.timeStyle = .short
+        XCTAssertTrue(cTTC == task.estimatedTimeToComplete, "Due date is \(df2.string(from: task.estimatedTimeToComplete)), should be 01:19)")
+        
         
     }
     

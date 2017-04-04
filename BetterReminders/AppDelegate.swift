@@ -9,13 +9,20 @@
 import UIKit
 import UserNotifications
 
+enum NotificationArgs: String {
+    case Class = "class"
+    case Name = "name"
+    case DueDate = "dueDate"
+    case TimeToComplete = "timeToComplete"
+}
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 
     let center = UNUserNotificationCenter.current()
     let notificationArgs: [String] = []
     var window: UIWindow?
-    var tasksToAdd = [JHTask]()
+    var tasksToAdd = [[String: JHTask]]()
     var args: [String: String] = ["class" : "","name": "","dueDate": "","timeToComplete": ""]
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
@@ -28,7 +35,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if response.actionIdentifier == "classFinshedAction" { //Action id
             //Class finished notiication response
             let response = response as! UNTextInputNotificationResponse
-            parseNotificationString(string: response.userText)
+            let (task, clas) = createTaskFromArgs(args: parseNotificationString(string: response.userText))
+            tasksToAdd.append([clas: task])
         }
         completionHandler()
     }
@@ -64,6 +72,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
         return args
+    }
+    
+    func createTaskFromArgs(args: [String: String]) -> (JHTask, String) {
+        //Creates a JHTask from args and returns it along with the class the task belongs to
+        var name: String = "Untitled"
+        var dueDate: Date = Date()
+        let components = DateComponents(hour: 1, minute: 15)
+        var timeToFinish: Date = Calendar.current.date(from: components)!
+        var clas: String = "AP Calculus"
+        for key in args.keys {
+            switch key {
+            case NotificationArgs.Class.rawValue:
+                clas = args[key]!
+            case NotificationArgs.Name.rawValue:
+                name = args[key]!
+            case NotificationArgs.DueDate.rawValue:
+                let formatter = DateFormatter()
+                formatter.dateFormat = "MM/dd/yyyy"
+                dueDate = formatter.date(from: args[key]!)!
+            case NotificationArgs.TimeToComplete.rawValue:
+                let formatter = DateFormatter()
+                formatter.dateFormat = "hh:mm"
+                timeToFinish = formatter.date(from: args[key]!)!
+            default:
+                break
+            }
+        }
+        return (JHTask(name: name, completed: false, dueDate: dueDate, estimatedTimeToComplete: timeToFinish), clas)
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
