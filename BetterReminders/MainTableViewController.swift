@@ -44,10 +44,6 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         
         setUpNotifications()
         
-        center.getPendingNotificationRequests(completionHandler: {
-            requests in
-            print(requests)
-        })
     }
     
     override func viewWillAppear(_ animated: Bool) {

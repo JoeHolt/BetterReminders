@@ -44,6 +44,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         completionHandler()
     }
     
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        //Creates UNNotifications notification as a repeat in a week after it is displayde
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60 * 10080, repeats: false)
+        let content = createNotificationContent(title: "Enter assigned homework", body: "class=\"Class\" \nname=\"Name\" \ndueDate=\"04/15/17\" \ntimeToComplete=\"01:15\"", badge: 0)
+        content.categoryIdentifier = "classFinishedCatagory"
+        let textInput = UNTextInputNotificationAction(identifier: "test", title: "Reminder", options: [], textInputButtonTitle: "Save", textInputPlaceholder: "Enter args here")
+        let catagory = UNNotificationCategory(identifier: "classFinishedCatagory", actions: [textInput], intentIdentifiers: [], options: [])
+        let request = UNNotificationRequest(identifier: "classFinishedRequest", content: content, trigger: trigger)
+        //center.add(request)
+        center.add(request)
+        print("Registiring notification with id: " + request.identifier)
+    }
+    
     func parseNotificationString(string: String) -> [String: String]{
         //notification is in the format of: arg0="content" arg1="Content" arg2="content" etc
         //Returns a dictionary with the args as keys and the value as the content
