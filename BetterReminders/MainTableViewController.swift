@@ -38,6 +38,12 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
 
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        //Notifications still bugged
+        setUpNotifications()
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         loadTasksFromNotification()
@@ -93,12 +99,12 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     func registerHomeWorkNotifications(forDates dates: [Date]) {
         
         //Set notifications for the end of each class, each week day
-        center.removeAllPendingNotificationRequests()
         for date in dates {
             let requesetString: String! = stringByAppendingDateAndTime(string: "classFinishedRequest", date: date)
-            let actionString: String! = stringByAppendingDateAndTime(string: "actionFinishedRequest", date: date)
-            print("Registiring notification with id: " + requesetString)
-            createNotificationWithTextField(title: "Enter assigned homework", body: "class=\"Class\" \n name=\"Name\" \n dueDate=\"04/15/17\" \n timeToComplete=\"01:15\"", launchDate: date, repeats: false, requestId: requesetString, actionId: actionString, textTitle: "Reminder", textButtonTitle: "Save", textPlaceholder: "Enter arguments here", catagotyId: "classFinishedCatagory", center: center)
+            let actionString: String! = stringByAppendingDateAndTime(string: "classFinshedAction", date: date)
+            print("Hour: \(Calendar.current.component(.hour, from: date))")
+            print("Date: \(date)")
+            createNotificationWithTextField(title: "Enter assigned homework", body: "class=\"Class\" \nname=\"Name\" \ndueDate=\"04/15/17\" \ntimeToComplete=\"01:15\"", launchDate: date, repeats: false, requestId: requesetString, actionId: actionString, textTitle: "Reminder", textButtonTitle: "Save", textPlaceholder: "Enter arguments here", catagotyId: "classFinishedCatagory", center: center)
         }
     }
     
@@ -118,7 +124,8 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         let daysOfWeek = getDaysOfWeek()
         for day in daysOfWeek {
             for time in endTimes {
-                var dateComponents = DateComponents()
+                let dateI = Date()
+                var dateComponents = Calendar.current.dateComponents(in: .current, from: dateI)
                 let weekDay = Calendar.current.component(.weekday, from: day)
                 let hour = Calendar.current.component(.hour, from: time)
                 let minute = Calendar.current.component(.minute, from: time)
@@ -126,6 +133,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
                 dateComponents.weekOfMonth = weekOfMonth
                 dateComponents.hour = hour
                 dateComponents.minute = minute
+                dateComponents.second = 0
                 let date = Calendar.current.date(from: dateComponents)
                 classEndDatesForWeek.append(date!)
             }
@@ -211,24 +219,28 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         //Register view for 3D touch preview
         registerForPreviewing(with: self, sourceView: view)
         
-        setUpNotifications()
     }
     
     func setUpNotifications() {
         //Registers notifications if needed
         let currentWeekOfMonth = Calendar.current.component(.weekOfMonth, from: Date())
         var currentNotifications: [UNNotificationRequest] = []
+        
         center.getPendingNotificationRequests(completionHandler: {
             requests in
-            currentNotifications = requests
-        })
-        if notificationsEnabled == true {
-            if currentNotifications.count == 0 {
-                //Load notifications for the current weekif there a none loaded
-                let dates = getClassEndDatesForWeek(forWeekOfMonth: currentWeekOfMonth)
-                registerHomeWorkNotifications(forDates: dates)
+            DispatchQueue.main.async {
+                //print(requests.count)
+                currentNotifications = requests
+                if self.notificationsEnabled == true {
+                    if currentNotifications.count == 0 {
+                        //Load notifications for the current weekif there a none loaded
+                        let dates = self.getClassEndDatesForWeek(forWeekOfMonth: currentWeekOfMonth)
+                        let current = Calendar.current.component(.hour, from: dates[0])
+                        self.registerHomeWorkNotifications(forDates: dates)
+                    }
+                }
             }
-        }
+        })
         
     }
     
@@ -306,7 +318,9 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         if !launchedBefore || forceLoadData == true {
             //First Launch
             defaults.set(true, forKey: "launchedBefore")
+            print("First Launch")
             parseScheduleJSON()
+            setUpNotifications()
         } else {
             //Not first launch
             loadClasses()

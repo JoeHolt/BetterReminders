@@ -69,7 +69,7 @@ func createNotificationContent(title: String, body: String, badge: Int = 0) -> U
     return content
 }
 
-func createNotificationWithTextField(title: String, body: String, launchDate date: Date, repeats: Bool, requestId: String, actionId: String, textTitle: String, textButtonTitle: String, textPlaceholder: String, catagotyId: String, center: UNUserNotificationCenter, removePending: Bool = false)   {
+func createNotificationWithTextField(title: String, body: String, launchDate date: Date, repeats: Bool, requestId: String, actionId: String, textTitle: String, textButtonTitle: String, textPlaceholder: String, catagotyId: String, center: UNUserNotificationCenter)   {
     //Creates UNNotifications notification
     //let tenSec = Calendar.current.date(byAdding: .second, value: 10, to: date)
     let calendar = Calendar(identifier: .gregorian)
@@ -81,9 +81,7 @@ func createNotificationWithTextField(title: String, body: String, launchDate dat
     let textInput = UNTextInputNotificationAction(identifier: actionId, title: textTitle, options: [], textInputButtonTitle: textButtonTitle, textInputPlaceholder: textPlaceholder)
     let catagory = UNNotificationCategory(identifier: catagotyId, actions: [textInput], intentIdentifiers: [], options: [])
     let request = UNNotificationRequest(identifier: requestId, content: content, trigger: trigger)
-    if removePending {
-        center.removeAllPendingNotificationRequests()
-    }
     center.add(request)
+    print("Registiring notification with id: " + request.identifier)
     center.setNotificationCategories([catagory])
 }
