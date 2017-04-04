@@ -33,16 +33,13 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         // set observer for UIApplicationWillEnterForeground
         NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: .UIApplicationWillEnterForeground, object: nil)
         
-        let date = Date()
-        let newDate = Calendar.current.date(byAdding: .second, value: 4, to: date)
-        createNotificationWithTextField(title: "Enter assigned homework", body: "class=\"Class\" \nname=\"Name\" \ndueDate=\"04/15/2017\" \ntimeToComplete=\"01:15\"", launchDate: newDate!, repeats: false, requestId: "classFinshedRequest", actionId: "classFinshedAction", textTitle: "TextTitle", textButtonTitle: "Save", textPlaceholder: "Read TextBook", catagotyId: "classFinishedCatagory", center: center)
-        
         getData()
         setUp()
 
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
         loadTasksFromNotification()
     }
     
@@ -94,10 +91,6 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     }
     
     func setUpNotifications() {
-        //Test Notification
-        //let testDate = Date()
-        //let newDate = Calendar.current.date(byAdding: .second, value: 4, to: testDate)
-        //createNotificationWithTextField(title: "Test Notification", body: "Please by a text field", launchDate: newDate!, repeats: false, requestId: "id1", actionId: "id2", textTitle: "This is the text box", textButtonTitle: "Save", textPlaceholder: "Placeholder", catagotyId: "id3", center: center)
         
         //Set notifications for the end of each class, each week day
         let dates = getClassEndDatesForWeek()
