@@ -41,7 +41,13 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         //Notifications still bugged
+        center.removeAllPendingNotificationRequests()
         setUpNotifications()
+        
+        center.getPendingNotificationRequests(completionHandler: {
+            requests in
+            print(requests)
+        })
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -103,8 +109,10 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             let requesetString: String! = stringByAppendingDateAndTime(string: "classFinishedRequest", date: date)
             let actionString: String! = stringByAppendingDateAndTime(string: "classFinshedAction", date: date)
             print("Hour: \(Calendar.current.component(.hour, from: date))")
-            print("Date: \(date)")
-            createNotificationWithTextField(title: "Enter assigned homework", body: "class=\"Class\" \nname=\"Name\" \ndueDate=\"04/15/17\" \ntimeToComplete=\"01:15\"", launchDate: date, repeats: false, requestId: requesetString, actionId: actionString, textTitle: "Reminder", textButtonTitle: "Save", textPlaceholder: "Enter arguments here", catagotyId: "classFinishedCatagory", center: center)
+            print("Minute: \(Calendar.current.component(.minute, from: date)))")
+            let hour = Calendar.current.component(.hour, from: date)
+            let minute = Calendar.current.component(.minute, from: date)
+            createNotificationWithTextField(title: "Enter assigned homework", body: "class=\"Class\" \nname=\"Name\" \ndueDate=\"04/15/17\" \ntimeToComplete=\"01:15\"", launchDateHour: hour, launchDateMinute: minute, repeats: false, requestId: requesetString, actionId: actionString, textTitle: "Reminder", textButtonTitle: "Save", textPlaceholder: "Enter arguments here", catagotyId: "classFinishedCatagory", center: center)
         }
     }
     
@@ -117,26 +125,21 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         return string + "." + String(weekDay) + "." + timeString
     }
     
-    func getClassEndDatesForWeek(forWeekOfMonth weekOfMonth: Int) -> [Date] {
+    func getClassEndDatesForWeek() -> [Date] {
         //Returns the endtimes of each class for each work day
         var classEndDatesForWeek = [Date]()
         let endTimes = getEndTimes()
-        let daysOfWeek = getDaysOfWeek()
-        for day in daysOfWeek {
-            for time in endTimes {
-                let dateI = Date()
-                var dateComponents = Calendar.current.dateComponents(in: .current, from: dateI)
-                let weekDay = Calendar.current.component(.weekday, from: day)
-                let hour = Calendar.current.component(.hour, from: time)
-                let minute = Calendar.current.component(.minute, from: time)
-                dateComponents.weekday = weekDay
-                dateComponents.weekOfMonth = weekOfMonth
-                dateComponents.hour = hour
-                dateComponents.minute = minute
-                dateComponents.second = 0
-                let date = Calendar.current.date(from: dateComponents)
-                classEndDatesForWeek.append(date!)
-            }
+        let dateToday = Date()
+        for time in endTimes {
+            var dateComponents = Calendar.current.dateComponents(in: .current, from: dateToday)
+            let hour = Calendar.current.component(.hour, from: time)
+            let minute = Calendar.current.component(.minute, from: time)
+            var newComponents = DateComponents()
+            newComponents.hour = hour
+            newComponents.minute = minute
+            let date = Calendar.current.date(from: newComponents)
+            print("Hour: \(Calendar.current.component(.hour, from: date!))")
+            classEndDatesForWeek.append(date!)
         }
         return classEndDatesForWeek
     }
@@ -150,20 +153,6 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             }
         }
         return endTimes
-    }
-    
-    func getDaysOfWeek() -> [Date] {
-        //Returns an array of dates for week days
-        let weekDayInts = [2,3,4,5,6]
-        var daysOfWeek = [Date]()
-        for x in weekDayInts {
-            var dateComponents = DateComponents()
-            dateComponents.weekday = x
-            dateComponents.weekOfMonth = 1
-            daysOfWeek.append(Calendar.current.date(from: dateComponents)!)
-        }
-        
-        return daysOfWeek
     }
     
     func editClass(at indexPath: IndexPath) {
@@ -223,7 +212,6 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     func setUpNotifications() {
         //Registers notifications if needed
-        let currentWeekOfMonth = Calendar.current.component(.weekOfMonth, from: Date())
         var currentNotifications: [UNNotificationRequest] = []
         
         center.getPendingNotificationRequests(completionHandler: {
@@ -234,8 +222,11 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
                 if self.notificationsEnabled == true {
                     if currentNotifications.count == 0 {
                         //Load notifications for the current weekif there a none loaded
-                        let dates = self.getClassEndDatesForWeek(forWeekOfMonth: currentWeekOfMonth)
-                        let current = Calendar.current.component(.hour, from: dates[0])
+                        //var dateC = DateComponents()
+                        //dateC.hour =
+                        //dateC.minute = 14
+                        //let date = Calendar.current.date(from: dateC)
+                        let dates: [Date] = self.getClassEndDatesForWeek()
                         self.registerHomeWorkNotifications(forDates: dates)
                     }
                 }
