@@ -10,6 +10,7 @@ import UIKit
 
 @objc protocol AddTaskDelegate {
     func didAddTask()
+    func didEditTask()
 }
 
 class TaskPopoverVC: UITableViewController {
@@ -20,6 +21,8 @@ class TaskPopoverVC: UITableViewController {
     
     var delegate: AddTaskDelegate?
     var clas: JHSchoolClass!
+    var forEditing: Bool!
+    var forTask: JHTask?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +41,15 @@ class TaskPopoverVC: UITableViewController {
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: .done, target: self, action: #selector(save))
         
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancel))
+        
+        //Editing vc not
+        if forEditing == true {
+            if let task = forTask {
+                taskNameTF.text = task.name
+                timeToFinishDP.date = task.estimatedTimeToComplete
+                dueDateDP.date = task.dueDate
+            }
+        }
     }
     
     func cancel() {
@@ -55,8 +67,20 @@ class TaskPopoverVC: UITableViewController {
         let ttc = timeToFinishDP.date
         let completed = false
         let newTask = JHTask(name: name, completed: completed, dueDate: dueDate, estimatedTimeToComplete: ttc)
-        clas.addTask(task: newTask)
-        delegate?.didAddTask()
+        if forEditing == true {
+            //editing
+            var index = 0
+            for task in clas.tasks {
+                if task.id == forTask!.id {
+                    clas.tasks[index] = newTask
+                }
+                index += 1
+            }
+            delegate?.didEditTask()
+        } else {
+            clas.addTask(task: newTask)
+            delegate?.didAddTask()
+        }
         dismiss(animated: true, completion: nil)
     }
 

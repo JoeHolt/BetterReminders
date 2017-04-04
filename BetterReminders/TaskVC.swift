@@ -52,10 +52,16 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         return cell
     }
     
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            deleteTask(at: indexPath)
-        }
+    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete", handler: { _,_ in
+            self.deleteTask(at: indexPath)
+        })
+        let editAction = UITableViewRowAction(style: .default, title: "Edit", handler: { _,_ in
+            self.editTask(task: self.tasks[indexPath.row])
+        })
+        editAction.backgroundColor = UIColor.blue
+        
+        return [deleteAction, editAction]
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -82,6 +88,11 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         reloadTasks()
     }
     
+    func didEditTask() {
+        //Task was edited
+        reloadTasks()
+    }
+    
     func reloadTasks() {
         //Reloads and saves tasks
         saveClasses()
@@ -97,11 +108,23 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     
     func addTask() {
         //Adds a new task to the given class
-        //Add a popover
+        displayTaskPopover()
+    }
+    
+    func editTask(task: JHTask) {
+        //Edit a task
+        displayTaskPopover(editing: true, forTask: task)
+    }
+
+    
+    func displayTaskPopover(editing: Bool = false, forTask: JHTask? = nil) {
+        //Display a popover for editing or creating
         let storyBoard = UIStoryboard(name: "Main", bundle: nil)
         let vc = storyBoard.instantiateViewController(withIdentifier: "popoverTaskAdd") as! TaskPopoverVC
         vc.delegate = self
         vc.clas = clas
+        vc.forTask = forTask
+        vc.forEditing = editing
         let nav = UINavigationController(rootViewController: vc)
         nav.modalPresentationStyle = .popover
         if let presentationController = nav.popoverPresentationController {

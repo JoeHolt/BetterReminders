@@ -17,12 +17,14 @@ class JHTask: NSObject, NSCoding {
     var completed: Bool!
     var dueDate: Date!
     var estimatedTimeToComplete: Date!
+    var id: Int!
     
     init(name: String, completed: Bool, dueDate: Date, estimatedTimeToComplete: Date) {
         self.name = name
         self.completed = completed
         self.dueDate = dueDate
         self.estimatedTimeToComplete = estimatedTimeToComplete
+        self.id = Int(arc4random_uniform(999999999))
     }
     
     required init(coder decoder: NSCoder) {
@@ -30,6 +32,7 @@ class JHTask: NSObject, NSCoding {
         self.completed = decoder.decodeObject(forKey: "completed") as! Bool
         self.dueDate = decoder.decodeObject(forKey: "dueDate") as! Date
         self.estimatedTimeToComplete = decoder.decodeObject(forKey: "estimatedTimeToComplete") as! Date
+        self.id = decoder.decodeObject(forKey: "id") as! Int
     }
     
     func encode(with coder: NSCoder) {
@@ -37,6 +40,7 @@ class JHTask: NSObject, NSCoding {
         coder.encode(completed, forKey: "completed")
         coder.encode(dueDate, forKey: "dueDate")
         coder.encode(estimatedTimeToComplete, forKey: "estimatedTimeToComplete")
+        coder.encode(id, forKey: "id")
     }
     
     
