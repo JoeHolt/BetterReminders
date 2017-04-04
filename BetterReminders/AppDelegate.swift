@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let center = UNUserNotificationCenter.current()
     let notificationArgs: [String] = []
     var window: UIWindow?
-    var tasksToAdd = [[String: JHTask]]()
+    var tasksToAdd: [[String: JHTask]] = []
     var args: [String: String] = ["class" : "","name": "","dueDate": "","timeToComplete": ""]
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
@@ -84,17 +84,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         for key in args.keys {
             switch key {
             case NotificationArgs.Class.rawValue:
-                clas = args[key]!
+                if args[key] != "" {
+                    clas = args[key]!
+                }
             case NotificationArgs.Name.rawValue:
-                name = args[key]!
+                if args[key] != "" {
+                    name = args[key]!
+                }
             case NotificationArgs.DueDate.rawValue:
-                let formatter = DateFormatter()
-                formatter.dateFormat = "MM/dd/yyyy"
-                dueDate = formatter.date(from: args[key]!)!
+                if args[key] != "" {
+                    let formatter = DateFormatter()
+                    formatter.dateFormat = "MM/dd/yyyy"
+                    if let dueDatex = formatter.date(from: args[key]!) {
+                        dueDate = dueDatex
+                    }
+                }
             case NotificationArgs.TimeToComplete.rawValue:
-                let formatter = DateFormatter()
-                formatter.dateFormat = "hh:mm"
-                timeToFinish = formatter.date(from: args[key]!)!
+                if args[key] != "" {
+                    let formatter = DateFormatter()
+                    formatter.dateFormat = "hh:mm"
+                    if let TTF = formatter.date(from: args[key]!) {
+                        timeToFinish = TTF
+                    }
+                }
             default:
                 break
             }

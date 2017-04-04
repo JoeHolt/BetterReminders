@@ -18,16 +18,38 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     var forceLoadData: Bool = false
     var notificationsEnabled: Bool = true
     var center = UNUserNotificationCenter.current()
+    var myAppDelegate = UIApplication.shared.delegate as! AppDelegate
+    var tasksToAdd: [[String: JHTask]]? {
+        didSet {
+            addNotificationTasks()
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         title = "Schedule"
         
+        // set observer for UIApplicationWillEnterForeground
+        NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: .UIApplicationWillEnterForeground, object: nil)
+        
+        let date = Date()
+        let newDate = Calendar.current.date(byAdding: .second, value: 4, to: date)
+        createNotificationWithTextField(title: "Enter assigned homework", body: "class=\"Class\" \nname=\"Name\" \ndueDate=\"04/15/2017\" \ntimeToComplete=\"01:15\"", launchDate: newDate!, repeats: false, requestId: "classFinshedRequest", actionId: "classFinshedAction", textTitle: "TextTitle", textButtonTitle: "Save", textPlaceholder: "Read TextBook", catagotyId: "classFinishedCatagory", center: center)
+        
         getData()
         setUp()
-        
 
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        loadTasksFromNotification()
+    }
+    
+    // my selector that was defined above
+    func willEnterForeground() {
+        print(myAppDelegate.tasksToAdd)
+        loadTasksFromNotification()
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -81,7 +103,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         let dates = getClassEndDatesForWeek()
         for date in dates {
             center.removeAllPendingNotificationRequests()
-            createNotificationWithTextField(title: "Class Finished", body: "Was there any homework?", launchDate: date, repeats: true, requestId: "classFinshedRequest", actionId: "classFinshedAction", textTitle: "TextTitle", textButtonTitle: "Save", textPlaceholder: "Read TextBook", catagotyId: "classFinishedCatagory", center: center)
+            createNotificationWithTextField(title: "Enter assigned homework", body: "class=\"Class\" \n name=\"Name\" \n dueDate=\"04/15/17\" \n timeToComplete=\"01:15\"", launchDate: date, repeats: true, requestId: "classFinshedRequest", actionId: "classFinshedAction", textTitle: "TextTitle", textButtonTitle: "Save", textPlaceholder: "Read TextBook", catagotyId: "classFinishedCatagory", center: center)
         }
     }
     
@@ -266,7 +288,15 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         }
         classes = sortClassesByStartTime(classes: classes!)
         classesByDay = sortClassesByDay(classes: classes!)
-        //classes?[0].tasks = [JHTask(name: "HW", completed: false, dueDate: "1/1/2018", estimatedTimeToComplete: "1:44")]
+        
+        loadTasksFromNotification()
+    }
+    
+    func loadTasksFromNotification() {
+        //Get data from tasks that are needed
+        tasksToAdd = myAppDelegate.tasksToAdd
+        saveClasses()
+        myAppDelegate.tasksToAdd = []
     }
     
     func refreshData() {
@@ -347,6 +377,24 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         return newClasses
     }
     
+    func addNotificationTasks() {
+        //Add tasks that were requested by notifications
+        print("Trying to add task")
+        if let tasksToAdd = tasksToAdd {
+            print(tasksToAdd)
+            for group in tasksToAdd {
+                for key in group.keys {
+                    for clas in classes! {
+                        //print(clas.name)
+                        if clas.name == key {
+                            print("Added task \(group[key]?.name) to \(key)")
+                            clas.addTask(task: group[key]!)
+                        }
+                    }
+                }
+            }
+        }
+    }
     
     
     func loadClasses() {
