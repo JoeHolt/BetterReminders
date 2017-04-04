@@ -46,7 +46,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         //Creates UNNotifications notification as a repeat in a week after it is displayde
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60 * 10080, repeats: false)
+        let nextTrigger: Double!   //1440 minutes in a day
+        let weekDay = Calendar.current.component(.weekday, from: Date())
+        switch weekDay {
+        case 6:
+            //Friday
+            nextTrigger = 60.0 * 1140.0 * 3.0 //Trigger in 3 days - monday
+        case 7:
+            //Saturday
+            nextTrigger = 60.0 * 1140.0 * 3.0 //Trigger in 2 days - monday
+        default:
+            nextTrigger = 60.0 * 1140.0 * 1.0 //Trigger in one day
+        }
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: nextTrigger, repeats: false)
         let content = createNotificationContent(title: "Enter assigned homework", body: "class=\"Class\" \nname=\"Name\" \ndueDate=\"04/15/17\" \ntimeToComplete=\"01:15\"", badge: 0)
         content.categoryIdentifier = "classFinishedCatagory"
         let request = UNNotificationRequest(identifier: "classFinishedRequest", content: content, trigger: trigger)

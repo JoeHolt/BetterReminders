@@ -37,48 +37,114 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         if section == 0 {
-            
+            //Total time left
+            return 1
         } else {
-            
+            //Tasks
+            return tasks.count
         }
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let task = tasks[indexPath.row]
-        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "taskCell")
-        cell.textLabel?.text = task.name
-        let outputFormatter = DateFormatter()
-        outputFormatter.dateStyle = .full
-        cell.detailTextLabel?.text = outputFormatter.string(from: task.dueDate!)
-        if task.completed == true {
-            cell.accessoryType = .checkmark
+        if indexPath.section == 0 {
+            //Total time left
+            let cell = tableView.dequeueReusableCell(withIdentifier: "timeLeftCell")
+            let (hours, minutes) = getTimeLeft()
+            cell?.textLabel?.text = "\(hours) \(getUnitsStringForHours(hours: hours)) and \(minutes) \(getUnitsStringForMinutes(minutes: minutes))"
+            return cell!
+        } else {
+            //Tasks
+            let task = tasks[indexPath.row]
+            let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "taskCell")
+            cell.textLabel?.text = task.name
+            let outputFormatter = DateFormatter()
+            outputFormatter.dateStyle = .full
+            let (hours, minutes) = getTimeLeft()
+            cell.detailTextLabel?.text = "\(outputFormatter.string(from: task.dueDate!)) - \(hours):\(minutes)"
+            if task.completed == true {
+                cell.accessoryType = .checkmark
+            }
+            return cell
         }
-        return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.section == 0 {
+            //Total time left
+            return 44.0 + 15.0    //Where 44 is default
+        } else {
+            return UITableViewAutomaticDimension
+        }
     }
     
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete", handler: { _,_ in
-            self.deleteTask(at: indexPath)
-        })
-        let editAction = UITableViewRowAction(style: .default, title: "Edit", handler: { _,_ in
-            self.editTask(task: self.tasks[indexPath.row])
-        })
-        editAction.backgroundColor = UIColor.blue
+        if indexPath.section == 1 {
+            let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete", handler: { _,_ in
+                self.deleteTask(at: indexPath)
+            })
+            let editAction = UITableViewRowAction(style: .default, title: "Edit", handler: { _,_ in
+                self.editTask(task: self.tasks[indexPath.row])
+            })
+            editAction.backgroundColor = UIColor.blue
+            
+            return [deleteAction, editAction]
+        } else {
+            return []
+        }
         
-        return [deleteAction, editAction]
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
-        let task = tasks[indexPath.row]
-        task.completed = !task.completed
-        let cell = tableView.cellForRow(at: indexPath)
-        if cell?.accessoryType == UITableViewCellAccessoryType.none {
-            cell?.accessoryType = UITableViewCellAccessoryType.checkmark
+        if indexPath.section == 0 {
+            //Time left
+                
+                
         } else {
-            cell?.accessoryType = UITableViewCellAccessoryType.none
+            let task = tasks[indexPath.row]
+            task.completed = !task.completed
+            let cell = tableView.cellForRow(at: indexPath)
+            if cell?.accessoryType == UITableViewCellAccessoryType.none {
+                cell?.accessoryType = UITableViewCellAccessoryType.checkmark
+            } else {
+                cell?.accessoryType = UITableViewCellAccessoryType.none
+            }
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == 1 {
+            return "Tasks"
+        } else {
+            return "Estimated Time Left"
+        }
+    }
+    
+    func getUnitsStringForHours(hours: Int) -> String {
+        if hours == 1 {
+            return "Hour"
+        } else {
+            return "Hours"
+        }
+    }
+    
+    func getUnitsStringForMinutes(minutes: Int) -> String {
+        if minutes == 1 {
+            return "Minute"
+        } else {
+            return "Minutes"
+        }
+    }
+    
+    func getTimeLeft() -> (Int, Int) {
+        var hours = 0
+        var minutes = 0
+        for task in clas.tasks {
+            let components = Calendar.current.dateComponents(in: .current, from: task.estimatedTimeToComplete)
+            hours += components.hour!
+            minutes += components.minute!
+        }
+        return (hours, minutes)
     }
     
     func deleteTask(at indexPath: IndexPath) {
