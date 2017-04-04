@@ -35,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        if response.actionIdentifier == "classFinshedAction" { //Action id
+        if response.actionIdentifier.contains("classFinshedAction") { //Action id format: "classFinishedRequest.DATE.hh:mma"
             //Class finished notiication response
             let response = response as! UNTextInputNotificationResponse
             let (task, clas) = createTaskFromArgs(args: parseNotificationString(string: response.userText))

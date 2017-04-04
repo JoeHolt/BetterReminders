@@ -71,6 +71,7 @@ class BetterRemindersTests: XCTestCase {
         tableView.parseScheduleJSON()
         let days = tableView.getDaysOfWeek()
         XCTAssertTrue(days.count == 5, "More days created than should be available")
+        XCTAssertTrue(Calendar.current.component(.weekday, from: days[1]) == 3, "Days incorrectly creates")
     }
     
     func testGetClassEndDatesForWeek() {

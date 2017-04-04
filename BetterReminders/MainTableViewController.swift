@@ -33,9 +33,17 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         // set observer for UIApplicationWillEnterForeground
         NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: .UIApplicationWillEnterForeground, object: nil)
         
+        
+        
         getData()
         setUp()
-
+        center.getPendingNotificationRequests(completionHandler: {
+            requests in
+            for request in requests {
+                print(request.identifier)
+            }
+        })
+        setUpNotifications()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -94,10 +102,22 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         
         //Set notifications for the end of each class, each week day
         let dates = getClassEndDatesForWeek()
+        center.removeAllPendingNotificationRequests()
         for date in dates {
-            center.removeAllPendingNotificationRequests()
-            createNotificationWithTextField(title: "Enter assigned homework", body: "class=\"Class\" \n name=\"Name\" \n dueDate=\"04/15/17\" \n timeToComplete=\"01:15\"", launchDate: date, repeats: true, requestId: "classFinshedRequest", actionId: "classFinshedAction", textTitle: "TextTitle", textButtonTitle: "Save", textPlaceholder: "Read TextBook", catagotyId: "classFinishedCatagory", center: center)
+            let requesetString: String! = stringByAppendingDateAndTime(string: "classFinishedRequest", date: date)
+            let actionString: String! = stringByAppendingDateAndTime(string: "actionFinishedRequest", date: date)
+            print("Creating notification with id: " + requesetString)
+            createNotificationWithTextField(title: "Enter assigned homework", body: "class=\"Class\" \n name=\"Name\" \n dueDate=\"04/15/17\" \n timeToComplete=\"01:15\"", launchDate: date, repeats: true, requestId: requesetString, actionId: actionString, textTitle: "Reminder", textButtonTitle: "Save", textPlaceholder: "Enter arguments here", catagotyId: "classFinishedCatagory", center: center)
         }
+    }
+    
+    func stringByAppendingDateAndTime(string: String, date: Date) -> String! {
+        //Notificatin ids must be unique so I add the dates and times for id
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        let weekDay = Calendar.current.component(.weekday, from: date)
+        let timeString = formatter.string(from: date)
+        return string + "." + String(weekDay) + "." + timeString
     }
     
     func getClassEndDatesForWeek() -> [Date] {
@@ -112,6 +132,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
                 let hour = Calendar.current.component(.hour, from: time)
                 let minute = Calendar.current.component(.minute, from: time)
                 dateComponents.weekday = weekDay
+                dateComponents.weekOfMonth = 1
                 dateComponents.hour = hour
                 dateComponents.minute = minute
                 let date = Calendar.current.date(from: dateComponents)
@@ -139,6 +160,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         for x in weekDayInts {
             var dateComponents = DateComponents()
             dateComponents.weekday = x
+            dateComponents.weekOfMonth = 1
             daysOfWeek.append(Calendar.current.date(from: dateComponents)!)
         }
         
@@ -372,13 +394,10 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     func addNotificationTasks() {
         //Add tasks that were requested by notifications
-        print("Trying to add task")
         if let tasksToAdd = tasksToAdd {
-            print(tasksToAdd)
             for group in tasksToAdd {
                 for key in group.keys {
                     for clas in classes! {
-                        //print(clas.name)
                         if clas.name == key {
                             print("Added task \(group[key]?.name) to \(key)")
                             clas.addTask(task: group[key]!)
