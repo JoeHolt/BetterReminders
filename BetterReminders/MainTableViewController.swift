@@ -41,7 +41,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         //Notifications still bugged
-        center.removeAllPendingNotificationRequests()
+        
         setUpNotifications()
         
         center.getPendingNotificationRequests(completionHandler: {
@@ -129,16 +129,15 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         //Returns the endtimes of each class for each work day
         var classEndDatesForWeek = [Date]()
         let endTimes = getEndTimes()
-        let dateToday = Date()
         for time in endTimes {
-            var dateComponents = Calendar.current.dateComponents(in: .current, from: dateToday)
+            var newComponents = DateComponents()
             let hour = Calendar.current.component(.hour, from: time)
             let minute = Calendar.current.component(.minute, from: time)
-            var newComponents = DateComponents()
             newComponents.hour = hour
             newComponents.minute = minute
             let date = Calendar.current.date(from: newComponents)
             print("Hour: \(Calendar.current.component(.hour, from: date!))")
+            print("Minute: \(Calendar.current.component(.minute, from: date!))")
             classEndDatesForWeek.append(date!)
         }
         return classEndDatesForWeek
