@@ -20,6 +20,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     var incompletedTasks: [JHTask]!
     var displayType: TaskViewType = .NotCompleted
     var tasks: [JHTask]!
+    var feedbackGenerator: UISelectionFeedbackGenerator?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -218,8 +219,14 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     }
     
     @objc func navBarLongPress(sender: UILongPressGestureRecognizer? = nil) {
+        feedBackGenerator = UISelectionFeedbackGenerator()
+        feedBackGenerator.prepare()
         if sender?.state == UIGestureRecognizerState.began {
+            feedBackGenerator.selectionChanged()
             changeDisplayType()
+        }
+        if sender?.state == UIGestureRecognizerState.ended {
+            feedBackGenerator = nil
         }
     }
     

@@ -250,7 +250,10 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     }
     
     func navBarLongPress(sender: UILongPressGestureRecognizer) {
+        let feedBackGenerator = UISelectionFeedbackGenerator()
+        feedBackGenerator.prepare()
         if sender.state == .began {
+            feedBackGenerator.selectionChanged()
             notificationsEnabled = !notificationsEnabled
             var message = ""
             if notificationsEnabled == true {
@@ -265,6 +268,9 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             let action = UIAlertAction(title: "Okay", style: .default, handler: { _ in })
             ac.addAction(action)
             present(ac, animated: true, completion: nil)
+        }
+        if sender?.state == UIGestureRecognizerState.ended {
+            feedBackGenerator = nil
         }
     }
     
