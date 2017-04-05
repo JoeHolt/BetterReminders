@@ -13,13 +13,13 @@ class JHSchoolClass: NSObject, NSCoding {
     
     // MARK: - Properties
     
-    var name: String!
-    var startDate: Date!
-    var endDate: Date!
-    var day: String!
-    var notifyAtEnd: Bool!
-    var tasks: [JHTask] = []
-    var id: Int!
+    internal var name: String!
+    internal var startDate: Date!
+    internal var endDate: Date!
+    internal var day: String!
+    internal var notifyAtEnd: Bool!
+    internal var tasks: [JHTask] = []
+    internal var id: Int!
     
     override var description: String {
         return name
@@ -50,7 +50,7 @@ class JHSchoolClass: NSObject, NSCoding {
         }
     }
     
-    func encode(with coder: NSCoder) {
+    internal func encode(with coder: NSCoder) {
         coder.encode(name, forKey: "name")
         coder.encode(startDate, forKey: "startDate")
         coder.encode(endDate, forKey: "endDate")
@@ -62,7 +62,7 @@ class JHSchoolClass: NSObject, NSCoding {
     
     // MARK: - Time functinos
     
-    func timeToCompleteTasks() -> (Int, Int) {
+    internal func timeToCompleteTasks() -> (Int, Int) {
         //Returns time to finish tasks in (hour, minute) format
         var hours = 0
         var minutes = 0
@@ -82,13 +82,13 @@ class JHSchoolClass: NSObject, NSCoding {
     
     // MARK: - Task functinos
     
-    func markAllTasksCompleted() {
+    internal func markAllTasksCompleted() {
         for task in tasks {
             task.completed = true
         }
     }
     
-    func addTask(task: JHTask, atStart: Bool = false) {
+    internal func addTask(task: JHTask, atStart: Bool = false) {
         if atStart {
             tasks.insert(task, at: 0)
         } else {
@@ -96,7 +96,7 @@ class JHSchoolClass: NSObject, NSCoding {
         }
     }
     
-    func removeTask(at index: Int) {
+    internal func removeTask(at index: Int) {
         tasks.remove(at: index)
     }
     

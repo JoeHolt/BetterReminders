@@ -14,15 +14,14 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     // MARK - Properties
     
-    let defaults = UserDefaults.standard
-    var schedule: JHSchedule!
-    var classesByDay: [String: [JHSchoolClass]]!
-    var forceLoadData: Bool = false
-    var notificationsEnabled: Bool!
-    var center = UNUserNotificationCenter.current()
-    var myAppDelegate = UIApplication.shared.delegate as! AppDelegate
-    var feedBackGenerator: UISelectionFeedbackGenerator?
-    var tasksToAdd: [[String: JHTask]]? {
+    internal let defaults = UserDefaults.standard
+    internal var schedule: JHSchedule!
+    private  var forceLoadData: Bool = false
+    internal var notificationsEnabled: Bool!
+    private  var center = UNUserNotificationCenter.current()
+    private  var myAppDelegate = UIApplication.shared.delegate as! AppDelegate
+    private  var feedBackGenerator: UISelectionFeedbackGenerator?
+    internal var tasksToAdd: [[String: JHTask]]? {
         didSet {
             addNotificationTasks()
         }
@@ -57,7 +56,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         tableView.reloadData()
     }
     
-    func willEnterForeground() {
+    @objc private func willEnterForeground() {
         print(myAppDelegate.tasksToAdd)
         loadTasksFromNotification()
         tableView.reloadData()
@@ -75,11 +74,11 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             return cell!
         } else {
             let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "ClassCell")
-            let c = classGivenIndexPath(indexPath: indexPath)
+            let c = schedule.classGivenIndexPath(indexPath: indexPath)
             cell.textLabel?.text = "\(c.name!)"
             let outputFormatter = DateFormatter()
             outputFormatter.timeStyle = .short
-            let (hour,minute) = classGivenIndexPath(indexPath: indexPath).timeToCompleteTasks()
+            let (hour,minute) = schedule.classGivenIndexPath(indexPath: indexPath).timeToCompleteTasks()
             cell.detailTextLabel?.text = "\(outputFormatter.string(from: c.startDate))-\(outputFormatter.string(from: c.endDate)) - \(timeStringFromHoursAndMinutes(hours: hour, minutes: minute))"
             cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
             return cell
@@ -91,14 +90,14 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return classesByDay.keys.count + 1  //+1 = timeLeftCell
+        return schedule.classesSortedByDay().keys.count + 1  //+1 = timeLeftCell
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if section == 0 {
             return "Estimated Time Left"
         } else {
-            let days: [String] = Array(classesByDay.keys).reversed()    //Reversed so "A" day is first
+            let days: [String] = Array(schedule.classesSortedByDay().keys).reversed()    //Reversed so "A" day is first
             return "\(days[section - 1]) Day"
         }
     }
@@ -107,8 +106,8 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         if section == 0 {
             return 1
         } else {
-            let days: [String] = Array(classesByDay.keys).reversed()    //Reversed so "A" day is first
-        return classesByDay[days[section - 1]]!.count
+            let days: [String] = Array(schedule.classesSortedByDay().keys).reversed()    //Reversed so "A" day is first
+        return schedule.classesSortedByDay()[days[section - 1]]!.count
         }
     }
     
@@ -120,13 +119,13 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             })
             let editAction = UITableViewRowAction(style: .normal, title: "Edit", handler: {
                 _,_ in
-                self.editClass(at: indexPath)
+                self.displayEditPopup(for: indexPath)
                 tableView.setEditing(false, animated: true)
             })
             editAction.backgroundColor = UIColor.blue
             let markAllCompletedAction = UITableViewRowAction(style: .normal, title: "MAC", handler: {
                 _,_ in
-                self.classGivenIndexPath(indexPath: indexPath).markAllTasksCompleted()
+                self.schedule.classGivenIndexPath(indexPath: indexPath).markAllTasksCompleted()
                 tableView.setEditing(false, animated: true)
             })
             markAllCompletedAction.backgroundColor = UIColor.green
@@ -146,7 +145,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     // MARK: - Notifications
     
-    func registerHomeWorkNotifications(forDates dates: [Date]) {
+    private func registerHomeWorkNotifications(forDates dates: [Date]) {
         
         //Set notifications for the end of each class, each week day
         for date in dates {
@@ -160,7 +159,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         }
     }
     
-    func setUpNotifications() {
+    private func setUpNotifications() {
         //Registers notifications if needed
         var currentNotifications: [UNNotificationRequest] = []
         
@@ -176,7 +175,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
                         //dateC.hour =
                         //dateC.minute = 14
                         //let date = Calendar.current.date(from: dateC)
-                        let dates: [Date] = self.getClassEndDates()
+                        let dates: [Date] = self.schedule.classEndTimes()
                         self.registerHomeWorkNotifications(forDates: dates)
                     }
                 }
@@ -184,14 +183,14 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         })
     }
     
-    func loadTasksFromNotification() {
+    private func loadTasksFromNotification() {
         //Get data from tasks that are needed
         tasksToAdd = myAppDelegate.tasksToAdd
         saveSchedule()
         myAppDelegate.tasksToAdd = []
     }
     
-    func addNotificationTasks() {
+    private func addNotificationTasks() {
         //Add tasks that were requested by notifications
         if let tasksToAdd = tasksToAdd {
             for group in tasksToAdd {
@@ -209,13 +208,13 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     // MARK: - Peek and Pop
     
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
+    internal func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
         // Peek and pop - Present a VC preview when force touching it
         if let indexPath = tableView.indexPathForRow(at: location) {
             previewingContext.sourceRect = tableView.rectForRow(at: indexPath)
             
             let vc = storyboard?.instantiateViewController(withIdentifier: "TaskVC") as! TaskVC
-            vc.clas = classGivenIndexPath(indexPath: indexPath)
+            vc.clas = schedule.classGivenIndexPath(indexPath: indexPath)
             let navVC = UINavigationController(rootViewController: vc)
             navVC.title = "\(vc.clas.name)"
             
@@ -229,7 +228,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         return nil
     }
     
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
+    internal func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
         // Peek and pop - Presents the view contorller when popping - hacky implementation
         let navVC = viewControllerToCommit as! UINavigationController
         let vc = navVC.viewControllers[0] as! TaskVC
@@ -239,43 +238,25 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         self.navigationController?.pushViewController(newVC, animated: true)
     }
     
-    // MARK: - School Class Methods
+    // MARK: - School Class Modificatoin
     
-    func getClassEndDates() -> [Date] {
-        //Returns the endtimes of each class for each work day
-        var classEndDatesForWeek = [Date]()
-        let endTimes = getEndTimes()
-        for time in endTimes {
-            var newComponents = DateComponents()
-            let hour = Calendar.current.component(.hour, from: time)
-            let minute = Calendar.current.component(.minute, from: time)
-            newComponents.hour = hour
-            newComponents.minute = minute
-            let date = Calendar.current.date(from: newComponents)
-            print("Hour: \(Calendar.current.component(.hour, from: date!))")
-            print("Minute: \(Calendar.current.component(.minute, from: date!))")
-            classEndDatesForWeek.append(date!)
-        }
-        return classEndDatesForWeek
-    }
-    
-    func editClass(at indexPath: IndexPath) {
+    private func displayEditPopup(for indexPath: IndexPath) {
         //Edit class
-        displayClassCreationPopup(editing: true, forClass: classGivenIndexPath(indexPath: indexPath))
+        displayClassCreationPopup(editing: true, forClass: schedule.classGivenIndexPath(indexPath: indexPath))
     }
     
-    func deleteClass(at indexPath: IndexPath) {
+    private func deleteClass(at indexPath: IndexPath) {
         //Confirm with user then delete class
-        let ac = UIAlertController(title: "Delete Class", message: "Are you sure you would like to delete \(self.classGivenIndexPath(indexPath: indexPath).name!)? All of the classes tasks will also be deleted.", preferredStyle: .actionSheet)
+        let ac = UIAlertController(title: "Delete Class", message: "Are you sure you would like to delete \(self.schedule.classGivenIndexPath(indexPath: indexPath).name!)? All of the classes tasks will also be deleted.", preferredStyle: .actionSheet)
         ac.addAction(UIAlertAction(title: "Delete Class", style: .destructive, handler: {
             action in
             //Deletes class at index path and then reloads data
             //Finds the class in classesByDay structure then deletes in from classes array, could be redone for betterr reading and efficency
-            let clas = self.classGivenIndexPath(indexPath: indexPath)
+            let clas = self.schedule.classGivenIndexPath(indexPath: indexPath)
             var i = 0
             for c in self.schedule.classes {
                 if c == clas {
-                    self.schedule.classes?.remove(at: i)
+                    self.schedule.removeClass(atIndex: i)
                     break
                 }
                 i += 1
@@ -288,28 +269,17 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         self.present(ac, animated: true, completion: nil)
     }
     
-    func didAddNewClass() {
+    internal func didAddNewClass() {
         //New class added from popover view controller
         getData()
         tableView.reloadData()
     }
     
-    func getEndTimes() -> [Date] {
-        //Returns an array of the end times
-        var endTimes = [Date]()
-        for c in schedule.classes! {
-            if !endTimes.contains(c.endDate) {
-                endTimes.append(c.endDate)
-            }
-        }
-        return endTimes
-    }
-    
-    func didCancelAddNewClass() {
+    internal func didCancelAddNewClass() {
         //Cancled creation of new class from popover view contorller
     }
     
-    func displayClassCreationPopup(editing: Bool = false, forClass: JHSchoolClass? = nil) {
+    private func displayClassCreationPopup(editing: Bool = false, forClass: JHSchoolClass? = nil) {
         //Instantiate and display popup for creating/editing a class
         let storyBoard = UIStoryboard(name: "Main", bundle: nil)
         let vc = storyBoard.instantiateViewController(withIdentifier: "popoverClassAdd") as! ClassPopoverVC
@@ -329,53 +299,26 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         }
     }
     
-    func sortClassesByDay(classes: [JHSchoolClass]) -> [String: [JHSchoolClass]] {
-        //Organizes classes into which class scheduele day in order for tableView organization
-        classesByDay = [String: [JHSchoolClass]]()
-        for c in classes {
-            if classesByDay[c.day] == nil {
-                classesByDay[c.day] = [c]
-            } else {
-                classesByDay[c.day]?.append(c)
-            }
-        }
-        return classesByDay
-    }
-    
-    func sortClassesByStartTime(classes: [JHSchoolClass]) -> [JHSchoolClass] {
-        // Sorts classes by startDate method
-        let newClasses = classes.sorted(by: { $0.startDate.compare($1.startDate) == .orderedAscending })
-        return newClasses
-    }
-    
-    
-    func loadSchedule() {
+    private func loadSchedule() {
         //Loads classes from defaults
         let data = defaults.object(forKey: "schedule") as! Data
         schedule = NSKeyedUnarchiver.unarchiveObject(with: data) as? JHSchedule
     }
     
-    func saveSchedule() {
+    private func saveSchedule() {
         //Save classes from defaults
         let data: Data = NSKeyedArchiver.archivedData(withRootObject: schedule!)
         defaults.set(data, forKey: "schedule")
     }
     
-    func classGivenIndexPath(indexPath: IndexPath) -> JHSchoolClass {
-        //Hacky method to return the class of a given indexPath on the table view from classesByDay
-        let day = dayGivenIndexPath(indexPath: indexPath)
-        let clas = classesByDay[day]?[(indexPath.row)]
-        return clas!
-    }
-    
     // MARK: - Popover
     
-    func addButtonSelected() {
+    @objc private func addButtonSelected() {
         //Add button selected in nav bar
         displayClassCreationPopup()
     }
     
-    func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
+    internal func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
         //Gives the view controller to be displayed in the popover view contorller
         let navigationController = UINavigationController(rootViewController: controller.presentedViewController)
         let btnDone = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(MainTableViewController.dismissView))
@@ -383,19 +326,19 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         return navigationController
     }
     
-    func dismissView() {
+    @objc internal func dismissView() {
         //Called from presentationController:controller:viewControllerForAdaptivePresentationStyle
         self.dismiss(animated: true, completion: nil)
     }
     
-    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+    internal func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
         //.none sets the popover style as an actual popover rather than a full screen view
         return UIModalPresentationStyle.none
     }
     
     // MARK: - Data functions
     
-    func setUp() {
+    private func setUp() {
         //General code to set up app when launched
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add, target: self, action: #selector(addButtonSelected))
@@ -407,7 +350,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         
     }
     
-    func getData() {
+    private func getData() {
         //Gets data, either from JSON or NSUserDefaults depending on launch
         let launchedBefore = defaults.bool(forKey: "launchedBefore")
         
@@ -422,19 +365,17 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             //Not first launch
             loadSchedule()
         }
-        schedule.classes = sortClassesByStartTime(classes: schedule.classes!)
-        classesByDay = sortClassesByDay(classes: schedule.classes!)
+        schedule.sortClassesByStartTime()
         notificationsEnabled = defaults.object(forKey: "notificationsEnabled") as! Bool
         loadTasksFromNotification()
     }
     
-    func refreshData() {
+    private func refreshData() {
         //Refreshs classes
-        schedule.classes = sortClassesByStartTime(classes: schedule.classes!)
-        classesByDay = sortClassesByDay(classes: schedule.classes!)
+        schedule.sortClassesByStartTime()
     }
     
-    func loadJSON(fromFile file: String, ofType type: String) -> JSON? {
+    private func loadJSON(fromFile file: String, ofType type: String) -> JSON? {
         //Loads the school scheduele JSON containing class info from the main bundle
         if let path = Bundle.main.path(forResource: file, ofType: type) {
             do {
@@ -454,7 +395,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         return nil
     }
     
-    func parseScheduleJSON() {
+    private func parseScheduleJSON() {
         //Parses JSON of school classes in the app bundle
         //Used for easy adding of classes -- Wont be used in final user version
         if let json = loadJSON(fromFile: "Classes", ofType: "json") {
@@ -490,7 +431,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
 
     // MARK: - Helper Functions
     
-    func stringByAppendingDateAndTime(string: String, date: Date) -> String! {
+    private func stringByAppendingDateAndTime(string: String, date: Date) -> String! {
         //Notificatin ids must be unique so I add the dates and times for id
         let formatter = DateFormatter()
         formatter.timeStyle = .short
@@ -499,12 +440,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         return string + "." + String(weekDay) + "." + timeString
     }
     
-    func dayGivenIndexPath(indexPath: IndexPath) -> String {
-        //Day given an index path of a class
-        return Array(classesByDay.keys).reversed()[(indexPath.section - 1)] as String
-    }
-    
-    func getTotalTimeToComplete() -> (Int, Int) {
+    private func getTotalTimeToComplete() -> (Int, Int) {
         var totalHours = 0
         var totalMinutes = 0
         for c in schedule.classes! {
@@ -519,7 +455,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         return (totalHours, totalMinutes)
     }
     
-    func getUnitsStringForHours(hours: Int) -> String {
+    private func getUnitsStringForHours(hours: Int) -> String {
         if hours == 1 {
             return "Hour"
         } else {
@@ -527,7 +463,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         }
     }
     
-    func getUnitsStringForMinutes(minutes: Int) -> String {
+    private func getUnitsStringForMinutes(minutes: Int) -> String {
         if minutes == 1 {
             return "Minute"
         } else {
@@ -538,13 +474,13 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     // MARK:- Misc
     
 
-    func didFinishEditing() {
+    internal func didFinishEditing() {
          //Finished editing a class
         getData()
         tableView.reloadData()
     }
     
-    func navBarLongPress(sender: UILongPressGestureRecognizer) {
+    @objc private func navBarLongPress(sender: UILongPressGestureRecognizer) {
         feedBackGenerator = UISelectionFeedbackGenerator()
         feedBackGenerator?.prepare()
         if sender.state == .began {
@@ -572,7 +508,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let nextVC = segue.destination as! TaskVC
         let indexPath = tableView.indexPathForSelectedRow
-        nextVC.clas = classGivenIndexPath(indexPath: indexPath!)
+        nextVC.clas = schedule.classGivenIndexPath(indexPath: indexPath!)
         nextVC.classes = schedule.classes
     }
     

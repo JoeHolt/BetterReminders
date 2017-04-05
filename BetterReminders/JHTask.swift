@@ -13,11 +13,11 @@ class JHTask: NSObject, NSCoding {
     
     //Class reminder
     
-    var name: String!
-    var completed: Bool!
-    var dueDate: Date!
-    var estimatedTimeToComplete: Date!
-    var id: Int!
+    internal var name: String!
+    internal var completed: Bool!
+    internal var dueDate: Date!
+    internal var estimatedTimeToComplete: Date!
+    internal var id: Int!
     
     init(name: String, completed: Bool, dueDate: Date, estimatedTimeToComplete: Date) {
         self.name = name
@@ -35,14 +35,14 @@ class JHTask: NSObject, NSCoding {
         self.id = decoder.decodeObject(forKey: "id") as! Int
     }
     
-    func encode(with coder: NSCoder) {
+    internal func encode(with coder: NSCoder) {
         coder.encode(name, forKey: "name")
         coder.encode(completed, forKey: "completed")
         coder.encode(dueDate, forKey: "dueDate")
         coder.encode(estimatedTimeToComplete, forKey: "estimatedTimeToComplete")
         coder.encode(id, forKey: "id")
     }
-    func timeToComplete() -> (Int, Int) {
+    internal func timeToComplete() -> (Int, Int) {
         //Returns time to finish task in (hour, minute) format
         var hours = 0
         var minutes = 0
@@ -58,8 +58,5 @@ class JHTask: NSObject, NSCoding {
         }
         return (hours, minutes)
     }
-    
-
-    
     
 }

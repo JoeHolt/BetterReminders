@@ -19,10 +19,10 @@ class TaskPopoverVC: UITableViewController {
     @IBOutlet weak var timeToFinishDP: UIDatePicker!
     @IBOutlet weak var dueDateDP: UIDatePicker!
     
-    var delegate: AddTaskDelegate?
-    var clas: JHSchoolClass!
-    var forEditing: Bool!
-    var forTask: JHTask?
+    internal var delegate: AddTaskDelegate?
+    internal var clas: JHSchoolClass!
+    internal var forEditing: Bool!
+    internal var forTask: JHTask?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,7 +33,7 @@ class TaskPopoverVC: UITableViewController {
         
     }
     
-    func setUp() {
+    private func setUp() {
         //Basic UI set up
         timeToFinishDP.countDownDuration = 60.0 * 15 //Fifteen minutes
         dueDateDP.minimumDate = Date()
@@ -52,11 +52,11 @@ class TaskPopoverVC: UITableViewController {
         }
     }
     
-    func cancel() {
+    @objc private func cancel() {
         dismiss(animated: true, completion: nil)
     }
     
-    func save() {
+    @objc private func save() {
         let name: String!
         if !(taskNameTF.text?.trimmingCharacters(in: .whitespaces).isEmpty)! {
             name = taskNameTF.text

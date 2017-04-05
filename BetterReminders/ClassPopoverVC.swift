@@ -22,10 +22,10 @@ class ClassPopoverVC: UITableViewController {
     @IBOutlet weak var endPicker: UIDatePicker!
     
     
-    var delegate: AddClassDelegate?
-    var forEditing: Bool!
-    var editClass: JHSchoolClass?
-    var classes: [JHSchoolClass]!
+    internal var delegate: AddClassDelegate?
+    internal var forEditing: Bool!
+    internal var editClass: JHSchoolClass?
+    private  var classes: [JHSchoolClass]!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +34,7 @@ class ClassPopoverVC: UITableViewController {
         
     }
     
-    func setUp() {
+    private func setUp() {
         //Basic ui setup
         title = "Add Class"
         
@@ -61,7 +61,7 @@ class ClassPopoverVC: UITableViewController {
         }
     }
     
-    func save() {
+    @objc private func save() {
         //Saves a new class from provided information in popover
     
         //Get data from view
@@ -109,7 +109,7 @@ class ClassPopoverVC: UITableViewController {
         
     }
     
-    func cancel() {
+    @objc private func cancel() {
         delegate?.didCancelAddNewClass()
         dismiss(animated: true, completion: nil)
     }

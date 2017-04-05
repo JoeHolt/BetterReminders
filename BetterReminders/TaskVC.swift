@@ -131,46 +131,46 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     
     // MARK: - Task Functions
     
-    func deleteTask(at indexPath: IndexPath) {
+    private func deleteTask(at indexPath: IndexPath) {
         //Delete task from model and UI
         clas.removeTask(at: indexPath.row)
         reloadTasks()
     }
     
-    func didAddTask() {
+    internal func didAddTask() {
         //Task was added
         reloadTasks()
     }
     
-    func didEditTask() {
+    internal func didEditTask() {
         //Task was edited
         reloadTasks()
     }
     
-    func reloadTasks() {
+    private func reloadTasks() {
         //Reloads and saves tasks
         saveClasses()
         loadTasks()
         tableView.reloadData()
     }
     
-    func saveClasses() {
+    private func saveClasses() {
         //Save classes from defaults
         let data: Data = NSKeyedArchiver.archivedData(withRootObject: classes!)
         UserDefaults.standard.set(data, forKey: "classes")
     }
     
-    func addTask() {
+    @objc private func addTask() {
         //Adds a new task to the given class
         displayTaskPopover()
     }
     
-    func editTask(task: JHTask) {
+    private func editTask(task: JHTask) {
         //Edit a task
         displayTaskPopover(editing: true, forTask: task)
     }
     
-    func loadTasks() {
+    private func loadTasks() {
         //Get array of incompleted tasks
         incompletedTasks = [JHTask]()
         for t in clas.tasks {
@@ -188,7 +188,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     
     // MARK: - TaskPopover
     
-    func displayTaskPopover(editing: Bool = false, forTask: JHTask? = nil) {
+    private func displayTaskPopover(editing: Bool = false, forTask: JHTask? = nil) {
         //Display a popover for editing or creating
         let storyBoard = UIStoryboard(name: "Main", bundle: nil)
         let vc = storyBoard.instantiateViewController(withIdentifier: "popoverTaskAdd") as! TaskPopoverVC
@@ -209,7 +209,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         }
     }
     
-    func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
+    internal func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
         //Gives the view controller to be displayed in the popover view contorller
         let navigationController = UINavigationController(rootViewController: controller.presentedViewController)
         let btnDone = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(MainTableViewController.dismissView))
@@ -217,19 +217,19 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         return navigationController
     }
     
-    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+    internal func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
         //.none sets the popover style as an actual popover rather than a full screen view
         return UIModalPresentationStyle.none
     }
     
-    func dismissView() {
+    internal func dismissView() {
         //dismiss popover
         self.dismiss(animated: true, completion: nil)
     }
     
     // MARK: - Helper Functions
     
-    func getUnitsStringForHours(hours: Int) -> String {
+    private func getUnitsStringForHours(hours: Int) -> String {
         if hours == 1 {
             return "Hour"
         } else {
@@ -237,7 +237,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         }
     }
     
-    func getUnitsStringForMinutes(minutes: Int) -> String {
+    private func getUnitsStringForMinutes(minutes: Int) -> String {
         if minutes == 1 {
             return "Minute"
         } else {
@@ -247,7 +247,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     
     // MARK: - Misc
     
-    @objc func navBarLongPress(sender: UILongPressGestureRecognizer? = nil) {
+    @objc private func navBarLongPress(sender: UILongPressGestureRecognizer? = nil) {
         feedbackGenerator = UISelectionFeedbackGenerator()
         feedbackGenerator?.prepare()
         if sender?.state == UIGestureRecognizerState.began {
@@ -259,7 +259,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         }
     }
     
-    func changeDisplayType() {
+    private func changeDisplayType() {
         //Changes display type of classes displayed
         if displayType == .NotCompleted {
             displayType = .All
@@ -269,7 +269,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         reloadTasks()
     }
     
-    func setUp() {
+    private func setUp() {
         //General UI set up at vc launch
         let button = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTask))
         navigationItem.rightBarButtonItem = button
