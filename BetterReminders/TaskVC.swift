@@ -52,6 +52,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
             let (hours, minutes) = clas.timeToCompleteTasks()
             cell?.textLabel?.text = "\(hours) \(getUnitsStringForHours(hours: hours)) and \(minutes) \(getUnitsStringForMinutes(minutes: minutes))"
             cell?.selectionStyle = .none
+            cell?.isUserInteractionEnabled = false
             return cell!
         } else {
             //Tasks

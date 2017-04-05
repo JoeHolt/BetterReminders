@@ -16,7 +16,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     var classes: [JHSchoolClass]?
     var classesByDay: [String: [JHSchoolClass]]!
     var forceLoadData: Bool = false
-    var notificationsEnabled: Bool = true
+    var notificationsEnabled: Bool!
     var center = UNUserNotificationCenter.current()
     var myAppDelegate = UIApplication.shared.delegate as! AppDelegate
     var tasksToAdd: [[String: JHTask]]? {
@@ -64,6 +64,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             let (hour, minutes) = getTotalTimeToComplete()
             cell?.textLabel?.text = "\(hour) \(getUnitsStringForHours(hours: hour)) and \(minutes) \(getUnitsStringForMinutes(minutes: minutes))"
             cell?.selectionStyle = .none
+            cell?.isUserInteractionEnabled = false
             return cell!
         } else {
             let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "ClassCell")
@@ -116,7 +117,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             editAction.backgroundColor = UIColor.blue
             return [deleteAction, editAction]
         } else {
-            return nil
+            return []
         }
     }
     
@@ -242,25 +243,18 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     func navBarLongPress(sender: UILongPressGestureRecognizer) {
         if sender.state == .began {
-            let formatter = DateFormatter()
-            formatter.timeStyle = .short
-            var message = "Unknown"
-            if getTotalTimeToComplete() != (0, 0) {
-                let (hour, minute) = getTotalTimeToComplete()
-                var hourText = "hours"
-                var minuteText = "minutes"
-                if hour == 1 {
-                    hourText = "hour"
-                }
-                if minute == 1 {
-                    minuteText = "minute"
-                }
-                message = "\(hour) \(hourText) \(minute) \(minuteText)"
+            notificationsEnabled = !notificationsEnabled
+            var message = ""
+            if notificationsEnabled == true {
+                message = "Enabled"
+                setUpNotifications()
             } else {
-                message = "You're done!"
+                center.removeAllPendingNotificationRequests()
+                message = "Disabled"
             }
-            let ac = UIAlertController(title: "Estimated Time to Complete HW", message: message, preferredStyle: .alert)
-            let action = UIAlertAction(title: "Fuck", style: .default, handler: { _ in })
+            defaults.set(notificationsEnabled, forKey: "notificationsEnabled")
+            let ac = UIAlertController(title: "Notifications \(message)", message: nil, preferredStyle: .alert)
+            let action = UIAlertAction(title: "Okay", style: .default, handler: { _ in })
             ac.addAction(action)
             present(ac, animated: true, completion: nil)
         }
@@ -362,10 +356,12 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     func getData() {
         //Gets data, either from JSON or NSUserDefaults depending on launch
         let launchedBefore = defaults.bool(forKey: "launchedBefore")
+        
         if !launchedBefore || forceLoadData == true {
             //First Launch
             defaults.set(true, forKey: "launchedBefore")
             print("First Launch")
+            defaults.set(true, forKey: "notificationsEnabled")
             parseScheduleJSON()
             setUpNotifications()
         } else {
@@ -374,7 +370,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         }
         classes = sortClassesByStartTime(classes: classes!)
         classesByDay = sortClassesByDay(classes: classes!)
-        
+        notificationsEnabled = defaults.object(forKey: "notificationsEnabled") as! Bool
         loadTasksFromNotification()
     }
     
