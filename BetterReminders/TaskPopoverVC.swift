@@ -28,19 +28,20 @@ class TaskPopoverVC: UITableViewController {
         super.viewDidLoad()
         
         title = "Add Task"
-        
         setUp()
         
     }
     
+    /**
+        UI set up
+    */
     private func setUp() {
-        //Basic UI set up
         timeToFinishDP.countDownDuration = 60.0 * 15 //Fifteen minutes
         dueDateDP.minimumDate = Date()
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: .done, target: self, action: #selector(save))
         
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancel))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelPopover))
         
         //Editing vc not
         if forEditing == true {
@@ -52,10 +53,16 @@ class TaskPopoverVC: UITableViewController {
         }
     }
     
-    @objc private func cancel() {
+    /**
+        Dismisses task popover
+    */
+    @objc private func cancelPopover() {
         dismiss(animated: true, completion: nil)
     }
     
+    /**
+        Saves new/edited class from popover
+    */
     @objc private func save() {
         let name: String!
         if !(taskNameTF.text?.trimmingCharacters(in: .whitespaces).isEmpty)! {

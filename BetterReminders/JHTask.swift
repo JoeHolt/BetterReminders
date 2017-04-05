@@ -8,16 +8,16 @@
 
 import UIKit
 
-//@objc(JHTask)
 class JHTask: NSObject, NSCoding {
-    
-    //Class reminder
     
     internal var name: String!
     internal var completed: Bool!
     internal var dueDate: Date!
     internal var estimatedTimeToComplete: Date!
     internal var id: Int!
+    override var description: String {
+        return name
+    }
     
     init(name: String, completed: Bool, dueDate: Date, estimatedTimeToComplete: Date) {
         self.name = name
@@ -42,6 +42,11 @@ class JHTask: NSObject, NSCoding {
         coder.encode(estimatedTimeToComplete, forKey: "estimatedTimeToComplete")
         coder.encode(id, forKey: "id")
     }
+    
+    /**
+        Returns time to complete task
+        - returns: Hours and minutes to complete task: (hour, minute)
+    */
     internal func timeToComplete() -> (Int, Int) {
         //Returns time to finish task in (hour, minute) format
         var hours = 0

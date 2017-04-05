@@ -33,6 +33,9 @@ class ClassPopoverVC: UITableViewController {
         
     }
     
+    /**
+        UI Set up
+     */
     private func setUp() {
         //Basic ui setup
         title = "Add Class"
@@ -60,6 +63,9 @@ class ClassPopoverVC: UITableViewController {
         }
     }
     
+    /**
+        Saves new class/edited class from popover
+     */
     @objc private func save() {
         //Saves a new class from provided information in popover
     
@@ -82,7 +88,6 @@ class ClassPopoverVC: UITableViewController {
         endTime = startPicker.date
         let newClass = JHSchoolClass(name: name, startDate: startTime, endDate: endTime, day: day)
         if !forEditing {
-            //Create a new class
             classes?.append(newClass)
         } else {
             //Take edited class and replace old, nonedited class with ti
@@ -108,6 +113,9 @@ class ClassPopoverVC: UITableViewController {
         
     }
     
+    /**
+        Dismiss popover
+     */
     @objc private func cancel() {
         dismiss(animated: true, completion: nil)
     }

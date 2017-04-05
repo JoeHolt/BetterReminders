@@ -10,8 +10,10 @@ import Foundation
 
 @objc(JHSchoolClass)
 class JHSchoolClass: NSObject, NSCoding {
-    
+
+
     // MARK: - Properties
+    
     
     internal var name: String!
     internal var startDate: Date!
@@ -20,12 +22,13 @@ class JHSchoolClass: NSObject, NSCoding {
     internal var notifyAtEnd: Bool!
     internal var tasks: [JHTask] = []
     internal var id: Int!
-    
     override var description: String {
         return name
     }
     
+    
     // MARK: - Init functions
+    
     
     init(name: String, startDate: Date, endDate: Date, day: String, notify: Bool = true) {
         self.name = name
@@ -60,8 +63,14 @@ class JHSchoolClass: NSObject, NSCoding {
         coder.encode(id, forKey: "notifyAtEnd")
     }
     
+    
     // MARK: - Time functinos
     
+    
+    /**
+        Finds time to complete class tasks
+        - returns: Time to complete in minutes and hours: (hours, minutes)
+    */
     internal func timeToCompleteTasks() -> (Int, Int) {
         //Returns time to finish tasks in (hour, minute) format
         var hours = 0
@@ -80,14 +89,24 @@ class JHSchoolClass: NSObject, NSCoding {
         return (hours, minutes)
     }
     
+    
     // MARK: - Task functinos
     
+    
+    /**
+        Marks all tasks in class completed
+    */
     internal func markAllTasksCompleted() {
         for task in tasks {
             task.completed = true
         }
     }
     
+    /**
+        Adds new task to class
+        - parameter task: Task to be added
+        - parameter atStart: Add task at start?
+    */
     internal func addTask(task: JHTask, atStart: Bool = false) {
         if atStart {
             tasks.insert(task, at: 0)
@@ -96,6 +115,10 @@ class JHSchoolClass: NSObject, NSCoding {
         }
     }
     
+    /**
+        Removes task
+        - parameter index: Index of task to be removed
+    */
     internal func removeTask(at index: Int) {
         tasks.remove(at: index)
     }
