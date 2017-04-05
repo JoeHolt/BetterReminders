@@ -42,7 +42,24 @@ class JHTask: NSObject, NSCoding {
         coder.encode(estimatedTimeToComplete, forKey: "estimatedTimeToComplete")
         coder.encode(id, forKey: "id")
     }
+    func timeToComplete() -> (Int, Int) {
+        //Returns time to finish task in (hour, minute) format
+        var hours = 0
+        var minutes = 0
+        
+        if completed == false {
+            let tComps = Calendar.current.dateComponents(in: .current, from: estimatedTimeToComplete)
+            hours += tComps.hour!
+            minutes += tComps.minute!
+            while minutes >= 60 {
+                minutes = minutes - 60
+                hours += 1
+            }
+        }
+        return (hours, minutes)
+    }
     
+
     
     
 }

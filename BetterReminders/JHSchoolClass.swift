@@ -76,6 +76,12 @@ class JHSchoolClass: NSObject, NSCoding {
         return (hours, minutes)
     }
     
+    func markAllTasksCompleted() {
+        for task in tasks {
+            task.completed = true
+        }
+    }
+    
     func addTask(task: JHTask, atStart: Bool = false) {
         if atStart {
             tasks.insert(task, at: 0)

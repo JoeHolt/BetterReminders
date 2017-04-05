@@ -109,13 +109,21 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         if indexPath.section != 0 {
             let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete", handler: {_,_ in
                 self.deleteClass(at: indexPath)
+                tableView.setEditing(false, animated: true)
             })
             let editAction = UITableViewRowAction(style: .normal, title: "Edit", handler: {
                 _,_ in
                 self.editClass(at: indexPath)
+                tableView.setEditing(false, animated: true)
             })
             editAction.backgroundColor = UIColor.blue
-            return [deleteAction, editAction]
+            let markAllCompletedAction = UITableViewRowAction(style: .normal, title: "MAC", handler: {
+                _,_ in
+                self.classGivenIndexPath(indexPath: indexPath).markAllTasksCompleted()
+                tableView.setEditing(false, animated: true)
+            })
+            markAllCompletedAction.backgroundColor = UIColor.green
+            return [deleteAction, editAction, markAllCompletedAction]
         } else {
             return []
         }

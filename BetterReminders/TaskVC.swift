@@ -61,7 +61,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
             cell.textLabel?.text = task.name
             let outputFormatter = DateFormatter()
             outputFormatter.dateStyle = .full
-            let (hours, minutes) = clas.timeToCompleteTasks()
+            let (hours, minutes) = task.timeToComplete()
             cell.detailTextLabel?.text = "\(outputFormatter.string(from: task.dueDate!)) - \(timeStringFromHoursAndMinutes(hours: hours, minutes: minutes))"
             if task.completed == true {
                 cell.accessoryType = .checkmark
