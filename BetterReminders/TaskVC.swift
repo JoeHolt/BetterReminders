@@ -219,14 +219,14 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     }
     
     @objc func navBarLongPress(sender: UILongPressGestureRecognizer? = nil) {
-        feedBackGenerator = UISelectionFeedbackGenerator()
-        feedBackGenerator.prepare()
+        feedbackGenerator = UISelectionFeedbackGenerator()
+        feedbackGenerator?.prepare()
         if sender?.state == UIGestureRecognizerState.began {
-            feedBackGenerator.selectionChanged()
+            feedbackGenerator?.selectionChanged()
             changeDisplayType()
         }
         if sender?.state == UIGestureRecognizerState.ended {
-            feedBackGenerator = nil
+            feedbackGenerator = nil
         }
     }
     

@@ -12,6 +12,8 @@ import UserNotificationsUI
 
 class MainTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UIAdaptivePresentationControllerDelegate, AddClassDelegate, UIViewControllerPreviewingDelegate, UIGestureRecognizerDelegate {
     
+    // MARK - Properties
+    
     let defaults = UserDefaults.standard
     var classes: [JHSchoolClass]?
     var classesByDay: [String: [JHSchoolClass]]!
@@ -19,11 +21,14 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     var notificationsEnabled: Bool!
     var center = UNUserNotificationCenter.current()
     var myAppDelegate = UIApplication.shared.delegate as! AppDelegate
+    var feedBackGenerator: UISelectionFeedbackGenerator?
     var tasksToAdd: [[String: JHTask]]? {
         didSet {
             addNotificationTasks()
         }
     }
+    
+    // MARK: - View Methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,11 +57,12 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         tableView.reloadData()
     }
     
-    // my selector that was defined above
     func willEnterForeground() {
         print(myAppDelegate.tasksToAdd)
         loadTasksFromNotification()
     }
+    
+    // MARK: - TableView methods
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
@@ -75,6 +81,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             let (hour,minute) = classGivenIndexPath(indexPath: indexPath).timeToCompleteTasks()
             cell.detailTextLabel?.text = "\(outputFormatter.string(from: c.startDate))-\(outputFormatter.string(from: c.endDate)) - \(timeStringFromHoursAndMinutes(hours: hour, minutes: minute))"
             cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
+            registerForPreviewing(with: cell, sourceView: cell.contentView)
             return cell
         }
     }
@@ -136,6 +143,8 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             return UITableViewAutomaticDimension
         }
     }
+    
+    // MARK: - Notifications
     
     func registerHomeWorkNotifications(forDates dates: [Date]) {
         
@@ -244,16 +253,14 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         longPress.delegate = self
         navigationController?.navigationBar.addGestureRecognizer(longPress)
         
-        //Register view for 3D touch preview
-        registerForPreviewing(with: self, sourceView: view)
         
     }
     
     func navBarLongPress(sender: UILongPressGestureRecognizer) {
-        let feedBackGenerator = UISelectionFeedbackGenerator()
-        feedBackGenerator.prepare()
+        feedBackGenerator = UISelectionFeedbackGenerator()
+        feedBackGenerator?.prepare()
         if sender.state == .began {
-            feedBackGenerator.selectionChanged()
+            feedBackGenerator?.selectionChanged()
             notificationsEnabled = !notificationsEnabled
             var message = ""
             if notificationsEnabled == true {
@@ -269,7 +276,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             ac.addAction(action)
             present(ac, animated: true, completion: nil)
         }
-        if sender?.state == UIGestureRecognizerState.ended {
+        if sender.state == UIGestureRecognizerState.ended {
             feedBackGenerator = nil
         }
     }
