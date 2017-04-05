@@ -18,7 +18,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     internal let defaults = UserDefaults.standard
     internal var schedule: JHSchedule!
-    internal  var forceLoadData: Bool = false
+    internal var forceLoadData: Bool = true
     internal var notificationsEnabled: Bool!
     private  var center = UNUserNotificationCenter.current()
     private  var myAppDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -468,28 +468,28 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         if let json = loadJSON(fromFile: "Classes") {
             var classes = [JHSchoolClass]()
             for item in json["Classes"].arrayValue {
-                if let name = item["name"].string {
-                    if let day = item["day"].string {
-                        if let startTime = item["startTime"].string {
-                            if let endTime = item["endTime"].string {
-                                let startDate: Date = dateFromString(time: startTime)
-                                let endDate: Date = dateFromString(time: endTime)
-                                let c = JHSchoolClass(name: name, startDate: startDate, endDate: endDate, day: day)
-                                classes.append(c)
-                                schedule = JHSchedule(classes: classes)
-                                saveSchedule()
-                            } else {
-                                print("Error parsing JSON")
-                            }
-                        } else {
-                            print("Error parsing JSON")
-                        }
-                    } else {
-                        print("Error parsing JSON")
-                    }
-                } else {
-                    print("Error parsing JSON")
+                guard let name = item["name"].string else {
+                    print("Error Parsing JSON: class name")
+                    return
                 }
+                guard let day = item["day"].string else {
+                    print("Error Parsing JSON: day")
+                    return
+                }
+                guard let startTime = item["startTime"].string else {
+                    print("Error Parsing JSON: startTime")
+                    return
+                }
+                guard let endTime = item["endTime"].string else {
+                    print("Error Parsing JSON: endTime")
+                    return
+                }
+                let startDate: Date = dateFromString(time: startTime)
+                let endDate: Date = dateFromString(time: endTime)
+                let c = JHSchoolClass(name: name, startDate: startDate, endDate: endDate, day: day)
+                classes.append(c)
+                schedule = JHSchedule(classes: classes)
+                saveSchedule()
             }
         } else {
             print("JSON not parsed properly")
