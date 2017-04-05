@@ -26,17 +26,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var args: [String: String] = ["class" : "","name": "","dueDate": "","timeToComplete": ""]
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        
         center.delegate = self
-        center.requestAuthorization(options: [.alert, .sound]) { (granted, error) in
-            // Enable or disable features based on authorization
-        }
+        center.requestAuthorization(options: [.alert, .sound]) { (granted, error) in }
         
         return true
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        if response.actionIdentifier.contains("classFinshedAction") { //Action id format: "classFinishedRequest.DATE.hh:mma"
-            //Class finished notiication response
+        //If notificatoin was a homework notification with text box
+        if response.actionIdentifier.contains("classFinshedAction") {
             let response = response as! UNTextInputNotificationResponse
             let (task, clas) = createTaskFromArgs(args: parseNotificationString(string: response.userText))
             tasksToAdd.append([clas: task])
@@ -45,30 +44,41 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        //Creates UNNotifications notification as a repeat in a week after it is displayde
-        let nextTrigger: Double!   //1440 minutes in a day
+        //After a notification is displayed, request it agaion after the next week day
+        
+        let nextTrigger: Double!
+        let oneMinute = 60.0 //Seconds
+        let oneDay = 1440.0 //Minutes
         let weekDay = Calendar.current.component(.weekday, from: Date())
+        var daysTillNextNotification: Double = 1.0
         switch weekDay {
         case 6:
             //Friday
-            nextTrigger = 60.0 * 1140.0 * 3.0 //Trigger in 3 days - monday
+            daysTillNextNotification = 3.0 //Trigger in 3 days - monday
         case 7:
             //Saturday
-            nextTrigger = 60.0 * 1140.0 * 3.0 //Trigger in 2 days - monday
+            daysTillNextNotification = 2.0 //Trigger in 2 days - monday
         default:
-            nextTrigger = 60.0 * 1140.0 * 1.0 //Trigger in one day
+            daysTillNextNotification = 1.0
         }
+        nextTrigger = oneMinute * oneDay * daysTillNextNotification
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: nextTrigger, repeats: false)
+        
         let content = createNotificationContent(title: "Enter assigned homework", body: "class=\"Class\" \nname=\"Name\" \ndueDate=\"04/15/17\" \ntimeToComplete=\"01:15\"", badge: 0)
         content.categoryIdentifier = "classFinishedCatagory"
+        
         let request = UNNotificationRequest(identifier: "classFinishedRequest", content: content, trigger: trigger)
         center.add(request)
-        print("Registiring notification with id: " + request.identifier)
     }
     
+    /**
+        Parses a notification string
+        - parameter string: String to be parsed
+        - returns: A dictionsary with keys as args and values as arg body
+    */
     func parseNotificationString(string: String) -> [String: String]{
         //notification is in the format of: arg0="content" arg1="Content" arg2="content" etc
-        //Returns a dictionary with the args as keys and the value as the content
+        
         var body: String = ""
         var argActive = false   //Sets if argument is been parsed
         var firstQuote = true   //Shows if first quote in block has passed
@@ -99,8 +109,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return args
     }
     
+    /**
+        Creates a JHTask from given args
+        - parameter args: Dictionary containing args as keys and bodies as values
+        - returns: The JHTask created and the name of the class it belonds to
+    */
     func createTaskFromArgs(args: [String: String]) -> (JHTask, String) {
-        //Creates a JHTask from args and returns it along with the class the task belongs to
         var name: String = "Untitled"
         var dueDate: Date = Date()
         let components = DateComponents(hour: 1, minute: 15)
