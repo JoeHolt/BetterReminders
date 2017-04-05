@@ -12,7 +12,9 @@ import UserNotificationsUI
 
 class MainTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UIAdaptivePresentationControllerDelegate, AddClassDelegate, UIViewControllerPreviewingDelegate, UIGestureRecognizerDelegate {
     
+    
     // MARK - Properties
+    
     
     internal let defaults = UserDefaults.standard
     internal var schedule: JHSchedule!
@@ -36,7 +38,6 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         
         title = "Schedule"
         
-        // set observer for UIApplicationWillEnterForeground
         NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: .UIApplicationWillEnterForeground, object: nil)
         
         getData()
@@ -46,24 +47,19 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
         setUpNotifications(forDates: schedule.classEndTimes())
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        loadTasksFromNotification()
-        tableView.reloadData()
+        loadTasksFromNotification(reload: true)
     }
     
     /**
         Called when function is about to enter forground
     */
     @objc private func willEnterForeground() {
-        print(myAppDelegate.tasksToAdd)
-        loadTasksFromNotification()
-        tableView.reloadData()
+        loadTasksFromNotification(reload: true)
     }
     
     
@@ -71,21 +67,35 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         if indexPath.section == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "timeLeftCell")
-            let (hour, minutes) = schedule.totalTimeToComplete()
-            cell?.textLabel?.text = "\(hour) \(getUnitsStringForHours(hours: hour)) and \(minutes) \(getUnitsStringForMinutes(minutes: minutes))"
-            cell?.selectionStyle = .none
-            cell?.isUserInteractionEnabled = false
-            return cell!
+            //Time Left Cell
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "timeLeftCell") else {
+                print("dequeueresusableCell not found")
+                return UITableViewCell()
+            }
+            
+            if let textLabel = cell.textLabel {
+                let (hour, minutes) = schedule.totalTimeToComplete()
+                textLabel.text = "\(hour) \(getUnitsStringForHours(hours: hour)) and \(minutes) \(getUnitsStringForMinutes(minutes: minutes))"
+            }
+            
+            cell.selectionStyle = .none
+            cell.isUserInteractionEnabled = false
+            return cell
         } else {
+            //Class Cells
             let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "ClassCell")
             let c = schedule.classGivenIndexPath(indexPath: indexPath)
-            cell.textLabel?.text = "\(c.name!)"
-            let outputFormatter = DateFormatter()
-            outputFormatter.timeStyle = .short
-            let (hour,minute) = schedule.classGivenIndexPath(indexPath: indexPath).timeToCompleteTasks()
-            cell.detailTextLabel?.text = "\(outputFormatter.string(from: c.startDate))-\(outputFormatter.string(from: c.endDate)) - \(timeStringFromHoursAndMinutes(hours: hour, minutes: minute))"
+            if let textLabel = cell.textLabel {
+                textLabel.text = "\(c.name!)"
+            }
+            if let detailLabel = cell.detailTextLabel {
+                let outputFormatter = DateFormatter()
+                outputFormatter.timeStyle = .short
+                let (hour,minute) = schedule.classGivenIndexPath(indexPath: indexPath).timeToCompleteTasks()
+                detailLabel.text = "\(outputFormatter.string(from: c.startDate))-\(outputFormatter.string(from: c.endDate)) - \(timeStringFromHoursAndMinutes(hours: hour, minutes: minute))"
+            }
             cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
             return cell
         }
@@ -112,8 +122,13 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         if section == 0 {
             return 1
         } else {
-            let days: [String] = Array(schedule.classesSortedByDay().keys).reversed()    //Reversed so "A" day is first
-        return schedule.classesSortedByDay()[days[section - 1]]!.count
+            let daysKeys: [String] = Array(schedule.classesSortedByDay().keys).reversed()    //Reversed so "A" day is first
+            let daysKey: String = daysKeys[section - 1]
+            guard let classByDay = schedule.classesSortedByDay()[daysKey] else {
+                print("Invalid key for classesByDay")
+                return 0
+            }
+            return classByDay.count
         }
     }
     
@@ -159,8 +174,8 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     */
     private func registerHomeworkNotifications(forDates dates: [Date]) {
         for date in dates {
-            let requesetString: String! = stringByAppendingDateAndTime(string: "classFinishedRequest", date: date)
-            let actionString: String! = stringByAppendingDateAndTime(string: "classFinshedAction", date: date)
+            let requesetString: String = stringByAppendingDateAndTime(string: "classFinishedRequest", date: date)
+            let actionString: String = stringByAppendingDateAndTime(string: "classFinshedAction", date: date)
             let hour = Calendar.current.component(.hour, from: date)
             let minute = Calendar.current.component(.minute, from: date)
             createNotificationWithTextField(title: "Enter assigned homework", body: "class=\"Class\" \nname=\"Name\" \ndueDate=\"04/15/17\" \ntimeToComplete=\"01:15\"", launchDateHour: hour, launchDateMinute: minute, repeats: false, requestId: requesetString, actionId: actionString, textTitle: "Reminder", textButtonTitle: "Save", textPlaceholder: "Enter arguments here", catagotyId: "classFinishedCatagory", center: center)
@@ -192,9 +207,13 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     /**
         Saves tasks that were created from notifications
     */
-    private func loadTasksFromNotification() {
+    private func loadTasksFromNotification(reload: Bool) {
         tasksToAdd = myAppDelegate.tasksToAdd
-        saveSchedule()
+        if reload {
+            reloadTable()
+        } else {
+            saveSchedule()
+        }
         myAppDelegate.tasksToAdd = []
     }
     
@@ -208,8 +227,11 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
                 for key in group.keys {
                     for clas in schedule.classes {
                         if clas.name == key {
-                            print("Added task \(group[key]?.name) to \(key)")
-                            clas.addTask(task: group[key]!)
+                            guard let task = group[key] else {
+                                print("\(#function): Error finding task")
+                                return
+                            }
+                            clas.addTask(task: task)
                         }
                     }
                 }
@@ -246,7 +268,11 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         let navVC = viewControllerToCommit as! UINavigationController
         let vc = navVC.viewControllers[0] as! TaskVC
         let clas = vc.clas
-        let newVC = storyboard?.instantiateViewController(withIdentifier: "TaskVC") as! TaskVC
+        guard let storyBoard = storyboard else {
+            print("\(#function): Error loading storyboard")
+            return
+        }
+        let newVC = storyBoard.instantiateViewController(withIdentifier: "TaskVC") as! TaskVC
         newVC.clas = clas
         self.navigationController?.pushViewController(newVC, animated: true)
     }
@@ -395,15 +421,10 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     private func getData() {
         let launchedBefore = defaults.bool(forKey: "launchedBefore")
         if !launchedBefore || forceLoadData == true {
-            //First Launch
-            defaults.set(true, forKey: "launchedBefore")
             print("First Launch")
+            defaults.set(true, forKey: "launchedBefore")
             defaults.set(true, forKey: "notificationsEnabled")
-            if let classes = parseScheduleJSON() {
-                schedule = JHSchedule(classes: classes)
-            } else {
-                schedule = JHSchedule(classes: [])
-            }
+            parseScheduleJSON()
             setUpNotifications(forDates: schedule.classEndTimes())
         } else {
             //Not first launch
@@ -411,7 +432,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         }
         schedule.sortClassesByStartTime()
         notificationsEnabled = defaults.object(forKey: "notificationsEnabled") as! Bool
-        loadTasksFromNotification()
+        loadTasksFromNotification(reload: false)
     }
     
     /**
@@ -440,9 +461,8 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     /**
         Parses a json names Classes.json in the main app bundle
-        - returns: An array of the classes parsed from the JSON, nil if JSON error
     */
-    private func parseScheduleJSON() -> [JHSchoolClass]? {
+    private func parseScheduleJSON() {
         //Used for easy adding of classes -- Wont be used in final user version
         if let json = loadJSON(fromFile: "Classes") {
             var classes = [JHSchoolClass]()
@@ -455,7 +475,8 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
                                 let endDate: Date = dateFromString(time: endTime)
                                 let c = JHSchoolClass(name: name, startDate: startDate, endDate: endDate, day: day)
                                 classes.append(c)
-                                return classes
+                                schedule = JHSchedule(classes: classes)
+                                saveSchedule()
                             } else {
                                 print("Error parsing JSON")
                             }
@@ -472,7 +493,6 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         } else {
             print("JSON not parsed properly")
         }
-        return nil
     }
 
     
@@ -541,9 +561,13 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     */
     @objc private func navBarLongPress(sender: UILongPressGestureRecognizer) {
         feedBackGenerator = UISelectionFeedbackGenerator()
-        feedBackGenerator?.prepare()
+        guard let generator = feedBackGenerator else {
+            print("\(#function): Error creating feedback generator")
+            return
+        }
+        generator.prepare()
         if sender.state == .began {
-            feedBackGenerator?.selectionChanged()
+            generator.selectionChanged()
             notificationsEnabled = !notificationsEnabled
             var message = ""
             if notificationsEnabled == true {
