@@ -81,7 +81,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             let (hour,minute) = classGivenIndexPath(indexPath: indexPath).timeToCompleteTasks()
             cell.detailTextLabel?.text = "\(outputFormatter.string(from: c.startDate))-\(outputFormatter.string(from: c.endDate)) - \(timeStringFromHoursAndMinutes(hours: hour, minutes: minute))"
             cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
-            registerForPreviewing(with: cell, sourceView: cell.contentView)
+            registerForPreviewing(with: cell as! UIViewControllerPreviewingDelegate, sourceView: cell.contentView)
             return cell
         }
     }
@@ -160,14 +160,81 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         }
     }
     
-    func stringByAppendingDateAndTime(string: String, date: Date) -> String! {
-        //Notificatin ids must be unique so I add the dates and times for id
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        let weekDay = Calendar.current.component(.weekday, from: date)
-        let timeString = formatter.string(from: date)
-        return string + "." + String(weekDay) + "." + timeString
+    func setUpNotifications() {
+        //Registers notifications if needed
+        var currentNotifications: [UNNotificationRequest] = []
+        
+        center.getPendingNotificationRequests(completionHandler: {
+            requests in
+            DispatchQueue.main.async {
+                //print(requests.count)
+                currentNotifications = requests
+                if self.notificationsEnabled == true {
+                    if currentNotifications.count == 0 {
+                        //Load notifications for the current weekif there a none loaded
+                        //var dateC = DateComponents()
+                        //dateC.hour =
+                        //dateC.minute = 14
+                        //let date = Calendar.current.date(from: dateC)
+                        let dates: [Date] = self.getClassEndDatesForWeek()
+                        self.registerHomeWorkNotifications(forDates: dates)
+                    }
+                }
+            }
+        })
     }
+    
+    func loadTasksFromNotification() {
+        //Get data from tasks that are needed
+        tasksToAdd = myAppDelegate.tasksToAdd
+        saveClasses()
+        myAppDelegate.tasksToAdd = []
+    }
+    
+    func addNotificationTasks() {
+        //Add tasks that were requested by notifications
+        if let tasksToAdd = tasksToAdd {
+            for group in tasksToAdd {
+                for key in group.keys {
+                    for clas in classes! {
+                        if clas.name == key {
+                            print("Added task \(group[key]?.name) to \(key)")
+                            clas.addTask(task: group[key]!)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // MARK: - Peek and Pop
+    
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
+        // Peek and pop - Present a VC preview when force touching it
+        if let indexPath = tableView.indexPathForRow(at: location) {
+            previewingContext.sourceRect = tableView.rectForRow(at: indexPath)
+            
+            let vc = storyboard?.instantiateViewController(withIdentifier: "TaskVC") as! TaskVC
+            vc.clas = classGivenIndexPath(indexPath: indexPath)
+            let navVC = UINavigationController(rootViewController: vc)
+            navVC.title = "\(vc.clas.name)"
+            
+            return navVC
+        }
+        return nil
+    }
+    
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
+        // Peek and pop - Presents the view contorller when popping - hacky implementation
+        let navVC = viewControllerToCommit as! UINavigationController
+        let vc = navVC.viewControllers[0] as! TaskVC
+        let clas = vc.clas
+        let newVC = storyboard?.instantiateViewController(withIdentifier: "TaskVC") as! TaskVC
+        newVC.clas = clas
+        self.navigationController?.pushViewController(newVC, animated: true)
+    }
+    
+    // MARK: - School Class Methods
     
     func getClassEndDatesForWeek() -> [Date] {
         //Returns the endtimes of each class for each work day
@@ -185,17 +252,6 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             classEndDatesForWeek.append(date!)
         }
         return classEndDatesForWeek
-    }
-    
-    func getEndTimes() -> [Date] {
-        //Returns an array of the end times
-        var endTimes = [Date]()
-        for c in classes! {
-            if !endTimes.contains(c.endDate) {
-                endTimes.append(c.endDate)
-            }
-        }
-        return endTimes
     }
     
     func editClass(at indexPath: IndexPath) {
@@ -233,107 +289,19 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         tableView.reloadData()
     }
     
-    func didFinishEditing() {
-         //Finished editing a class
-        getData()
-        tableView.reloadData()
+    func getEndTimes() -> [Date] {
+        //Returns an array of the end times
+        var endTimes = [Date]()
+        for c in classes! {
+            if !endTimes.contains(c.endDate) {
+                endTimes.append(c.endDate)
+            }
+        }
+        return endTimes
     }
     
     func didCancelAddNewClass() {
         //Cancled creation of new class from popover view contorller
-    }
-    
-    func setUp() {
-        //General code to set up app when launched
-        
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add, target: self, action: #selector(addButtonSelected))
-        
-        //Long press nav bar
-        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(navBarLongPress(sender:)))
-        longPress.delegate = self
-        navigationController?.navigationBar.addGestureRecognizer(longPress)
-        
-        
-    }
-    
-    func navBarLongPress(sender: UILongPressGestureRecognizer) {
-        feedBackGenerator = UISelectionFeedbackGenerator()
-        feedBackGenerator?.prepare()
-        if sender.state == .began {
-            feedBackGenerator?.selectionChanged()
-            notificationsEnabled = !notificationsEnabled
-            var message = ""
-            if notificationsEnabled == true {
-                message = "Enabled"
-                setUpNotifications()
-            } else {
-                center.removeAllPendingNotificationRequests()
-                message = "Disabled"
-            }
-            defaults.set(notificationsEnabled, forKey: "notificationsEnabled")
-            let ac = UIAlertController(title: "Notifications \(message)", message: nil, preferredStyle: .alert)
-            let action = UIAlertAction(title: "Okay", style: .default, handler: { _ in })
-            ac.addAction(action)
-            present(ac, animated: true, completion: nil)
-        }
-        if sender.state == UIGestureRecognizerState.ended {
-            feedBackGenerator = nil
-        }
-    }
-    
-    func setUpNotifications() {
-        //Registers notifications if needed
-        var currentNotifications: [UNNotificationRequest] = []
-        
-        center.getPendingNotificationRequests(completionHandler: {
-            requests in
-            DispatchQueue.main.async {
-                //print(requests.count)
-                currentNotifications = requests
-                if self.notificationsEnabled == true {
-                    if currentNotifications.count == 0 {
-                        //Load notifications for the current weekif there a none loaded
-                        //var dateC = DateComponents()
-                        //dateC.hour =
-                        //dateC.minute = 14
-                        //let date = Calendar.current.date(from: dateC)
-                        let dates: [Date] = self.getClassEndDatesForWeek()
-                        self.registerHomeWorkNotifications(forDates: dates)
-                    }
-                }
-            }
-        })
-        
-    }
-    
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
-        // Peek and pop - Present a VC preview when force touching it
-        if let indexPath = tableView.indexPathForRow(at: location) {
-            previewingContext.sourceRect = tableView.rectForRow(at: indexPath)
-            
-            let vc = storyboard?.instantiateViewController(withIdentifier: "TaskVC") as! TaskVC
-            vc.clas = classGivenIndexPath(indexPath: indexPath)
-            let navVC = UINavigationController(rootViewController: vc)
-            navVC.title = "\(vc.clas.name)"
-            
-            return navVC
-        }
-        return nil
-    }
-    
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
-        // Peek and pop - Presents the view contorller when popping - hacky implementation
-        let navVC = viewControllerToCommit as! UINavigationController
-        let vc = navVC.viewControllers[0] as! TaskVC
-        let clas = vc.clas
-        let newVC = storyboard?.instantiateViewController(withIdentifier: "TaskVC") as! TaskVC
-        newVC.clas = clas
-        self.navigationController?.pushViewController(newVC, animated: true)
-    }
-    
-    func addButtonSelected() {
-        //Add button selected in nav bar
-        displayClassCreationPopup()
     }
     
     func displayClassCreationPopup(editing: Bool = false, forClass: JHSchoolClass? = nil) {
@@ -356,6 +324,52 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         }
     }
     
+    func sortClassesByDay(classes: [JHSchoolClass]) -> [String: [JHSchoolClass]] {
+        //Organizes classes into which class scheduele day in order for tableView organization
+        classesByDay = [String: [JHSchoolClass]]()
+        for c in classes {
+            if classesByDay[c.day] == nil {
+                classesByDay[c.day] = [c]
+            } else {
+                classesByDay[c.day]?.append(c)
+            }
+        }
+        return classesByDay
+    }
+    
+    func sortClassesByStartTime(classes: [JHSchoolClass]) -> [JHSchoolClass] {
+        // Sorts classes by startDate method
+        let newClasses = classes.sorted(by: { $0.startDate.compare($1.startDate) == .orderedAscending })
+        return newClasses
+    }
+    
+    
+    func loadClasses() {
+        //Loads classes from defaults
+        let data = defaults.object(forKey: "classes") as! Data
+        classes = NSKeyedUnarchiver.unarchiveObject(with: data) as? [JHSchoolClass]
+    }
+    
+    func saveClasses() {
+        //Save classes from defaults
+        let data: Data = NSKeyedArchiver.archivedData(withRootObject: classes!)
+        defaults.set(data, forKey: "classes")
+    }
+    
+    func classGivenIndexPath(indexPath: IndexPath) -> JHSchoolClass {
+        //Hacky method to return the class of a given indexPath on the table view from classesByDay
+        let day = dayGivenIndexPath(indexPath: indexPath)
+        let clas = classesByDay[day]?[(indexPath.row)]
+        return clas!
+    }
+    
+    // MARK: - Popover
+    
+    func addButtonSelected() {
+        //Add button selected in nav bar
+        displayClassCreationPopup()
+    }
+    
     func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
         //Gives the view controller to be displayed in the popover view contorller
         let navigationController = UINavigationController(rootViewController: controller.presentedViewController)
@@ -372,6 +386,20 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
         //.none sets the popover style as an actual popover rather than a full screen view
         return UIModalPresentationStyle.none
+    }
+    
+    // MARK: - Data functions
+    
+    func setUp() {
+        //General code to set up app when launched
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add, target: self, action: #selector(addButtonSelected))
+        
+        //Long press nav bar
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(navBarLongPress(sender:)))
+        longPress.delegate = self
+        navigationController?.navigationBar.addGestureRecognizer(longPress)
+        
     }
     
     func getData() {
@@ -393,13 +421,6 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         classesByDay = sortClassesByDay(classes: classes!)
         notificationsEnabled = defaults.object(forKey: "notificationsEnabled") as! Bool
         loadTasksFromNotification()
-    }
-    
-    func loadTasksFromNotification() {
-        //Get data from tasks that are needed
-        tasksToAdd = myAppDelegate.tasksToAdd
-        saveClasses()
-        myAppDelegate.tasksToAdd = []
     }
     
     func refreshData() {
@@ -460,72 +481,21 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             print("JSON not parsed properly")
         }
     }
+
+    // MARK: - Helper Functions
     
-    func sortClassesByDay(classes: [JHSchoolClass]) -> [String: [JHSchoolClass]] {
-        //Organizes classes into which class scheduele day in order for tableView organization
-        classesByDay = [String: [JHSchoolClass]]()
-        for c in classes {
-            if classesByDay[c.day] == nil {
-                classesByDay[c.day] = [c]
-            } else {
-                classesByDay[c.day]?.append(c)
-            }
-        }
-        return classesByDay
-    }
-    
-    func sortClassesByStartTime(classes: [JHSchoolClass]) -> [JHSchoolClass] {
-        // Sorts classes by startDate method
-        let newClasses = classes.sorted(by: { $0.startDate.compare($1.startDate) == .orderedAscending })
-        return newClasses
-    }
-    
-    func addNotificationTasks() {
-        //Add tasks that were requested by notifications
-        if let tasksToAdd = tasksToAdd {
-            for group in tasksToAdd {
-                for key in group.keys {
-                    for clas in classes! {
-                        if clas.name == key {
-                            print("Added task \(group[key]?.name) to \(key)")
-                            clas.addTask(task: group[key]!)
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    
-    func loadClasses() {
-        //Loads classes from defaults
-        let data = defaults.object(forKey: "classes") as! Data
-        classes = NSKeyedUnarchiver.unarchiveObject(with: data) as? [JHSchoolClass]
-    }
-    
-    func saveClasses() {
-        //Save classes from defaults
-        let data: Data = NSKeyedArchiver.archivedData(withRootObject: classes!)
-        defaults.set(data, forKey: "classes")
-    }
-    
-    func classGivenIndexPath(indexPath: IndexPath) -> JHSchoolClass {
-        //Hacky method to return the class of a given indexPath on the table view from classesByDay
-        let day = dayGivenIndexPath(indexPath: indexPath)
-        let clas = classesByDay[day]?[(indexPath.row)]
-        return clas!
+    func stringByAppendingDateAndTime(string: String, date: Date) -> String! {
+        //Notificatin ids must be unique so I add the dates and times for id
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        let weekDay = Calendar.current.component(.weekday, from: date)
+        let timeString = formatter.string(from: date)
+        return string + "." + String(weekDay) + "." + timeString
     }
     
     func dayGivenIndexPath(indexPath: IndexPath) -> String {
         //Day given an index path of a class
         return Array(classesByDay.keys).reversed()[(indexPath.section - 1)] as String
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let nextVC = segue.destination as! TaskVC
-        let indexPath = tableView.indexPathForSelectedRow
-        nextVC.clas = classGivenIndexPath(indexPath: indexPath!)
-        nextVC.classes = classes
     }
     
     func getTotalTimeToComplete() -> (Int, Int) {
@@ -558,8 +528,47 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             return "Minutes"
         }
     }
-
     
+    // MARK:- Misc
+    
+
+    func didFinishEditing() {
+         //Finished editing a class
+        getData()
+        tableView.reloadData()
+    }
+    
+    func navBarLongPress(sender: UILongPressGestureRecognizer) {
+        feedBackGenerator = UISelectionFeedbackGenerator()
+        feedBackGenerator?.prepare()
+        if sender.state == .began {
+            feedBackGenerator?.selectionChanged()
+            notificationsEnabled = !notificationsEnabled
+            var message = ""
+            if notificationsEnabled == true {
+                message = "Enabled"
+                setUpNotifications()
+            } else {
+                center.removeAllPendingNotificationRequests()
+                message = "Disabled"
+            }
+            defaults.set(notificationsEnabled, forKey: "notificationsEnabled")
+            let ac = UIAlertController(title: "Notifications \(message)", message: nil, preferredStyle: .alert)
+            let action = UIAlertAction(title: "Okay", style: .default, handler: { _ in })
+            ac.addAction(action)
+            present(ac, animated: true, completion: nil)
+        }
+        if sender.state == UIGestureRecognizerState.ended {
+            feedBackGenerator = nil
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let nextVC = segue.destination as! TaskVC
+        let indexPath = tableView.indexPathForSelectedRow
+        nextVC.clas = classGivenIndexPath(indexPath: indexPath!)
+        nextVC.classes = classes
+    }
     
 }
 

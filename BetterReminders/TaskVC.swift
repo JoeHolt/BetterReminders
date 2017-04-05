@@ -15,12 +15,16 @@ enum TaskViewType {
 
 class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate {
     
+    // MARK: - Properties
+    
     var classes: [JHSchoolClass]!
     var clas: JHSchoolClass!
     var incompletedTasks: [JHTask]!
     var displayType: TaskViewType = .NotCompleted
     var tasks: [JHTask]!
     var feedbackGenerator: UISelectionFeedbackGenerator?
+    
+    // MARK: - View Methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,6 +33,8 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         setUp()
         
     }
+    
+    // MARK: - TableView methods
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
@@ -123,21 +129,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         }
     }
     
-    func getUnitsStringForHours(hours: Int) -> String {
-        if hours == 1 {
-            return "Hour"
-        } else {
-            return "Hours"
-        }
-    }
-    
-    func getUnitsStringForMinutes(minutes: Int) -> String {
-        if minutes == 1 {
-            return "Minute"
-        } else {
-            return "Minutes"
-        }
-    }
+    // MARK: - Task Functions
     
     func deleteTask(at indexPath: IndexPath) {
         //Delete task from model and UI
@@ -177,7 +169,24 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         //Edit a task
         displayTaskPopover(editing: true, forTask: task)
     }
-
+    
+    func loadTasks() {
+        //Get array of incompleted tasks
+        incompletedTasks = [JHTask]()
+        for t in clas.tasks {
+            if !t.completed {
+                incompletedTasks.append(t)
+            }
+        }
+        //Get tasks to be displayed
+        if displayType == .NotCompleted {
+            tasks = incompletedTasks
+        } else {
+            tasks = clas.tasks
+        }
+    }
+    
+    // MARK: - TaskPopover
     
     func displayTaskPopover(editing: Bool = false, forTask: JHTask? = nil) {
         //Display a popover for editing or creating
@@ -218,6 +227,26 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         self.dismiss(animated: true, completion: nil)
     }
     
+    // MARK: - Helper Functions
+    
+    func getUnitsStringForHours(hours: Int) -> String {
+        if hours == 1 {
+            return "Hour"
+        } else {
+            return "Hours"
+        }
+    }
+    
+    func getUnitsStringForMinutes(minutes: Int) -> String {
+        if minutes == 1 {
+            return "Minute"
+        } else {
+            return "Minutes"
+        }
+    }
+    
+    // MARK: - Misc
+    
     @objc func navBarLongPress(sender: UILongPressGestureRecognizer? = nil) {
         feedbackGenerator = UISelectionFeedbackGenerator()
         feedbackGenerator?.prepare()
@@ -238,22 +267,6 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
             displayType = .NotCompleted
         }
         reloadTasks()
-    }
-    
-    func loadTasks() {
-        //Get array of incompleted tasks
-        incompletedTasks = [JHTask]()
-        for t in clas.tasks {
-            if !t.completed {
-                incompletedTasks.append(t)
-            }
-        }
-        //Get tasks to be displayed
-        if displayType == .NotCompleted {
-            tasks = incompletedTasks
-        } else {
-            tasks = clas.tasks
-        }
     }
     
     func setUp() {
