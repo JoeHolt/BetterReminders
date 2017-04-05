@@ -18,7 +18,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     internal let defaults = UserDefaults.standard
     internal var schedule: JHSchedule!
-    private  var forceLoadData: Bool = false
+    internal  var forceLoadData: Bool = false
     internal var notificationsEnabled: Bool!
     private  var center = UNUserNotificationCenter.current()
     private  var myAppDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -307,6 +307,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
                 }
                 i += 1
             }
+            self.saveSchedule()
             self.reloadTable()
         }))
         ac.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
@@ -317,6 +318,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         Saves, gets most recent data and reloads table view
     */
     internal func reloadTable() {
+        //saveSchedule()
         getData()
         tableView.reloadData()
     }
@@ -592,7 +594,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         let nextVC = segue.destination as! TaskVC
         let indexPath = tableView.indexPathForSelectedRow
         nextVC.clas = schedule.classGivenIndexPath(indexPath: indexPath!)
-        nextVC.classes = schedule.classes
+        nextVC.schedule = schedule
     }
     
 }

@@ -24,7 +24,7 @@ class ClassPopoverVC: UITableViewController {
     internal var delegate: AddClassDelegate?
     internal var forEditing: Bool!
     internal var editClass: JHSchoolClass?
-    private  var classes: [JHSchoolClass]!
+    private  var schedule: JHSchedule!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,8 +45,8 @@ class ClassPopoverVC: UITableViewController {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancel))
         
         //Load classes
-        let data = UserDefaults.standard.object(forKey: "classes") as! Data
-        classes = NSKeyedUnarchiver.unarchiveObject(with: data) as? [JHSchoolClass]
+        let data = UserDefaults.standard.object(forKey: "schedule") as! Data
+        schedule = NSKeyedUnarchiver.unarchiveObject(with: data) as? JHSchedule
         
         //Set up based on if editing
         if forEditing == true {
@@ -88,22 +88,22 @@ class ClassPopoverVC: UITableViewController {
         endTime = startPicker.date
         let newClass = JHSchoolClass(name: name, startDate: startTime, endDate: endTime, day: day)
         if !forEditing {
-            classes?.append(newClass)
+            schedule.classes.append(newClass)
         } else {
             //Take edited class and replace old, nonedited class with ti
             if let editClassInitial = editClass {
                 var i = 0
-                for c in classes {
+                for c in schedule.classes {
                     if editClassInitial.id == c.id {
-                        classes[i] = newClass
+                        schedule.classes[i] = newClass
                     }
                     i += 1
                 }
             }
         }
         //Save classes with new/edited class
-        let data = NSKeyedArchiver.archivedData(withRootObject: classes!)
-        UserDefaults.standard.set(data, forKey: "classes")
+        let data = NSKeyedArchiver.archivedData(withRootObject: schedule)
+        UserDefaults.standard.set(data, forKey: "schedule")
         if forEditing == false {
             delegate?.didAddNewClass()
         } else {

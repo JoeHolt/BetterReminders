@@ -34,38 +34,5 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<key>UIApplicationShortcutItems</key>
-	<array>
-		<dict>
-			<key>UIApplicationShortcutItemType</key>
-			<string>$(PRODUCT_BUNDLE_IDENTIFIER).APCALC</string>
-			<key>UIApplicationShortcutItemTitle</key>
-			<string>AP Calculus</string>
-			<key>UIApplicationShortcutItemSubtitle</key>
-			<string>View reminders</string>
-			<key>UIApplicationShortcutItemIconType</key>
-			<integer>22</integer>
-		</dict>
-		<dict>
-			<key>UIApplicationShortcutItemType</key>
-			<string>$(PRODUCT_BUNDLE_IDENTIFIER).APCOMP</string>
-			<key>UIApplicationShortcutItemTitle</key>
-			<string>AP Composistion</string>
-			<key>UIApplicationShortcutItemSubtitle</key>
-			<string>View reminders</string>
-			<key>UIApplicationShortcutItemIconType</key>
-			<integer>22</integer>
-		</dict>
-		<dict>
-			<key>UIApplicationShortcutItemType</key>
-			<string>$(PRODUCT_BUNDLE_IDENTIFIER).ECON</string>
-			<key>UIApplicationShortcutItemTitle</key>
-			<string>Economics</string>
-			<key>UIApplicationShortcutItemSubtitle</key>
-			<string>View reminders</string>
-			<key>UIApplicationShortcutItemIconType</key>
-			<integer>22</integer>
-		</dict>
-	</array>
 </dict>
 </plist>

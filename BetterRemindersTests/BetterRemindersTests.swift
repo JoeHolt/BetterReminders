@@ -32,7 +32,7 @@ class BetterRemindersTests: XCTestCase {
     }
     
     func testLoadingOfJSON() {
-        let data = tableView.loadJSON(fromFile: "TestJSON", ofType: "json")
+        let data = tableView.loadJSON(fromFile: "TestJSON")
         XCTAssertTrue(data!["People"].arrayValue.count == 2)
         XCTAssertTrue(data!["People"].arrayValue[0]["name"] == "Joe")
     }

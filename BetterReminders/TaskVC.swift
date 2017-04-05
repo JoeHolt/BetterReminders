@@ -19,11 +19,10 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     // MARK: - Properties
     
     
-    var classes: [JHSchoolClass]!
+    var schedule: JHSchedule!
     var clas: JHSchoolClass!
     var incompletedTasks: [JHTask]!
     var displayType: TaskViewType = .NotCompleted
-    var tasks: [JHTask]!
     var feedbackGenerator: UISelectionFeedbackGenerator?
     
     
@@ -54,7 +53,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
             return 1
         } else {
             //Tasks
-            return tasks.count
+            return clas.tasks.count
         }
     }
 
@@ -69,7 +68,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
             return cell!
         } else {
             //Tasks
-            let task = tasks[indexPath.row]
+            let task = clas.tasks[indexPath.row]
             let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "taskCell")
             cell.textLabel?.text = task.name
             let outputFormatter = DateFormatter()
@@ -98,7 +97,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
                 self.deleteTask(at: indexPath)
             })
             let editAction = UITableViewRowAction(style: .default, title: "Edit", handler: { _,_ in
-                self.editTask(task: self.tasks[indexPath.row])
+                self.editTask(task: self.clas.tasks[indexPath.row])
             })
             editAction.backgroundColor = UIColor.blue
             
@@ -116,7 +115,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
                 
                 
         } else {
-            let task = tasks[indexPath.row]
+            let task = clas.tasks[indexPath.row]
             task.completed = !task.completed
             let cell = tableView.cellForRow(at: indexPath)
             if cell?.accessoryType == UITableViewCellAccessoryType.none {
@@ -169,7 +168,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
      */
     private func reloadTasks() {
         //Reloads and saves tasks
-        saveClasses()
+        saveSchedule()
         loadTasks()
         tableView.reloadData()
     }
@@ -177,9 +176,9 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     /**
         Save classes to defaults
      */
-    private func saveClasses() {
-        let data: Data = NSKeyedArchiver.archivedData(withRootObject: classes!)
-        UserDefaults.standard.set(data, forKey: "classes")
+    private func saveSchedule() {
+        let data: Data = NSKeyedArchiver.archivedData(withRootObject: schedule!)
+        UserDefaults.standard.set(data, forKey: "schedule")
     }
     
     /**
@@ -210,9 +209,9 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         }
         //Get tasks to be displayed
         if displayType == .NotCompleted {
-            tasks = incompletedTasks
+            clas.tasks = incompletedTasks
         } else {
-            tasks = clas.tasks
+            clas.tasks = clas.tasks
         }
     }
     
