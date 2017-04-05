@@ -85,7 +85,7 @@ class ClassPopoverVC: UITableViewController {
             day = "A"
         }
         startTime = startPicker.date
-        endTime = startPicker.date
+        endTime = endPicker.date
         let newClass = JHSchoolClass(name: name, startDate: startTime, endDate: endTime, day: day)
         if !forEditing {
             schedule.classes.append(newClass)
