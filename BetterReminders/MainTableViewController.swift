@@ -39,7 +39,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         title = "Schedule"
         
         NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: .UIApplicationWillEnterForeground, object: nil)
-        
+        registerForPreviewing(with: self, sourceView: view)
         getData()
         setUp()
 
@@ -246,6 +246,9 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     internal func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
         // Peek and pop - Present a VC preview when force touching it
         if let indexPath = tableView.indexPathForRow(at: location) {
+            if indexPath.section == 0 {
+                return nil
+            }
             previewingContext.sourceRect = tableView.rectForRow(at: indexPath)
             
             let vc = storyboard?.instantiateViewController(withIdentifier: "TaskVC") as! TaskVC
@@ -253,11 +256,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             let navVC = UINavigationController(rootViewController: vc)
             navVC.title = "\(vc.clas.name)"
             
-            if indexPath.section == 0 {
-                return nil
-            } else {
-                return navVC
-            }
+            return navVC
             
         }
         return nil
