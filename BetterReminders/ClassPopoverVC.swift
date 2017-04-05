@@ -18,8 +18,9 @@ class ClassPopoverVC: UITableViewController {
 
     @IBOutlet weak var classNameTF: UITextField!
     @IBOutlet weak var dayTF: UITextField!
-    @IBOutlet weak var startTF: UITextField!
-    @IBOutlet weak var endTF: UITextField!
+    @IBOutlet weak var startPicker: UIDatePicker!
+    @IBOutlet weak var endPicker: UIDatePicker!
+    
     
     var delegate: AddClassDelegate?
     var forEditing: Bool!
@@ -52,12 +53,8 @@ class ClassPopoverVC: UITableViewController {
                 classNameTF.text = c.name
                 dayTF.placeholder = c.day
                 dayTF.text = c.day
-                let outputter = DateFormatter()
-                outputter.timeStyle = .short
-                startTF.placeholder = outputter.string(from: c.startDate)
-                startTF.text = outputter.string(from: c.startDate)
-                endTF.placeholder = outputter.string(from: c.endDate)
-                endTF.text = outputter.string(from: c.endDate)
+                startPicker.date = c.startDate
+                endPicker.date = c.endDate
             } else {
                 print("Error editing class")
             }
@@ -70,8 +67,8 @@ class ClassPopoverVC: UITableViewController {
         //Get data from view
         let name: String!
         let day: String!
-        let startTime: String!
-        let endTime: String!
+        let startTime: Date!
+        let endTime: Date!
         if !(classNameTF.text?.trimmingCharacters(in: .whitespaces).isEmpty)! {
             name = classNameTF.text
         } else {
@@ -82,17 +79,9 @@ class ClassPopoverVC: UITableViewController {
         } else {
             day = "A"
         }
-        if !(startTF.text?.trimmingCharacters(in: .whitespaces).isEmpty)! {
-            startTime = startTF.text
-        } else {
-            startTime = "07:55 AM"
-        }
-        if !(endTF.text?.trimmingCharacters(in: .whitespaces).isEmpty)! {
-            endTime = endTF.text
-        } else {
-            endTime = "08:55 AM"
-        }
-        let newClass = JHSchoolClass(name: name, startDate: dateFromString(time: startTime), endDate: dateFromString(time: endTime), day: day)
+        startTime = startPicker.date
+        endTime = startPicker.date
+        let newClass = JHSchoolClass(name: name, startDate: startTime, endDate: endTime, day: day)
         if !forEditing {
             //Create a new class
             classes?.append(newClass)

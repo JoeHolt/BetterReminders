@@ -129,19 +129,13 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="popCell" id="KPS-h0-DdH" userLabel="startCell">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="popCell" id="KPS-h0-DdH" userLabel="startCellTitle">
                                         <rect key="frame" x="0.0" y="88" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KPS-h0-DdH" id="DPn-nY-oe2">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="07:55 AM" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="n96-Bj-oRa">
-                                                    <rect key="frame" x="126" y="12.5" width="239" height="17"/>
-                                                    <nil key="textColor"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits"/>
-                                                </textField>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Start Time" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WWY-Bc-V04">
                                                     <rect key="frame" x="18" y="11" width="83" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
@@ -151,26 +145,39 @@
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="WWY-Bc-V04" firstAttribute="centerY" secondItem="DPn-nY-oe2" secondAttribute="centerY" id="Ce1-rC-INq"/>
-                                                <constraint firstItem="n96-Bj-oRa" firstAttribute="centerY" secondItem="DPn-nY-oe2" secondAttribute="centerY" id="Ny6-Uu-5Qn"/>
                                                 <constraint firstItem="WWY-Bc-V04" firstAttribute="leading" secondItem="DPn-nY-oe2" secondAttribute="leadingMargin" constant="10" id="O7r-f3-5G5"/>
-                                                <constraint firstAttribute="trailing" secondItem="n96-Bj-oRa" secondAttribute="trailing" constant="10" id="W9y-PJ-xrE"/>
-                                                <constraint firstItem="n96-Bj-oRa" firstAttribute="leading" secondItem="WWY-Bc-V04" secondAttribute="trailing" constant="25" id="YPZ-NK-lvT"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="popCell" id="4ed-EJ-4XV" userLabel="endTime">
-                                        <rect key="frame" x="0.0" y="132" width="375" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="popCell" rowHeight="242" id="HDz-6v-Uka" userLabel="startTimePicker">
+                                        <rect key="frame" x="0.0" y="132" width="375" height="242"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="HDz-6v-Uka" id="kUr-c7-6sh">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="241.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="5" translatesAutoresizingMaskIntoConstraints="NO" id="xbh-jl-Rqp">
+                                                    <rect key="frame" x="0.0" y="0.0" width="375" height="241"/>
+                                                    <date key="date" timeIntervalSinceReferenceDate="512888672.32837701">
+                                                        <!--2017-04-03 05:04:32 +0000-->
+                                                    </date>
+                                                </datePicker>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="xbh-jl-Rqp" firstAttribute="top" secondItem="kUr-c7-6sh" secondAttribute="top" id="B3K-N8-3Kr"/>
+                                                <constraint firstItem="xbh-jl-Rqp" firstAttribute="leading" secondItem="kUr-c7-6sh" secondAttribute="leading" id="aOT-ac-k1f"/>
+                                                <constraint firstAttribute="trailing" secondItem="xbh-jl-Rqp" secondAttribute="trailing" id="lB2-VF-xu3"/>
+                                                <constraint firstAttribute="bottom" secondItem="xbh-jl-Rqp" secondAttribute="bottom" id="sEy-Dx-Qmf"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="popCell" id="4ed-EJ-4XV" userLabel="endTimeTitle">
+                                        <rect key="frame" x="0.0" y="374" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="4ed-EJ-4XV" id="5v1-dT-fjN">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="09:55 AM" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="y3o-78-L3T">
-                                                    <rect key="frame" x="117" y="12.5" width="248" height="17"/>
-                                                    <nil key="textColor"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits"/>
-                                                </textField>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="End Time" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7qr-xV-zPK">
                                                     <rect key="frame" x="18" y="11" width="74" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
@@ -179,11 +186,30 @@
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="y3o-78-L3T" firstAttribute="centerY" secondItem="5v1-dT-fjN" secondAttribute="centerY" id="28W-Tc-Qxz"/>
-                                                <constraint firstItem="y3o-78-L3T" firstAttribute="leading" secondItem="7qr-xV-zPK" secondAttribute="trailing" constant="25" id="JgL-Iw-usH"/>
                                                 <constraint firstItem="7qr-xV-zPK" firstAttribute="leading" secondItem="5v1-dT-fjN" secondAttribute="leadingMargin" constant="10" id="Kkr-re-Aom"/>
                                                 <constraint firstItem="7qr-xV-zPK" firstAttribute="centerY" secondItem="5v1-dT-fjN" secondAttribute="centerY" id="LJh-Kp-d1B"/>
-                                                <constraint firstAttribute="trailing" secondItem="y3o-78-L3T" secondAttribute="trailing" constant="10" id="Xvp-jF-e3v"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="popCell" rowHeight="242" id="iGi-5X-OEv" userLabel="endTimePicker">
+                                        <rect key="frame" x="0.0" y="418" width="375" height="242"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="iGi-5X-OEv" id="Sd2-Vx-NGv">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="241.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="5" translatesAutoresizingMaskIntoConstraints="NO" id="aAc-mC-Bby">
+                                                    <rect key="frame" x="0.0" y="0.0" width="375" height="241"/>
+                                                    <date key="date" timeIntervalSinceReferenceDate="512888672.32837701">
+                                                        <!--2017-04-03 05:04:32 +0000-->
+                                                    </date>
+                                                </datePicker>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="bottom" secondItem="aAc-mC-Bby" secondAttribute="bottom" id="38n-vL-qVu"/>
+                                                <constraint firstAttribute="trailing" secondItem="aAc-mC-Bby" secondAttribute="trailing" id="Fht-N5-su4"/>
+                                                <constraint firstItem="aAc-mC-Bby" firstAttribute="leading" secondItem="Sd2-Vx-NGv" secondAttribute="leading" id="KFx-tb-Wbx"/>
+                                                <constraint firstItem="aAc-mC-Bby" firstAttribute="top" secondItem="Sd2-Vx-NGv" secondAttribute="top" id="jhx-G7-5ke"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -199,8 +225,8 @@
                     <connections>
                         <outlet property="classNameTF" destination="dRq-iS-YHG" id="nf8-q4-o70"/>
                         <outlet property="dayTF" destination="KtF-IA-FZG" id="6iI-Ki-Db5"/>
-                        <outlet property="endTF" destination="y3o-78-L3T" id="DcR-yl-k8G"/>
-                        <outlet property="startTF" destination="n96-Bj-oRa" id="88C-IC-JNu"/>
+                        <outlet property="endPicker" destination="aAc-mC-Bby" id="BFx-u0-MLc"/>
+                        <outlet property="startPicker" destination="xbh-jl-Rqp" id="f4q-Pi-pol"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="G17-QA-AiZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
