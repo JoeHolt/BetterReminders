@@ -86,3 +86,22 @@ func createNotificationWithTextField(title: String, body: String, launchDateHour
     print("Registiring notification with id: " + request.identifier)
     center.setNotificationCategories([catagory])
 }
+
+func timeStringFromHoursAndMinutes(hours: Int, minutes: Int) -> String {
+    var firstPart = ""
+    var secondPart = ""
+    if Array(String(hours).characters).count == 1 {
+        firstPart = "0\(hours)"
+    } else {
+        firstPart = "\(hours)"
+    }
+    if Array(String(minutes).characters).count == 1 {
+        secondPart = "0\(minutes)"
+    } else {
+        secondPart = "\(minutes)"
+    }
+    return "\(firstPart):\(secondPart)"
+}
+
+
+

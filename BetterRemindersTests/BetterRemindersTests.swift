@@ -67,13 +67,6 @@ class BetterRemindersTests: XCTestCase {
         XCTAssertTrue(endTime.count == 5, "Incorrectly sorted end times")
     }
     
-    func testDaysOfWeek() {
-        tableView.parseScheduleJSON()
-        let days = tableView.getDaysOfWeek()
-        XCTAssertTrue(days.count == 5, "More days created than should be available")
-        XCTAssertTrue(Calendar.current.component(.weekday, from: days[1]) == 3, "Days incorrectly creates")
-    }
-    
     func testGetClassEndDatesForWeek() {
         tableView.parseScheduleJSON()
         let arr = tableView.getClassEndDatesForWeek()
@@ -111,11 +104,6 @@ class BetterRemindersTests: XCTestCase {
         let df2 = DateFormatter()
         df2.timeStyle = .short
         XCTAssertTrue(cTTC == task.estimatedTimeToComplete, "Due date is \(df2.string(from: task.estimatedTimeToComplete)), should be 01:19)")
-        
-        
     }
-    
-   
-    
     
 }

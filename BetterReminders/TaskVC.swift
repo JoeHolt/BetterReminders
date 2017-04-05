@@ -49,8 +49,9 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         if indexPath.section == 0 {
             //Total time left
             let cell = tableView.dequeueReusableCell(withIdentifier: "timeLeftCell")
-            let (hours, minutes) = getTimeLeft()
+            let (hours, minutes) = clas.timeToCompleteTasks()
             cell?.textLabel?.text = "\(hours) \(getUnitsStringForHours(hours: hours)) and \(minutes) \(getUnitsStringForMinutes(minutes: minutes))"
+            cell?.selectionStyle = .none
             return cell!
         } else {
             //Tasks
@@ -59,8 +60,8 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
             cell.textLabel?.text = task.name
             let outputFormatter = DateFormatter()
             outputFormatter.dateStyle = .full
-            let (hours, minutes) = getTimeLeft()
-            cell.detailTextLabel?.text = "\(outputFormatter.string(from: task.dueDate!)) - \(hours):\(minutes)"
+            let (hours, minutes) = clas.timeToCompleteTasks()
+            cell.detailTextLabel?.text = "\(outputFormatter.string(from: task.dueDate!)) - \(timeStringFromHoursAndMinutes(hours: hours, minutes: minutes))"
             if task.completed == true {
                 cell.accessoryType = .checkmark
             }
@@ -134,17 +135,6 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         } else {
             return "Minutes"
         }
-    }
-    
-    func getTimeLeft() -> (Int, Int) {
-        var hours = 0
-        var minutes = 0
-        for task in clas.tasks {
-            let components = Calendar.current.dateComponents(in: .current, from: task.estimatedTimeToComplete)
-            hours += components.hour!
-            minutes += components.minute!
-        }
-        return (hours, minutes)
     }
     
     func deleteTask(at indexPath: IndexPath) {

@@ -49,6 +49,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         loadTasksFromNotification()
+        tableView.reloadData()
     }
     
     // my selector that was defined above
@@ -58,14 +59,23 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "ClassCell")
-        let c = classGivenIndexPath(indexPath: indexPath)
-        cell.textLabel?.text = "\(c.name!)"
-        let outputFormatter = DateFormatter()
-        outputFormatter.timeStyle = .short
-        cell.detailTextLabel?.text = "\(outputFormatter.string(from: c.startDate))-\(outputFormatter.string(from: c.endDate))"
-        cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
-        return cell
+        if indexPath.section == 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "timeLeftCell")
+            let (hour, minutes) = getTotalTimeToComplete()
+            cell?.textLabel?.text = "\(hour) \(getUnitsStringForHours(hours: hour)) and \(minutes) \(getUnitsStringForMinutes(minutes: minutes))"
+            cell?.selectionStyle = .none
+            return cell!
+        } else {
+            let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "ClassCell")
+            let c = classGivenIndexPath(indexPath: indexPath)
+            cell.textLabel?.text = "\(c.name!)"
+            let outputFormatter = DateFormatter()
+            outputFormatter.timeStyle = .short
+            let (hour,minute) = classGivenIndexPath(indexPath: indexPath).timeToCompleteTasks()
+            cell.detailTextLabel?.text = "\(outputFormatter.string(from: c.startDate))-\(outputFormatter.string(from: c.endDate)) - \(timeStringFromHoursAndMinutes(hours: hour, minutes: minute))"
+            cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
+            return cell
+        }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -73,29 +83,49 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return classesByDay.keys.count
+        return classesByDay.keys.count + 1  //+1 = timeLeftCell
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        let days: [String] = Array(classesByDay.keys).reversed()    //Reversed so "A" day is first
-        return "\(days[section]) Day"
+        if section == 0 {
+            return "Estimated Time Left"
+        } else {
+            let days: [String] = Array(classesByDay.keys).reversed()    //Reversed so "A" day is first
+            return "\(days[section - 1]) Day"
+        }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let days: [String] = Array(classesByDay.keys).reversed()    //Reversed so "A" day is first
-        return classesByDay[days[section]]!.count
+        if section == 0 {
+            return 1
+        } else {
+            let days: [String] = Array(classesByDay.keys).reversed()    //Reversed so "A" day is first
+        return classesByDay[days[section - 1]]!.count
+        }
     }
     
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete", handler: {_,_ in 
-            self.deleteClass(at: indexPath)
-        })
-        let editAction = UITableViewRowAction(style: .normal, title: "Edit", handler: {
-            _,_ in
-            self.editClass(at: indexPath)
-        })
-        editAction.backgroundColor = UIColor.blue
-        return [deleteAction, editAction]
+        if indexPath.section != 0 {
+            let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete", handler: {_,_ in
+                self.deleteClass(at: indexPath)
+            })
+            let editAction = UITableViewRowAction(style: .normal, title: "Edit", handler: {
+                _,_ in
+                self.editClass(at: indexPath)
+            })
+            editAction.backgroundColor = UIColor.blue
+            return [deleteAction, editAction]
+        } else {
+            return nil
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.section == 0 {
+            return 44 + 15
+        } else {
+            return UITableViewAutomaticDimension
+        }
     }
     
     func registerHomeWorkNotifications(forDates dates: [Date]) {
@@ -471,7 +501,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     func dayGivenIndexPath(indexPath: IndexPath) -> String {
         //Day given an index path of a class
-        return Array(classesByDay.keys).reversed()[(indexPath.section)] as String
+        return Array(classesByDay.keys).reversed()[(indexPath.section - 1)] as String
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -482,19 +512,36 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     }
     
     func getTotalTimeToComplete() -> (Int, Int) {
-        var timeMinutes = 0
-        var timeHours = 0
+        var totalHours = 0
+        var totalMinutes = 0
         for c in classes! {
-            for t in c.tasks {
-                if t.completed == false {
-                    let tComps = Calendar.current.dateComponents(in: .current, from: t.estimatedTimeToComplete)
-                    timeHours += tComps.hour!
-                    timeMinutes += tComps.minute!
-                }
-            }
+            let (hour, minute) = c.timeToCompleteTasks()
+            totalHours += hour
+            totalMinutes += minute
         }
-        return (timeHours, timeMinutes)
+        while totalMinutes >= 60 {
+            totalMinutes = totalMinutes - 60
+            totalHours += 1
+        }
+        return (totalHours, totalMinutes)
     }
+    
+    func getUnitsStringForHours(hours: Int) -> String {
+        if hours == 1 {
+            return "Hour"
+        } else {
+            return "Hours"
+        }
+    }
+    
+    func getUnitsStringForMinutes(minutes: Int) -> String {
+        if minutes == 1 {
+            return "Minute"
+        } else {
+            return "Minutes"
+        }
+    }
+
     
     
 }
