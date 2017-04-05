@@ -420,7 +420,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     /**
         Setts up modal elements of app
     */
-    private func getData() {
+    internal func getData() {
         let launchedBefore = defaults.bool(forKey: "launchedBefore")
         if !launchedBefore || forceLoadData == true {
             print("First Launch")
@@ -442,7 +442,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         - parameter file: Name of sile to be loaded(excluding file type)
         - returns: JSON object
     */
-    private func loadJSON(fromFile file: String) -> JSON? {
+    internal func loadJSON(fromFile file: String) -> JSON? {
         if let path = Bundle.main.path(forResource: file, ofType: "json") {
             do {
                 let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .alwaysMapped)
@@ -464,7 +464,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     /**
         Parses a json names Classes.json in the main app bundle
     */
-    private func parseScheduleJSON() {
+    internal func parseScheduleJSON() {
         //Used for easy adding of classes -- Wont be used in final user version
         if let json = loadJSON(fromFile: "Classes") {
             var classes = [JHSchoolClass]()

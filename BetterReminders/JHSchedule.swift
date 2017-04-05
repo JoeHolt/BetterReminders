@@ -34,7 +34,6 @@ class JHSchedule: NSObject, NSCoding {
             if !endDates.contains(c.endDate) {
                 endDates.append(c.endDate)
             }
-            endDates.append(c.endDate)
         }
         return endDates
     }

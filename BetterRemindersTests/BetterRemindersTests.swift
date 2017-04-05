@@ -39,7 +39,7 @@ class BetterRemindersTests: XCTestCase {
     
     func testParseJSON() {
         tableView.parseScheduleJSON()
-        XCTAssertTrue(tableView.classes?.count == 10, "Parsing JSON brought \(tableView.classes?.count) classes, there should be 10)")
+        XCTAssertTrue(tableView.schedule.classes.count == 10, "Parsing JSON brought \(tableView.schedule.classes?.count) classes, there should be 10)")
     }
     
     func testClassOrderByTime() {
@@ -47,8 +47,11 @@ class BetterRemindersTests: XCTestCase {
         let class2 = JHSchoolClass(name: "Test2", startDate: dateFromString(time: "07:56 AM"), endDate: dateFromString(time: "07:55 AM"), day: "A")
         let class3 = JHSchoolClass(name: "Test3", startDate: dateFromString(time: "10:57 AM"), endDate: dateFromString(time: "07:55 AM"), day: "A")
         let classes = [class2, class3, class1]
-        let ordered = tableView.sortClassesByStartTime(classes: classes)
-        XCTAssertTrue(ordered[0].name == "Test1" && ordered[1].name == "Test2" && ordered[2].name == "Test3", "Not Ordered Correctly, correct order: \(class1.name), \(class2.name), \(class3.name), you had: \(ordered[0].name), \(ordered[1].name), \(ordered[2].name)")
+        tableView.getData()
+        tableView.schedule.classes = classes
+        tableView.schedule.sortClassesByStartTime()
+        let ordered = tableView.schedule.classes
+        XCTAssertTrue(ordered?[0].name == "Test1" && ordered?[1].name == "Test2" && ordered?[2].name == "Test3", "Not Ordered Correctly, correct order: \(class1.name), \(class2.name), \(class3.name), you had: \(ordered?[0].name), \(ordered?[1].name), \(ordered?[2].name)")
     }
     
     func testClassOrderByDay() {
@@ -56,21 +59,19 @@ class BetterRemindersTests: XCTestCase {
         let class2 = JHSchoolClass(name: "Test2", startDate: dateFromString(time: "07:56 AM"), endDate: dateFromString(time: "07:55 AM"), day: "B")
         let class3 = JHSchoolClass(name: "Test3", startDate: dateFromString(time: "10:57 AM"), endDate: dateFromString(time: "07:55 AM"), day: "B")
         let classes = [class2, class3, class1]
-        let ordered = tableView.sortClassesByDay(classes: classes)
+        tableView.getData()
+        tableView.schedule.classes = classes
+        tableView.schedule.sortClassesByStartTime()
+        let ordered = tableView.schedule.classesSortedByDay()
         XCTAssertTrue(ordered["A"]!.count == 1, "\(ordered["A"]!.count) A day objects, there should be 1")
         XCTAssertTrue(ordered["B"]![1].name == "Test3", "Second B day class is \(ordered["B"]![0].name), should be Test3")
     }
     
     func testGetEndTimes() {
         tableView.parseScheduleJSON()
-        let endTime = tableView.getEndTimes()
-        XCTAssertTrue(endTime.count == 5, "Incorrectly sorted end times")
-    }
-    
-    func testGetClassEndDatesForWeek() {
-        tableView.parseScheduleJSON()
-        let arr = tableView.getClassEndDatesForWeek()
-        XCTAssertTrue(arr.count == 25, "Incorrect number of Dates created per day for a week")
+        let endTime = tableView.schedule.classEndTimes()
+        print(endTime)
+        XCTAssertTrue(endTime.count == 5, "Incorrectly sorted end times: \(endTime.count)")
     }
     
     func testStringParser() {
