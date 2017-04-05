@@ -10,7 +10,6 @@ import UIKit
 
 @objc protocol AddClassDelegate {
     func didAddNewClass()
-    func didCancelAddNewClass()
     func didFinishEditing()
 }
 
@@ -110,7 +109,6 @@ class ClassPopoverVC: UITableViewController {
     }
     
     @objc private func cancel() {
-        delegate?.didCancelAddNewClass()
         dismiss(animated: true, completion: nil)
     }
 

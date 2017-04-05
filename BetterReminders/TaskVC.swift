@@ -212,7 +212,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     internal func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
         //Gives the view controller to be displayed in the popover view contorller
         let navigationController = UINavigationController(rootViewController: controller.presentedViewController)
-        let btnDone = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(MainTableViewController.dismissView))
+        let btnDone = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(MainTableViewController.dismissClassPopoverView))
         navigationController.topViewController?.navigationItem.rightBarButtonItem = btnDone
         return navigationController
     }

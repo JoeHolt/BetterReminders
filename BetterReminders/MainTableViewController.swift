@@ -27,7 +27,9 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         }
     }
     
+    
     // MARK: - View Methods
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,9 +46,8 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        //Notifications still bugged
-        
-        setUpNotifications()
+
+        setUpNotifications(forDates: schedule.classEndTimes())
         
     }
     
@@ -56,18 +57,23 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         tableView.reloadData()
     }
     
+    /**
+        Called when function is about to enter forground
+    */
     @objc private func willEnterForeground() {
         print(myAppDelegate.tasksToAdd)
         loadTasksFromNotification()
         tableView.reloadData()
     }
     
+    
     // MARK: - TableView methods
+    
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "timeLeftCell")
-            let (hour, minutes) = getTotalTimeToComplete()
+            let (hour, minutes) = schedule.totalTimeToComplete()
             cell?.textLabel?.text = "\(hour) \(getUnitsStringForHours(hours: hour)) and \(minutes) \(getUnitsStringForMinutes(minutes: minutes))"
             cell?.selectionStyle = .none
             cell?.isUserInteractionEnabled = false
@@ -114,12 +120,12 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         if indexPath.section != 0 {
             let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete", handler: {_,_ in
-                self.deleteClass(at: indexPath)
+                self.deleteClass(class: self.schedule.classGivenIndexPath(indexPath: indexPath))
                 tableView.setEditing(false, animated: true)
             })
             let editAction = UITableViewRowAction(style: .normal, title: "Edit", handler: {
                 _,_ in
-                self.displayEditPopup(for: indexPath)
+                self.displayEditPopup(forClass: self.schedule.classGivenIndexPath(indexPath: indexPath))
                 tableView.setEditing(false, animated: true)
             })
             editAction.backgroundColor = UIColor.blue
@@ -143,53 +149,58 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         }
     }
     
+    
     // MARK: - Notifications
     
-    private func registerHomeWorkNotifications(forDates dates: [Date]) {
-        
-        //Set notifications for the end of each class, each week day
+    
+    /**
+        Creates a notification to enter homework for given dates
+        - parameter forDates: dates for homework notifications to be created on
+    */
+    private func registerHomeworkNotifications(forDates dates: [Date]) {
         for date in dates {
             let requesetString: String! = stringByAppendingDateAndTime(string: "classFinishedRequest", date: date)
             let actionString: String! = stringByAppendingDateAndTime(string: "classFinshedAction", date: date)
-            print("Hour: \(Calendar.current.component(.hour, from: date))")
-            print("Minute: \(Calendar.current.component(.minute, from: date)))")
             let hour = Calendar.current.component(.hour, from: date)
             let minute = Calendar.current.component(.minute, from: date)
             createNotificationWithTextField(title: "Enter assigned homework", body: "class=\"Class\" \nname=\"Name\" \ndueDate=\"04/15/17\" \ntimeToComplete=\"01:15\"", launchDateHour: hour, launchDateMinute: minute, repeats: false, requestId: requesetString, actionId: actionString, textTitle: "Reminder", textButtonTitle: "Save", textPlaceholder: "Enter arguments here", catagotyId: "classFinishedCatagory", center: center)
         }
     }
     
-    private func setUpNotifications() {
+    /**
+        If no notificatinos are currently schedueled, schedules more
+        - parameter forDates: Dates to be schedueled for
+    */
+    private func setUpNotifications(forDates dates: [Date]) {
         //Registers notifications if needed
         var currentNotifications: [UNNotificationRequest] = []
         
         center.getPendingNotificationRequests(completionHandler: {
             requests in
             DispatchQueue.main.async {
-                //print(requests.count)
                 currentNotifications = requests
                 if self.notificationsEnabled == true {
                     if currentNotifications.count == 0 {
-                        //Load notifications for the current weekif there a none loaded
-                        //var dateC = DateComponents()
-                        //dateC.hour =
-                        //dateC.minute = 14
-                        //let date = Calendar.current.date(from: dateC)
-                        let dates: [Date] = self.schedule.classEndTimes()
-                        self.registerHomeWorkNotifications(forDates: dates)
+                        self.registerHomeworkNotifications(forDates: dates)
                     }
                 }
             }
         })
     }
     
+    // TODO: - Mix the follorwinf classes or rewirok them
+    /**
+        Saves tasks that were created from notifications
+    */
     private func loadTasksFromNotification() {
-        //Get data from tasks that are needed
         tasksToAdd = myAppDelegate.tasksToAdd
         saveSchedule()
         myAppDelegate.tasksToAdd = []
     }
     
+    /**
+        Adds tasks that were created from notificatonis
+    */
     private func addNotificationTasks() {
         //Add tasks that were requested by notifications
         if let tasksToAdd = tasksToAdd {
@@ -206,7 +217,9 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         }
     }
     
+    
     // MARK: - Peek and Pop
+    
     
     internal func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
         // Peek and pop - Present a VC preview when force touching it
@@ -238,47 +251,55 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         self.navigationController?.pushViewController(newVC, animated: true)
     }
     
+    
     // MARK: - School Class Modificatoin
     
-    private func displayEditPopup(for indexPath: IndexPath) {
+    
+    /**
+        Displays the editing popup for a class
+        - parameter c: The class to be edited
+    */
+    private func displayEditPopup(forClass c: JHSchoolClass) {
         //Edit class
-        displayClassCreationPopup(editing: true, forClass: schedule.classGivenIndexPath(indexPath: indexPath))
+        displayClassCreationPopup(editing: true, forClass: c)
     }
     
-    private func deleteClass(at indexPath: IndexPath) {
-        //Confirm with user then delete class
-        let ac = UIAlertController(title: "Delete Class", message: "Are you sure you would like to delete \(self.schedule.classGivenIndexPath(indexPath: indexPath).name!)? All of the classes tasks will also be deleted.", preferredStyle: .actionSheet)
+    /**
+        Confirms with user then deletes a class and reflects it in UI
+        - parameter c: Class to be deleted
+    */
+    private func deleteClass(class c: JHSchoolClass) {
+        let ac = UIAlertController(title: "Delete Class", message: "Are you sure you would like to delete \(c.name!)? All of the classes tasks will also be deleted.", preferredStyle: .actionSheet)
         ac.addAction(UIAlertAction(title: "Delete Class", style: .destructive, handler: {
             action in
             //Deletes class at index path and then reloads data
-            //Finds the class in classesByDay structure then deletes in from classes array, could be redone for betterr reading and efficency
-            let clas = self.schedule.classGivenIndexPath(indexPath: indexPath)
             var i = 0
-            for c in self.schedule.classes {
-                if c == clas {
+            for c2 in self.schedule.classes {
+                if c.id == c2.id {
                     self.schedule.removeClass(atIndex: i)
                     break
                 }
                 i += 1
             }
-            self.saveSchedule()
-            self.refreshData()
-            self.tableView.reloadData()
+            self.reloadTable()
         }))
         ac.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         self.present(ac, animated: true, completion: nil)
     }
     
-    internal func didAddNewClass() {
-        //New class added from popover view controller
+    /**
+        Saves, gets most recent data and reloads table view
+    */
+    internal func reloadTable() {
         getData()
         tableView.reloadData()
     }
     
-    internal func didCancelAddNewClass() {
-        //Cancled creation of new class from popover view contorller
-    }
-    
+    /**
+        Displaysa popover controller that allows for the adding or editing of classes
+        - parameter editing: Bool that shows tells if popover is used editing
+        - parameter forClass: Class that will be edited
+    */
     private func displayClassCreationPopup(editing: Bool = false, forClass: JHSchoolClass? = nil) {
         //Instantiate and display popup for creating/editing a class
         let storyBoard = UIStoryboard(name: "Main", bundle: nil)
@@ -299,36 +320,34 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         }
     }
     
+    /**
+        Loads the JHSchedule model from defaults
+    */
     private func loadSchedule() {
         //Loads classes from defaults
         let data = defaults.object(forKey: "schedule") as! Data
         schedule = NSKeyedUnarchiver.unarchiveObject(with: data) as? JHSchedule
     }
     
+    /**
+        Saves the JHSchedule model to defaults
+    */
     private func saveSchedule() {
         //Save classes from defaults
         let data: Data = NSKeyedArchiver.archivedData(withRootObject: schedule!)
         defaults.set(data, forKey: "schedule")
     }
     
+    
     // MARK: - Popover
     
-    @objc private func addButtonSelected() {
-        //Add button selected in nav bar
-        displayClassCreationPopup()
-    }
     
     internal func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
         //Gives the view controller to be displayed in the popover view contorller
         let navigationController = UINavigationController(rootViewController: controller.presentedViewController)
-        let btnDone = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(MainTableViewController.dismissView))
+        let btnDone = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(MainTableViewController.dismissClassPopoverView))
         navigationController.topViewController?.navigationItem.rightBarButtonItem = btnDone
         return navigationController
-    }
-    
-    @objc internal func dismissView() {
-        //Called from presentationController:controller:viewControllerForAdaptivePresentationStyle
-        self.dismiss(animated: true, completion: nil)
     }
     
     internal func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
@@ -336,10 +355,30 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         return UIModalPresentationStyle.none
     }
     
+    /**
+     Ran when add button in rightBarButton is clicked - Displays class add popup
+     */
+    @objc private func addButtonSelected() {
+        //Add button selected in nav bar
+        displayClassCreationPopup()
+    }
+    
+    /**
+        Dismisses popover
+    */
+    @objc internal func dismissClassPopoverView() {
+        //Called from presentationController:controller:viewControllerForAdaptivePresentationStyle
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    
     // MARK: - Data functions
     
+    
+    /**
+        Sets up UI elements of app
+    */
     private func setUp() {
-        //General code to set up app when launched
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add, target: self, action: #selector(addButtonSelected))
         
@@ -350,17 +389,22 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         
     }
     
+    /**
+        Setts up modal elements of app
+    */
     private func getData() {
-        //Gets data, either from JSON or NSUserDefaults depending on launch
         let launchedBefore = defaults.bool(forKey: "launchedBefore")
-        
         if !launchedBefore || forceLoadData == true {
             //First Launch
             defaults.set(true, forKey: "launchedBefore")
             print("First Launch")
             defaults.set(true, forKey: "notificationsEnabled")
-            parseScheduleJSON()
-            setUpNotifications()
+            if let classes = parseScheduleJSON() {
+                schedule = JHSchedule(classes: classes)
+            } else {
+                schedule = JHSchedule(classes: [])
+            }
+            setUpNotifications(forDates: schedule.classEndTimes())
         } else {
             //Not first launch
             loadSchedule()
@@ -370,14 +414,13 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         loadTasksFromNotification()
     }
     
-    private func refreshData() {
-        //Refreshs classes
-        schedule.sortClassesByStartTime()
-    }
-    
-    private func loadJSON(fromFile file: String, ofType type: String) -> JSON? {
-        //Loads the school scheduele JSON containing class info from the main bundle
-        if let path = Bundle.main.path(forResource: file, ofType: type) {
+    /**
+        Loads classes from a JSON in app bundle
+        - parameter file: Name of sile to be loaded(excluding file type)
+        - returns: JSON object
+    */
+    private func loadJSON(fromFile file: String) -> JSON? {
+        if let path = Bundle.main.path(forResource: file, ofType: "json") {
             do {
                 let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .alwaysMapped)
                 let jsonObj = JSON(data: data)
@@ -395,10 +438,13 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         return nil
     }
     
-    private func parseScheduleJSON() {
-        //Parses JSON of school classes in the app bundle
+    /**
+        Parses a json names Classes.json in the main app bundle
+        - returns: An array of the classes parsed from the JSON, nil if JSON error
+    */
+    private func parseScheduleJSON() -> [JHSchoolClass]? {
         //Used for easy adding of classes -- Wont be used in final user version
-        if let json = loadJSON(fromFile: "Classes", ofType: "json") {
+        if let json = loadJSON(fromFile: "Classes") {
             var classes = [JHSchoolClass]()
             for item in json["Classes"].arrayValue {
                 if let name = item["name"].string {
@@ -409,8 +455,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
                                 let endDate: Date = dateFromString(time: endTime)
                                 let c = JHSchoolClass(name: name, startDate: startDate, endDate: endDate, day: day)
                                 classes.append(c)
-                                schedule = JHSchedule(classes: classes)
-                                saveSchedule()
+                                return classes
                             } else {
                                 print("Error parsing JSON")
                             }
@@ -427,10 +472,19 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         } else {
             print("JSON not parsed properly")
         }
+        return nil
     }
 
+    
     // MARK: - Helper Functions
     
+    
+    /**
+        Creates a string from a given string and an apended date
+        - parameter string: String for body
+        - parameter date: Date to be added to string
+        - returns: String in the format of string.weekday.04:56
+    */
     private func stringByAppendingDateAndTime(string: String, date: Date) -> String! {
         //Notificatin ids must be unique so I add the dates and times for id
         let formatter = DateFormatter()
@@ -440,21 +494,10 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         return string + "." + String(weekDay) + "." + timeString
     }
     
-    private func getTotalTimeToComplete() -> (Int, Int) {
-        var totalHours = 0
-        var totalMinutes = 0
-        for c in schedule.classes! {
-            let (hour, minute) = c.timeToCompleteTasks()
-            totalHours += hour
-            totalMinutes += minute
-        }
-        while totalMinutes >= 60 {
-            totalMinutes = totalMinutes - 60
-            totalHours += 1
-        }
-        return (totalHours, totalMinutes)
-    }
-    
+    /**
+        Finds units for gives hours
+        - returns: Untits for given hours
+    */
     private func getUnitsStringForHours(hours: Int) -> String {
         if hours == 1 {
             return "Hour"
@@ -463,6 +506,10 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         }
     }
     
+    /**
+     Finds units for gives minutes
+     - returns: Untits for given minutes
+     */
     private func getUnitsStringForMinutes(minutes: Int) -> String {
         if minutes == 1 {
             return "Minute"
@@ -471,15 +518,27 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         }
     }
     
+    
     // MARK:- Misc
     
 
+    /**
+        Called when popover view finished editing
+    */
     internal func didFinishEditing() {
-         //Finished editing a class
-        getData()
-        tableView.reloadData()
+        reloadTable()
     }
     
+    /**
+        New class added - Reload table
+    */
+    func didAddNewClass() {
+        reloadTable()
+    }
+    
+    /**
+        Toggles if notifications are enabled
+    */
     @objc private func navBarLongPress(sender: UILongPressGestureRecognizer) {
         feedBackGenerator = UISelectionFeedbackGenerator()
         feedBackGenerator?.prepare()
@@ -489,7 +548,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             var message = ""
             if notificationsEnabled == true {
                 message = "Enabled"
-                setUpNotifications()
+                setUpNotifications(forDates: schedule.classEndTimes())
             } else {
                 center.removeAllPendingNotificationRequests()
                 message = "Disabled"
