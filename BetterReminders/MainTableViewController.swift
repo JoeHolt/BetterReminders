@@ -60,6 +60,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     func willEnterForeground() {
         print(myAppDelegate.tasksToAdd)
         loadTasksFromNotification()
+        tableView.reloadData()
     }
     
     // MARK: - TableView methods
@@ -81,7 +82,6 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             let (hour,minute) = classGivenIndexPath(indexPath: indexPath).timeToCompleteTasks()
             cell.detailTextLabel?.text = "\(outputFormatter.string(from: c.startDate))-\(outputFormatter.string(from: c.endDate)) - \(timeStringFromHoursAndMinutes(hours: hour, minutes: minute))"
             cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
-            registerForPreviewing(with: cell as! UIViewControllerPreviewingDelegate, sourceView: cell.contentView)
             return cell
         }
     }
@@ -219,7 +219,12 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             let navVC = UINavigationController(rootViewController: vc)
             navVC.title = "\(vc.clas.name)"
             
-            return navVC
+            if indexPath.section == 0 {
+                return nil
+            } else {
+                return navVC
+            }
+            
         }
         return nil
     }
