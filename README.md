@@ -2,6 +2,8 @@
 A simple reminders app with advanced features
 
 This app is meant for school students on multi day schedueles(A day/B day/C day etc.)
+
+Requires iOS 10
 ## Swift 3
 This app has been written in scratch from the ground up using Swift 3.0
 
@@ -46,8 +48,12 @@ When creating this app I had two main goals in mind: Create an app that reminds 
   - Parsed notification string turns into task for the given class with the given attributes
 - Given a file "Classes.json", in the correct format, the user can load classes from a json if compiling from source for easy and quick adding of classes
 - 3D Touch Peek and Pop Support
+- Full support for iPhone 7+
+- Large focus on clean code and stability
 ## TODO
 - Dark mode UI
 - Add multiple tasks via a single notification
 - Add task view mode that shows only completed reminders
 - Add reminders reminding user to complete task near due date
+- Add support for all other iOS 10 iPhones
+- Imporve optional checking
