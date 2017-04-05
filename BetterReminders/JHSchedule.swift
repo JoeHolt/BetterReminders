@@ -21,7 +21,7 @@ class JHSchedule: NSObject, NSCoding {
     }
     
     internal func encode(with aCoder: NSCoder) {
-        aCoder.encode(classes)
+        aCoder.encode(classes, forKey: "classes")
     }
     
     private func classEndDates() -> [Date] {
