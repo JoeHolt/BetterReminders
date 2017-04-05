@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6911480D1E95534100BB7193 /* JHSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6911480C1E95534100BB7193 /* JHSchedule.swift */; };
 		693484591E89C30100493CE2 /* JHSchoolClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693484581E89C30100493CE2 /* JHSchoolClass.swift */; };
 		6934845C1E89C9F500493CE2 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6934845B1E89C9F500493CE2 /* SwiftyJSON.swift */; };
 		6934845E1E89CD3E00493CE2 /* TestJSON.json in Resources */ = {isa = PBXBuildFile; fileRef = 6934845D1E89CD3E00493CE2 /* TestJSON.json */; };
@@ -36,6 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6911480C1E95534100BB7193 /* JHSchedule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JHSchedule.swift; sourceTree = "<group>"; };
 		693484581E89C30100493CE2 /* JHSchoolClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JHSchoolClass.swift; sourceTree = "<group>"; };
 		6934845B1E89C9F500493CE2 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 		6934845D1E89CD3E00493CE2 /* TestJSON.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = TestJSON.json; sourceTree = "<group>"; };
@@ -101,6 +103,7 @@
 				695C49A51E8F30C70094F3B1 /* ClassPopoverVC.swift */,
 				693484661E8B5B1700493CE2 /* TaskVC.swift */,
 				69D6CDEF1E92021100594A9D /* TaskPopoverVC.swift */,
+				6911480C1E95534100BB7193 /* JHSchedule.swift */,
 				693484581E89C30100493CE2 /* JHSchoolClass.swift */,
 				695C499B1E8B60970094F3B1 /* JHTask.swift */,
 				693484601E89D9FB00493CE2 /* JHHelper.swift */,
@@ -234,6 +237,7 @@
 			files = (
 				696BA2861E6663550002E84D /* MainTableViewController.swift in Sources */,
 				693484591E89C30100493CE2 /* JHSchoolClass.swift in Sources */,
+				6911480D1E95534100BB7193 /* JHSchedule.swift in Sources */,
 				695C499C1E8B60970094F3B1 /* JHTask.swift in Sources */,
 				693484611E89D9FB00493CE2 /* JHHelper.swift in Sources */,
 				696BA2841E6663550002E84D /* AppDelegate.swift in Sources */,

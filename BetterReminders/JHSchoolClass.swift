@@ -11,7 +11,7 @@ import Foundation
 @objc(JHSchoolClass)
 class JHSchoolClass: NSObject, NSCoding {
     
-    // Class
+    // MARK: - Properties
     
     var name: String!
     var startDate: Date!
@@ -24,6 +24,8 @@ class JHSchoolClass: NSObject, NSCoding {
     override var description: String {
         return name
     }
+    
+    // MARK: - Init functions
     
     init(name: String, startDate: Date, endDate: Date, day: String, notify: Bool = true) {
         self.name = name
@@ -58,6 +60,8 @@ class JHSchoolClass: NSObject, NSCoding {
         coder.encode(id, forKey: "notifyAtEnd")
     }
     
+    // MARK: - Time functinos
+    
     func timeToCompleteTasks() -> (Int, Int) {
         //Returns time to finish tasks in (hour, minute) format
         var hours = 0
@@ -75,6 +79,8 @@ class JHSchoolClass: NSObject, NSCoding {
         }
         return (hours, minutes)
     }
+    
+    // MARK: - Task functinos
     
     func markAllTasksCompleted() {
         for task in tasks {

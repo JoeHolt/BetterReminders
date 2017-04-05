@@ -15,7 +15,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     // MARK - Properties
     
     let defaults = UserDefaults.standard
-    var classes: [JHSchoolClass]?
+    var schedule: JHSchedule!
     var classesByDay: [String: [JHSchoolClass]]!
     var forceLoadData: Bool = false
     var notificationsEnabled: Bool!
@@ -176,7 +176,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
                         //dateC.hour =
                         //dateC.minute = 14
                         //let date = Calendar.current.date(from: dateC)
-                        let dates: [Date] = self.getClassEndDatesForWeek()
+                        let dates: [Date] = self.getClassEndDates()
                         self.registerHomeWorkNotifications(forDates: dates)
                     }
                 }
@@ -187,7 +187,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     func loadTasksFromNotification() {
         //Get data from tasks that are needed
         tasksToAdd = myAppDelegate.tasksToAdd
-        saveClasses()
+        saveSchedule()
         myAppDelegate.tasksToAdd = []
     }
     
@@ -196,7 +196,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         if let tasksToAdd = tasksToAdd {
             for group in tasksToAdd {
                 for key in group.keys {
-                    for clas in classes! {
+                    for clas in schedule.classes {
                         if clas.name == key {
                             print("Added task \(group[key]?.name) to \(key)")
                             clas.addTask(task: group[key]!)
@@ -241,7 +241,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     // MARK: - School Class Methods
     
-    func getClassEndDatesForWeek() -> [Date] {
+    func getClassEndDates() -> [Date] {
         //Returns the endtimes of each class for each work day
         var classEndDatesForWeek = [Date]()
         let endTimes = getEndTimes()
@@ -273,14 +273,14 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             //Finds the class in classesByDay structure then deletes in from classes array, could be redone for betterr reading and efficency
             let clas = self.classGivenIndexPath(indexPath: indexPath)
             var i = 0
-            for c in self.classes! {
+            for c in self.schedule.classes {
                 if c == clas {
-                    self.classes?.remove(at: i)
+                    self.schedule.classes?.remove(at: i)
                     break
                 }
                 i += 1
             }
-            self.saveClasses()
+            self.saveSchedule()
             self.refreshData()
             self.tableView.reloadData()
         }))
@@ -297,7 +297,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     func getEndTimes() -> [Date] {
         //Returns an array of the end times
         var endTimes = [Date]()
-        for c in classes! {
+        for c in schedule.classes! {
             if !endTimes.contains(c.endDate) {
                 endTimes.append(c.endDate)
             }
@@ -349,16 +349,16 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     }
     
     
-    func loadClasses() {
+    func loadSchedule() {
         //Loads classes from defaults
-        let data = defaults.object(forKey: "classes") as! Data
-        classes = NSKeyedUnarchiver.unarchiveObject(with: data) as? [JHSchoolClass]
+        let data = defaults.object(forKey: "schedule") as! Data
+        schedule = NSKeyedUnarchiver.unarchiveObject(with: data) as? JHSchedule
     }
     
-    func saveClasses() {
+    func saveSchedule() {
         //Save classes from defaults
-        let data: Data = NSKeyedArchiver.archivedData(withRootObject: classes!)
-        defaults.set(data, forKey: "classes")
+        let data: Data = NSKeyedArchiver.archivedData(withRootObject: schedule!)
+        defaults.set(data, forKey: "schedule")
     }
     
     func classGivenIndexPath(indexPath: IndexPath) -> JHSchoolClass {
@@ -420,18 +420,18 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             setUpNotifications()
         } else {
             //Not first launch
-            loadClasses()
+            loadSchedule()
         }
-        classes = sortClassesByStartTime(classes: classes!)
-        classesByDay = sortClassesByDay(classes: classes!)
+        schedule.classes = sortClassesByStartTime(classes: schedule.classes!)
+        classesByDay = sortClassesByDay(classes: schedule.classes!)
         notificationsEnabled = defaults.object(forKey: "notificationsEnabled") as! Bool
         loadTasksFromNotification()
     }
     
     func refreshData() {
         //Refreshs classes
-        classes = sortClassesByStartTime(classes: classes!)
-        classesByDay = sortClassesByDay(classes: classes!)
+        schedule.classes = sortClassesByStartTime(classes: schedule.classes!)
+        classesByDay = sortClassesByDay(classes: schedule.classes!)
     }
     
     func loadJSON(fromFile file: String, ofType type: String) -> JSON? {
@@ -458,7 +458,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         //Parses JSON of school classes in the app bundle
         //Used for easy adding of classes -- Wont be used in final user version
         if let json = loadJSON(fromFile: "Classes", ofType: "json") {
-            classes = [JHSchoolClass]()
+            var classes = [JHSchoolClass]()
             for item in json["Classes"].arrayValue {
                 if let name = item["name"].string {
                     if let day = item["day"].string {
@@ -467,8 +467,9 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
                                 let startDate: Date = dateFromString(time: startTime)
                                 let endDate: Date = dateFromString(time: endTime)
                                 let c = JHSchoolClass(name: name, startDate: startDate, endDate: endDate, day: day)
-                                classes!.append(c)
-                                saveClasses()
+                                classes.append(c)
+                                schedule = JHSchedule(classes: classes)
+                                saveSchedule()
                             } else {
                                 print("Error parsing JSON")
                             }
@@ -506,7 +507,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     func getTotalTimeToComplete() -> (Int, Int) {
         var totalHours = 0
         var totalMinutes = 0
-        for c in classes! {
+        for c in schedule.classes! {
             let (hour, minute) = c.timeToCompleteTasks()
             totalHours += hour
             totalMinutes += minute
@@ -572,7 +573,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         let nextVC = segue.destination as! TaskVC
         let indexPath = tableView.indexPathForSelectedRow
         nextVC.clas = classGivenIndexPath(indexPath: indexPath!)
-        nextVC.classes = classes
+        nextVC.classes = schedule.classes
     }
     
 }
