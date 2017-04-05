@@ -26,8 +26,9 @@
       "scale" : "2x"
     },
     {
-      "idiom" : "iphone",
       "size" : "40x40",
+      "idiom" : "iphone",
+      "filename" : "MetroVib120x120.png",
       "scale" : "3x"
     },
     {
@@ -36,9 +37,61 @@
       "scale" : "2x"
     },
     {
-      "idiom" : "iphone",
       "size" : "60x60",
+      "idiom" : "iphone",
+      "filename" : "MetroVib180x180.png",
       "scale" : "3x"
+    },
+    {
+      "idiom" : "mac",
+      "size" : "16x16",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "mac",
+      "size" : "16x16",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "mac",
+      "size" : "32x32",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "mac",
+      "size" : "32x32",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "mac",
+      "size" : "128x128",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "mac",
+      "size" : "128x128",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "mac",
+      "size" : "256x256",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "mac",
+      "size" : "256x256",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "mac",
+      "size" : "512x512",
+      "scale" : "1x"
+    },
+    {
+      "size" : "512x512",
+      "idiom" : "mac",
+      "filename" : "MetroVib1024x1024.png",
+      "scale" : "2x"
     }
   ],
   "info" : {
