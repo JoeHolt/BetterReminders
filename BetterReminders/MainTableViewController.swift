@@ -25,7 +25,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     private  var feedBackGenerator: UISelectionFeedbackGenerator?
     internal var tasksToAdd: [[String: JHTask]]? {
         didSet {
-            addNotificationTasks()
+            loadTasksToAdd()
         }
     }
     
@@ -205,14 +205,23 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         })
     }
     
-    // TODO: - Mix the follorwinf classes or rewirok them
-    
     /**
-        Adds tasks that were created from notificatonis
+        Saves tasks that were created from notifications
     */
     private func loadTasksFromNotification(reload: Bool) {
-        //Add tasks that were requested by notifications
         tasksToAdd = myAppDelegate.tasksToAdd
+        if reload {
+            reloadTable()
+        } else {
+            saveSchedule()
+        }
+        myAppDelegate.tasksToAdd = []
+    }
+    
+    /**
+        Adds tasks that were created from taskToAdd property
+    */
+    private func loadTasksToAdd() {
         if let tasksToAdd = tasksToAdd {
             for group in tasksToAdd {
                 for key in group.keys {
@@ -228,12 +237,6 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
                 }
             }
         }
-        if reload {
-            reloadTable()
-        } else {
-            saveSchedule()
-        }
-        myAppDelegate.tasksToAdd = []
     }
     
     
@@ -320,7 +323,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     }
     
     /**
-        Displaysa popover controller that allows for the adding or editing of classes
+        Displays a popover controller that allows for the adding or editing of classes
         - parameter editing: Bool that shows tells if popover is used editing
         - parameter forClass: Class that will be edited
     */
@@ -337,9 +340,9 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             presentationController.delegate = self
             presentationController.permittedArrowDirections = UIPopoverArrowDirection(rawValue: 0)
             presentationController.sourceView = self.view
-            let width = self.view.bounds.width - 30
-            let height = UIScreen.main.bounds.height - 150
-            presentationController.sourceRect = CGRect(x: (self.view.bounds.width - width)/2, y: 0.0, width: width, height: height - 300)
+            let width = self.view.bounds.width
+            let height = UIScreen.main.bounds.height
+            presentationController.sourceRect = CGRect(x: (self.view.bounds.width - width)/2, y: 0.0, width: width, height: height - 150)
             self.present(nav, animated: true, completion: nil)
         }
     }

@@ -236,9 +236,9 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
             presentationController.delegate = self
             presentationController.permittedArrowDirections = UIPopoverArrowDirection(rawValue: 0)
             presentationController.sourceView = self.view
-            let width = self.view.bounds.width - 30
-            let height = UIScreen.main.bounds.height - 150
-            presentationController.sourceRect = CGRect(x: (self.view.bounds.width - width)/2, y: 0.0, width: width, height: height - 300)
+            let width = self.view.bounds.width
+            let height = UIScreen.main.bounds.height
+            presentationController.sourceRect = CGRect(x: (self.view.bounds.width - width)/2, y: 0.0, width: width, height: height - 150)
             self.present(nav, animated: true, completion: nil)
         }
     }

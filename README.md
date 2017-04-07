@@ -48,12 +48,11 @@ When creating this app I had two main goals in mind: Create an app that reminds 
   - Parsed notification string turns into task for the given class with the given attributes
 - Given a file "Classes.json", in the correct format, the user can load classes from a json if compiling from source for easy and quick adding of classes
 - 3D Touch Peek and Pop Support
-- Full support for iPhone 7+
+- Full support for all iOS 10 devices
 - Large focus on clean code and stability
 ## TODO
 - Dark mode UI
 - Add multiple tasks via a single notification
 - Add task view mode that shows only completed reminders
 - Add reminders reminding user to complete task near due date
-- Add support for all other iOS 10 iPhones
 - Imporve optional checking

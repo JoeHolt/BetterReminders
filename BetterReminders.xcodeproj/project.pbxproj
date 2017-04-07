@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		6911480D1E95534100BB7193 /* JHSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6911480C1E95534100BB7193 /* JHSchedule.swift */; };
 		69205EE01E9722A300AFADC5 /* License.txt in Resources */ = {isa = PBXBuildFile; fileRef = 69205EDE1E9722A300AFADC5 /* License.txt */; };
-		69205EE11E9722A300AFADC5 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 69205EDF1E9722A300AFADC5 /* README.md */; };
+		69205EE11E9722A300AFADC5 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 69205EDF1E9722A300AFADC5 /* README.md */; };
 		693484591E89C30100493CE2 /* JHSchoolClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693484581E89C30100493CE2 /* JHSchoolClass.swift */; };
 		6934845C1E89C9F500493CE2 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6934845B1E89C9F500493CE2 /* SwiftyJSON.swift */; };
 		6934845E1E89CD3E00493CE2 /* TestJSON.json in Resources */ = {isa = PBXBuildFile; fileRef = 6934845D1E89CD3E00493CE2 /* TestJSON.json */; };
@@ -218,6 +218,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69205EE11E9722A300AFADC5 /* README.md in Resources */,
 				696BA28E1E6663560002E84D /* LaunchScreen.storyboard in Resources */,
 				696BA28B1E6663560002E84D /* Assets.xcassets in Resources */,
 				69205EE01E9722A300AFADC5 /* License.txt in Resources */,
@@ -251,7 +252,6 @@
 				6934845C1E89C9F500493CE2 /* SwiftyJSON.swift in Sources */,
 				695C49A61E8F30C70094F3B1 /* ClassPopoverVC.swift in Sources */,
 				693484671E8B5B1700493CE2 /* TaskVC.swift in Sources */,
-				69205EE11E9722A300AFADC5 /* README.md in Sources */,
 				69D6CDF01E92021100594A9D /* TaskPopoverVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
