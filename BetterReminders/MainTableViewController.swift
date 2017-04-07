@@ -319,7 +319,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     internal func reloadTable() {
         //saveSchedule()
         getData()
-        tableView.reloadData()
+        UIView.transition(with: tableView, duration: 1.0, options: .transitionCrossDissolve, animations: {self.tableView.reloadData()}, completion: nil)
     }
     
     /**

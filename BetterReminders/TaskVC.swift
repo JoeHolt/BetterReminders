@@ -8,6 +8,57 @@
 
 import UIKit
 
+extension UITableView {
+    
+    /**
+        Returns an array of UITableView cells in a given section
+        - parameter section: Section of cells
+        - returns: Array of cells in section, nil if invalid section
+    */
+    func cellsForSection(section: Int) -> [UITableViewCell]? {
+        
+        if section > numberOfSections - 1 {
+            //Invalid section (out of range)
+            return nil
+        }
+        
+        var cells = [UITableViewCell]()
+        var row: Int = 0
+        while row < numberOfRows(inSection: section) {
+            if let cell = cellForRow(at: IndexPath(row: row, section: section)) {
+                cells.append(cell)
+            }
+            row += 1
+        }
+        
+        return cells
+    }
+    
+    
+    /**
+        Returns an array containing indexPaths of all cells in section
+        - parameter section: Section of requested index paths
+        - returns: Array of wanted index paths, nil if invalid section
+    */
+    func indexPathsForSection(section: Int) -> [IndexPath]? {
+        if section > numberOfSections - 1 {
+            //Invalid section (out of range)
+            return nil
+        }
+        
+        var indexPaths = [IndexPath]()
+        var row: Int = 0
+        while row < numberOfRows(inSection: section) {
+            if let _ = cellForRow(at: IndexPath(row: row, section: section)) {
+                indexPaths.append(IndexPath(row: row, section: section))
+            }
+            row += 1
+        }
+        
+        return indexPaths
+    }
+}
+
 enum TaskViewType: String {
     case NotCompleted = "Not Completed"
     case Completed = "Completed"
@@ -168,7 +219,8 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         //Reloads and saves tasks
         saveSchedule()
         loadTasks()
-        tableView.reloadData()
+        UIView.transition(with: tableView, duration: 1.0, options: .transitionCrossDissolve, animations: {self.tableView.reloadData()}, completion: nil)
+
     }
     
     /**
