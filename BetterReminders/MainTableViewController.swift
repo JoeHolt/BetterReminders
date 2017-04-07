@@ -18,7 +18,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     internal let defaults = UserDefaults.standard
     internal var schedule: JHSchedule!
-    internal var forceLoadData: Bool = true
+    internal var forceLoadData: Bool = false
     internal var notificationsEnabled: Bool!
     private  var center = UNUserNotificationCenter.current()
     private  var myAppDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -39,7 +39,9 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         title = "Schedule"
         
         NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: .UIApplicationWillEnterForeground, object: nil)
-        registerForPreviewing(with: self, sourceView: view)
+        if self.view.traitCollection.forceTouchCapability == UIForceTouchCapability.available {
+            registerForPreviewing(with: self, sourceView: view)
+        }
         getData()
         setUp()
 
