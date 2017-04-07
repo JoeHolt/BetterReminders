@@ -206,24 +206,13 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     }
     
     // TODO: - Mix the follorwinf classes or rewirok them
-    /**
-        Saves tasks that were created from notifications
-    */
-    private func loadTasksFromNotification(reload: Bool) {
-        tasksToAdd = myAppDelegate.tasksToAdd
-        if reload {
-            reloadTable()
-        } else {
-            saveSchedule()
-        }
-        myAppDelegate.tasksToAdd = []
-    }
     
     /**
         Adds tasks that were created from notificatonis
     */
-    private func addNotificationTasks() {
+    private func loadTasksFromNotification(reload: Bool) {
         //Add tasks that were requested by notifications
+        tasksToAdd = myAppDelegate.tasksToAdd
         if let tasksToAdd = tasksToAdd {
             for group in tasksToAdd {
                 for key in group.keys {
@@ -239,6 +228,12 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
                 }
             }
         }
+        if reload {
+            reloadTable()
+        } else {
+            saveSchedule()
+        }
+        myAppDelegate.tasksToAdd = []
     }
     
     
