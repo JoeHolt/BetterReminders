@@ -26,6 +26,7 @@ When creating this app I had two main goals in mind: Create an app that reminds 
 - Multiple task view modes
   - Show all tasks
   - Show uncompleted tasks
+  - Show completed tasks
 - Classes ordered by school day and by start time
 - Ability to mark all tasks for a given class done in a single tap
 - Estimated time to complete
@@ -52,7 +53,6 @@ When creating this app I had two main goals in mind: Create an app that reminds 
 - Large focus on clean code and stability
 ## TODO
 - Dark mode UI
-- Add multiple tasks via a single notification
-- Add task view mode that shows only completed reminders
+- Quick add tasks
 - Add reminders reminding user to complete task near due date
 - Imporve optional checking

@@ -8,9 +8,10 @@
 
 import UIKit
 
-enum TaskViewType {
-    case NotCompleted
-    case All
+enum TaskViewType: String {
+    case NotCompleted = "Not Completed"
+    case Completed = "Completed"
+    case All = "All"
 }
 
 class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate {
@@ -21,7 +22,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     
     var schedule: JHSchedule!
     var clas: JHSchoolClass!
-    var incompletedTasks: [JHTask]!
+    var displayTasks: [JHTask]!
     var displayType: TaskViewType = .NotCompleted
     var feedbackGenerator: UISelectionFeedbackGenerator?
     
@@ -53,7 +54,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
             return 1
         } else {
             //Tasks
-            return clas.tasks.count
+            return displayTasks.count
         }
     }
 
@@ -68,7 +69,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
             return cell!
         } else {
             //Tasks
-            let task = clas.tasks[indexPath.row]
+            let task = displayTasks[indexPath.row]
             let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "taskCell")
             cell.textLabel?.text = task.name
             let outputFormatter = DateFormatter()
@@ -110,12 +111,8 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if indexPath.section == 0 {
-            //Time left
-                
-                
-        } else {
-            let task = clas.tasks[indexPath.row]
+        if indexPath.section != 0 {
+            let task = displayTasks[indexPath.row]
             task.completed = !task.completed
             let cell = tableView.cellForRow(at: indexPath)
             if cell?.accessoryType == UITableViewCellAccessoryType.none {
@@ -124,11 +121,12 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
                 cell?.accessoryType = UITableViewCellAccessoryType.none
             }
         }
+        updateTimeLeft()
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if section == 1 {
-            return "Tasks"
+            return "Tasks - \(displayType.rawValue)"
         } else {
             return "Estimated Time Left"
         }
@@ -200,19 +198,17 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         Sets tasks depending on if displayMode
      */
     private func loadTasks() {
-        //Get array of incompleted tasks
-        incompletedTasks = [JHTask]()
-        for t in clas.tasks {
-            if !t.completed {
-                incompletedTasks.append(t)
-            }
-        }
+        
         //Get tasks to be displayed
-        if displayType == .NotCompleted {
-            clas.tasks = incompletedTasks
-        } else {
-            clas.tasks = clas.tasks
+        switch displayType {
+        case .NotCompleted:
+            displayTasks = clas.uncompletedTasks()
+        case .Completed:
+            displayTasks = clas.completedTasks()
+        default:
+            displayTasks = clas.tasks
         }
+
     }
     
     
@@ -294,7 +290,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     }
     
     
-    // MARK: - Misc
+    // MARK: - Display type
     
     
     /**
@@ -317,12 +313,23 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     */
     private func changeDisplayType() {
         //Changes display type of classes displayed
-        if displayType == .NotCompleted {
+        switch displayType {
+        case .NotCompleted:
+            displayType = .Completed
+        case .Completed:
             displayType = .All
-        } else {
+        default:
             displayType = .NotCompleted
         }
+        print(displayType.rawValue)
         reloadTasks()
+    }
+    
+    /**
+        Updates timeLeft ui
+    */
+    func updateTimeLeft() {
+        tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
     }
     
     /**

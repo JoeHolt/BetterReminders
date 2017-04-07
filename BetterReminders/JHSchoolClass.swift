@@ -94,6 +94,35 @@ class JHSchoolClass: NSObject, NSCoding {
     
     
     /**
+        Returns array of uncompleted tasks
+        - returns: array of uncompleted tasks
+    */
+    internal func uncompletedTasks() -> [JHTask] {
+        var uTasks = [JHTask]()
+        for task in tasks {
+            if task.completed == false {
+                uTasks.append(task)
+            }
+        }
+        return uTasks
+    }
+    
+    /**
+     Returns array of completed tasks
+     - returns: array of completed tasks
+     */
+    internal func completedTasks() -> [JHTask] {
+        var uTasks = [JHTask]()
+        for task in tasks {
+            if task.completed == true {
+                uTasks.append(task)
+            }
+        }
+        return uTasks
+    }
+    
+    
+    /**
         Marks all tasks in class completed
     */
     internal func markAllTasksCompleted() {
