@@ -96,7 +96,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
                 let outputFormatter = DateFormatter()
                 outputFormatter.dateFormat = "hh:mm a"
                 let (hour,minute) = schedule.classGivenIndexPath(indexPath: indexPath).timeToCompleteTasks()
-                detailLabel.text = "\(outputFormatter.string(from: c.startDate))-\(outputFormatter.string(from: c.endDate)) \t \(timeStringFromHoursAndMinutes(hours: hour, minutes: minute)) \t \(c.tasks.count)"
+                detailLabel.text = "\(outputFormatter.string(from: c.startDate))-\(outputFormatter.string(from: c.endDate)) \t \(timeStringFromHoursAndMinutes(hours: hour, minutes: minute)) \t \(c.completedTasks().count)"
             }
             cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
             return cell

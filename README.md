@@ -16,6 +16,11 @@ When creating this app I had two main goals in mind: Create an app that reminds 
   - Start Time
   - End Time
   - School Day
+- Classes displayed as list displaying:
+  - Start time
+  - End time
+  - Total time to complete all tasks for class
+  - Number of tasks
 - Add "tasks" for each school class, tasks have the following attributes:
   - Name
   - Due Date
@@ -49,6 +54,7 @@ When creating this app I had two main goals in mind: Create an app that reminds 
     - `name`
   - Notification body contains arguments and how to use them so as not to confuse the user
   - Parsed notification string turns into task for the given class with the given attributes
+  - Option to notify user for a certain task at a certain date 
 - Given a file "Classes.json", in the correct format, the user can load classes from a json if compiling from source for easy and quick adding of classes
 - 3D Touch Peek and Pop Support
 - Full support for all iOS 10 devices
