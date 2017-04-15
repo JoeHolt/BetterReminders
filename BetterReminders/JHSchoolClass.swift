@@ -77,12 +77,14 @@ class JHSchoolClass: NSObject, NSCoding {
         var minutes = 0
         for t in tasks {
             if t.completed == false {
-                let tComps = Calendar.current.dateComponents(in: .current, from: t.estimatedTimeToComplete)
-                hours += tComps.hour!
-                minutes += tComps.minute!
-                while minutes >= 60 {
-                    minutes = minutes - 60
-                    hours += 1
+                if let ttc = t.estimatedTimeToComplete {
+                    let tComps = Calendar.current.dateComponents(in: .current, from: ttc)
+                    hours += tComps.hour!
+                    minutes += tComps.minute!
+                    while minutes >= 60 {
+                        minutes = minutes - 60
+                        hours += 1
+                    }
                 }
             }
         }

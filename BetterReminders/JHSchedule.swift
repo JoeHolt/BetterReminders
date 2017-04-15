@@ -83,9 +83,10 @@ class JHSchedule: NSObject, NSCoding {
     
     /**
         Sorts classes by start time
+        - returns: An array of the classes sorted by day
     */
-    internal func sortClassesByStartTime() {
-        classes = classes.sorted(by: { $0.startDate.compare($1.startDate) == .orderedAscending })
+    internal func sortClassesByStartTime() -> [JHSchoolClass] {
+        return classes.sorted(by: { $0.startDate.compare($1.startDate) == .orderedAscending })
     }
     
     /**
@@ -126,6 +127,31 @@ class JHSchedule: NSObject, NSCoding {
             totalHours += 1
         }
         return (totalHours, totalMinutes)
+    }
+    
+    /**
+        Saves a task for a given class index
+        - parameter task: Task to save
+        - parameter index: Class to be saved
+    */
+    internal func saveTaskForClass(task: JHTask, class c: JHTask){
+        for clas in classes {
+            if clas.id == c.id {
+                var index = 0
+                for t in clas.tasks {
+                    if t.id == task.id {
+                        //save task
+                        clas.tasks[index] = task
+                        break
+                    }
+                    index += 1
+                }
+                //Class doesnt have a task with taht id so add a new one
+                if index == 0 {
+                    clas.tasks.append(task)
+                }
+            }
+        }
     }
     
 

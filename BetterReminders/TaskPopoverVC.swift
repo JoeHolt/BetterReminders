@@ -47,8 +47,16 @@ class TaskPopoverVC: UITableViewController {
         if forEditing == true {
             if let task = forTask {
                 taskNameTF.text = task.name
-                timeToFinishDP.date = task.estimatedTimeToComplete
-                dueDateDP.date = task.dueDate
+                if let TTC = task.estimatedTimeToComplete {
+                    timeToFinishDP.date = TTC
+                } else {
+                    timeToFinishDP.date = Date()
+                }
+                if let date = task.dueDate {
+                    dueDateDP.date = date
+                } else {
+                    dueDateDP.date = Date()
+                }
             }
         }
     }

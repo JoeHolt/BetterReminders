@@ -65,7 +65,7 @@ enum TaskViewType: String {
     case All = "All"
 }
 
-class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate {
+class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate, UITextFieldDelegate {
     
     
     // MARK: - Properties
@@ -76,6 +76,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     var displayTasks: [JHTask]!
     var displayType: TaskViewType = .NotCompleted
     var feedbackGenerator: UISelectionFeedbackGenerator?
+    var quickAddTextField: UITextField?
     
     
     // MARK: - View Methods
@@ -94,19 +95,24 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
 
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 2    //Task section and time left sectoin
+        //  1 - Time left
+        //  2 - Tasks
+        return 2
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        if section == 0 {
-            //Total time left
+        
+        switch section {
+        case 0:
+            // Time remaining
             return 1
-        } else {
+        case 1:
             //Tasks
-            return displayTasks.count
+            return displayTasks.count + 1 //THe one extra is the quick add view
+        default:
+            return 0
         }
+        
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -118,15 +124,28 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
             cell?.selectionStyle = .none
             cell?.isUserInteractionEnabled = false
             return cell!
+        } else if indexPath.section == 1 && indexPath.row == displayTasks.count {
+            //Quick add view
+            let cell = tableView.dequeueReusableCell(withIdentifier: "quickAddCell")
+            let textField = cell?.viewWithTag(5) as! UITextField
+            textField.delegate = self
+            textField.text = ""
+            return cell!
         } else {
             //Tasks
             let task = displayTasks[indexPath.row]
             let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "taskCell")
+            var displayString = ""
             cell.textLabel?.text = task.name
             let outputFormatter = DateFormatter()
             outputFormatter.dateStyle = .full
-            let (hours, minutes) = task.timeToComplete()
-            cell.detailTextLabel?.text = "\(outputFormatter.string(from: task.dueDate!)) - \(timeStringFromHoursAndMinutes(hours: hours, minutes: minutes))"
+            if let due = task.dueDate {
+                displayString += "\(outputFormatter.string(from: due)) - "
+            }
+            if let (hours, minutes) = task.timeToComplete() {
+                displayString += "\(timeStringFromHoursAndMinutes(hours: hours, minutes: minutes))"
+            }
+            cell.detailTextLabel?.text = displayString
             if task.completed == true {
                 cell.accessoryType = .checkmark
             }
@@ -162,7 +181,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if indexPath.section != 0 {
+        if indexPath.section != 0 && indexPath.row != displayTasks.count {
             let task = displayTasks[indexPath.row]
             task.completed = !task.completed
             let cell = tableView.cellForRow(at: indexPath)
@@ -181,6 +200,19 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         } else {
             return "Estimated Time Left"
         }
+    }
+    
+    // MARK: - Text (quick add) View functions
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.view.endEditing(true)
+        if textField.text?.trimmingCharacters(in: .whitespaces) != "" {
+            print("test")
+            let task = JHTask(name: textField.text!, completed: false, dueDate: nil, estimatedTimeToComplete: nil)
+            schedule.classes[0].tasks.append(task)
+            reloadTasks()
+        }
+        return false
     }
     
     
@@ -219,6 +251,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         //Reloads and saves tasks
         saveSchedule()
         loadTasks()
+        print("Rload")
         UIView.transition(with: tableView, duration: 1.0, options: .transitionCrossDissolve, animations: {self.tableView.reloadData()}, completion: nil)
 
     }

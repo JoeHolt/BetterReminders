@@ -431,7 +431,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             //Not first launch
             loadSchedule()
         }
-        schedule.sortClassesByStartTime()
+        schedule.classes = schedule.sortClassesByStartTime()
         notificationsEnabled = defaults.object(forKey: "notificationsEnabled") as! Bool
         loadTasksFromNotification(reload: false)
     }

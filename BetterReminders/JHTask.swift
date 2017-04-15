@@ -12,14 +12,14 @@ class JHTask: NSObject, NSCoding {
     
     internal var name: String!
     internal var completed: Bool!
-    internal var dueDate: Date!
-    internal var estimatedTimeToComplete: Date!
+    internal var dueDate: Date?
+    internal var estimatedTimeToComplete: Date?
     internal var id: Int!
     override var description: String {
         return name
     }
     
-    init(name: String, completed: Bool, dueDate: Date, estimatedTimeToComplete: Date) {
+    init(name: String, completed: Bool, dueDate: Date?, estimatedTimeToComplete: Date?) {
         self.name = name
         self.completed = completed
         self.dueDate = dueDate
@@ -30,8 +30,8 @@ class JHTask: NSObject, NSCoding {
     required init(coder decoder: NSCoder) {
         self.name = decoder.decodeObject(forKey: "name") as! String
         self.completed = decoder.decodeObject(forKey: "completed") as! Bool
-        self.dueDate = decoder.decodeObject(forKey: "dueDate") as! Date
-        self.estimatedTimeToComplete = decoder.decodeObject(forKey: "estimatedTimeToComplete") as! Date
+        self.dueDate = decoder.decodeObject(forKey: "dueDate") as? Date
+        self.estimatedTimeToComplete = decoder.decodeObject(forKey: "estimatedTimeToComplete") as? Date
         self.id = decoder.decodeObject(forKey: "id") as! Int
     }
     
@@ -47,15 +47,18 @@ class JHTask: NSObject, NSCoding {
         Returns time to complete task
         - returns: Hours and minutes to complete task: (hour, minute)
     */
-    internal func timeToComplete() -> (Int, Int) {
+    internal func timeToComplete() -> (Int, Int)? {
         //Returns time to finish task in (hour, minute) format
         var hours = 0
         var minutes = 0
         
         if completed == false {
-            let tComps = Calendar.current.dateComponents(in: .current, from: estimatedTimeToComplete)
-            hours += tComps.hour!
-            minutes += tComps.minute!
+            guard let TTC = estimatedTimeToComplete else {
+                return nil
+            }
+            let tComps = Calendar.current.dateComponents(in: .current, from: TTC)
+            hours += (tComps.hour)!
+            minutes += (tComps.minute)!
             while minutes >= 60 {
                 minutes = minutes - 60
                 hours += 1

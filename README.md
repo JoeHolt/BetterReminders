@@ -51,6 +51,8 @@ When creating this app I had two main goals in mind: Create an app that reminds 
 - 3D Touch Peek and Pop Support
 - Full support for all iOS 10 devices
 - Large focus on clean code and stability
+    - Each function is fully documented using swift markup
+    - Code is organized via mark up (MARK, TODO, etc)
 ## TODO
 - Dark mode UI
 - Quick add tasks
