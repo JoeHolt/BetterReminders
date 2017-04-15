@@ -16,10 +16,10 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     // MARK - Properties
     
     
-    internal let defaults = UserDefaults.standard
+    internal let defaults: UserDefaults = UserDefaults.standard
     internal var schedule: JHSchedule!
     internal var forceLoadData: Bool = false
-    internal var notificationsEnabled: Bool!
+    internal var notifsEnabled: Bool!
     private  var center = UNUserNotificationCenter.current()
     private  var myAppDelegate = UIApplication.shared.delegate as! AppDelegate
     private  var feedBackGenerator: UISelectionFeedbackGenerator?
@@ -36,12 +36,6 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Schedule"
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: .UIApplicationWillEnterForeground, object: nil)
-        if self.view.traitCollection.forceTouchCapability == UIForceTouchCapability.available {
-            registerForPreviewing(with: self, sourceView: view)
-        }
         getData()
         setUp()
 
@@ -57,9 +51,6 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         loadTasksFromNotification(reload: true)
     }
     
-    /**
-        Called when function is about to enter forground
-    */
     @objc private func willEnterForeground() {
         loadTasksFromNotification(reload: true)
     }
@@ -76,12 +67,10 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
                 print("dequeueresusableCell not found")
                 return UITableViewCell()
             }
-            
             if let textLabel = cell.textLabel {
                 let (hour, minutes) = schedule.totalTimeToComplete()
                 textLabel.text = "\(hour) \(getUnitsStringForHours(hours: hour)) and \(minutes) \(getUnitsStringForMinutes(minutes: minutes))"
             }
-            
             cell.selectionStyle = .none
             cell.isUserInteractionEnabled = false
             return cell
@@ -115,16 +104,18 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         if section == 0 {
             return "Estimated Time Left"
         } else {
-            let days: [String] = Array(schedule.classesSortedByDay().keys).reversed()    //Reversed so "A" day is first
+            let days: [String] = schedule.classDays()
             return "\(days[section - 1]) Day"
         }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
+            //Time left
             return 1
         } else {
-            let daysKeys: [String] = Array(schedule.classesSortedByDay().keys).reversed()    //Reversed so "A" day is first
+            //Classes
+            let daysKeys: [String] = schedule.classDays()
             let daysKey: String = daysKeys[section - 1]
             guard let classByDay = schedule.classesSortedByDay()[daysKey] else {
                 print("Invalid key for classesByDay")
@@ -136,6 +127,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         if indexPath.section != 0 {
+            //Classes
             let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete", handler: {_,_ in
                 self.deleteClass(class: self.schedule.classGivenIndexPath(indexPath: indexPath))
                 tableView.setEditing(false, animated: true)
@@ -160,6 +152,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == 0 {
+            //Time left needs to be slightly bigger
             return 44 + 15
         } else {
             return UITableViewAutomaticDimension
@@ -196,7 +189,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             requests in
             DispatchQueue.main.async {
                 currentNotifications = requests
-                if self.notificationsEnabled == true {
+                if self.notifsEnabled == true {
                     if currentNotifications.count == 0 {
                         self.registerHomeworkNotifications(forDates: dates)
                     }
@@ -298,14 +291,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         ac.addAction(UIAlertAction(title: "Delete Class", style: .destructive, handler: {
             action in
             //Deletes class at index path and then reloads data
-            var i = 0
-            for c2 in self.schedule.classes {
-                if c.id == c2.id {
-                    self.schedule.removeClass(atIndex: i)
-                    break
-                }
-                i += 1
-            }
+            schedule.removeClass(withId: c.id)
             self.saveSchedule()
             self.reloadTable()
         }))
@@ -407,6 +393,14 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
     */
     private func setUp() {
         
+        title = "Schedule"
+        
+        //View will enter forground
+        NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: .UIApplicationWillEnterForeground, object: nil)
+        if self.view.traitCollection.forceTouchCapability == UIForceTouchCapability.available {
+            registerForPreviewing(with: self, sourceView: view)
+        }
+        
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add, target: self, action: #selector(addButtonSelected))
         
         //Long press nav bar
@@ -432,7 +426,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
             loadSchedule()
         }
         schedule.classes = schedule.sortClassesByStartTime()
-        notificationsEnabled = defaults.object(forKey: "notificationsEnabled") as! Bool
+        notifsEnabled = defaults.object(forKey: "notificationsEnabled") as! Bool
         loadTasksFromNotification(reload: false)
     }
     
@@ -554,16 +548,16 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
         generator.prepare()
         if sender.state == .began {
             generator.selectionChanged()
-            notificationsEnabled = !notificationsEnabled
+            notifsEnabled = !notifsEnabled
             var message = ""
-            if notificationsEnabled == true {
+            if notifsEnabled == true {
                 message = "Enabled"
                 setUpNotifications(forDates: schedule.classEndTimes())
             } else {
                 center.removeAllPendingNotificationRequests()
                 message = "Disabled"
             }
-            defaults.set(notificationsEnabled, forKey: "notificationsEnabled")
+            defaults.set(notifsEnabled, forKey: "notificationsEnabled")
             let ac = UIAlertController(title: "Notifications \(message)", message: nil, preferredStyle: .alert)
             let action = UIAlertAction(title: "Okay", style: .default, handler: { _ in })
             ac.addAction(action)

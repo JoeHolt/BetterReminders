@@ -61,3 +61,9 @@ When creating this app I had two main goals in mind: Create an app that reminds 
 - Large focus on clean code and stability
     - Each function is fully documented using swift markup
     - Code is organized via mark up (MARK, TODO, etc)
+
+## TODO
+- Fix UI so its not ugly
+  - I am not a big fan of designing ios apps or doing UI in general so its unlikely this will happen
+  - "If it works it works, who needs it to look good"
+- General code clean up

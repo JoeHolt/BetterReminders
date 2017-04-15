@@ -154,5 +154,26 @@ class JHSchedule: NSObject, NSCoding {
         }
     }
     
+    /**
+        Returns an array of the days
+        - returns: An array containg all the class days
+    */
+    internal func classDays() -> [String] {
+        return Array(classesSortedByDay().keys).reversed() //reverse so A is frist
+    }
+    
+    /**
+     Removes a task
+     - parameter id: id of task to be removed
+     */
+    internal func removeClass(withId id: Int) {
+        for i in 0...classes.count - 1 {
+            if classes[i].id == id {
+                removeClass(atIndex: i)
+                break
+            }
+        }
+    }
+    
 
 }
