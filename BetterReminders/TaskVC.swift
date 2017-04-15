@@ -177,9 +177,9 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         - parameter indexPath: Index for task to remove
     */
     private func deleteTask(at indexPath: IndexPath) {
-        //Delete task from model and UI
-        print(indexPath)
-        clas.removeTask(at: indexPath.row)
+        //get most recent task list
+        let task = displayTasks[indexPath.row]
+        clas.removeTask(withId: task.id)
         let requestId =  ("TASK_\(clas.tasks[indexPath.row].id)")
         center.removePendingNotificationRequests(withIdentifiers: [requestId])
         reloadTasks()

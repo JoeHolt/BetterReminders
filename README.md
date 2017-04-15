@@ -21,6 +21,8 @@ When creating this app I had two main goals in mind: Create an app that reminds 
   - Due Date
   - Estimated Time to Complpete
   - Completed
+  - Date to remind when due
+- Quick add task with just task name
 - Clean and classy PopoverUI to add classes and tasks
 - Ability to edit classes and tasks
 - Multiple task view modes
@@ -53,7 +55,3 @@ When creating this app I had two main goals in mind: Create an app that reminds 
 - Large focus on clean code and stability
     - Each function is fully documented using swift markup
     - Code is organized via mark up (MARK, TODO, etc)
-## TODO
-- Dark mode UI
-- Add reminders reminding user to complete task near due date
-- Imporve optional checking

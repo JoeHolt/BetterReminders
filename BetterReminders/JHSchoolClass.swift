@@ -154,5 +154,14 @@ class JHSchoolClass: NSObject, NSCoding {
         tasks.remove(at: index)
     }
     
+    internal func removeTask(withId id: Int) {
+        for i in 0...tasks.count - 1 {
+            if tasks[i].id == id {
+                removeTask(at: i)
+                break
+            }
+        }
+    }
+    
     
 }
