@@ -127,6 +127,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
         } else if indexPath.section == 1 && indexPath.row == displayTasks.count {
             //Quick add view
             let cell = tableView.dequeueReusableCell(withIdentifier: "quickAddCell")
+            cell?.selectionStyle = .none
             let textField = cell?.viewWithTag(5) as! UITextField
             textField.delegate = self
             textField.text = ""
@@ -190,6 +191,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
             } else {
                 cell?.accessoryType = UITableViewCellAccessoryType.none
             }
+            saveSchedule()
         }
         updateTimeLeft()
     }
@@ -225,6 +227,8 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     */
     private func deleteTask(at indexPath: IndexPath) {
         //Delete task from model and UI
+        print("Deleting")
+        print(indexPath)
         clas.removeTask(at: indexPath.row)
         reloadTasks()
     }

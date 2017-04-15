@@ -55,6 +55,5 @@ When creating this app I had two main goals in mind: Create an app that reminds 
     - Code is organized via mark up (MARK, TODO, etc)
 ## TODO
 - Dark mode UI
-- Quick add tasks
 - Add reminders reminding user to complete task near due date
 - Imporve optional checking
