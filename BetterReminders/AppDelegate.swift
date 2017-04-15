@@ -45,30 +45,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         //After a notification is displayed, request it agaion after the next week day
-        
-        let nextTrigger: Double!
-        let oneMinute = 60.0 //Seconds
-        let oneDay = 1440.0 //Minutes
-        let weekDay = Calendar.current.component(.weekday, from: Date())
-        var daysTillNextNotification: Double = 1.0
-        switch weekDay {
-        case 6:
-            //Friday
-            daysTillNextNotification = 3.0 //Trigger in 3 days - monday
-        case 7:
-            //Saturday
-            daysTillNextNotification = 2.0 //Trigger in 2 days - monday
-        default:
-            daysTillNextNotification = 1.0
+        if notification.request.identifier.contains("classFinishedRequest") {
+            let nextTrigger: Double!
+            let oneMinute = 60.0 //Seconds
+            let oneDay = 1440.0 //Minutes
+            let weekDay = Calendar.current.component(.weekday, from: Date())
+            var daysTillNextNotification: Double = 1.0
+            switch weekDay {
+            case 6:
+                //Friday
+                daysTillNextNotification = 3.0 //Trigger in 3 days - monday
+            case 7:
+                //Saturday
+                daysTillNextNotification = 2.0 //Trigger in 2 days - monday
+            default:
+                daysTillNextNotification = 1.0
+            }
+            nextTrigger = oneMinute * oneDay * daysTillNextNotification
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: nextTrigger, repeats: false)
+            
+            let content = createNotificationContent(title: "Enter assigned homework", body: "class=\"Class\" \nname=\"Name\" \ndueDate=\"04/15/17\" \ntimeToComplete=\"01:15\"", badge: 0)
+            content.categoryIdentifier = "classFinishedCatagory"
+            
+            let request = UNNotificationRequest(identifier: "classFinishedRequest", content: content, trigger: trigger)
+            center.add(request)
         }
-        nextTrigger = oneMinute * oneDay * daysTillNextNotification
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: nextTrigger, repeats: false)
-        
-        let content = createNotificationContent(title: "Enter assigned homework", body: "class=\"Class\" \nname=\"Name\" \ndueDate=\"04/15/17\" \ntimeToComplete=\"01:15\"", badge: 0)
-        content.categoryIdentifier = "classFinishedCatagory"
-        
-        let request = UNNotificationRequest(identifier: "classFinishedRequest", content: content, trigger: trigger)
-        center.add(request)
     }
     
     /**

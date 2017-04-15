@@ -357,6 +357,54 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="popCell" id="WGG-ck-vcf" userLabel="reminderTitle">
+                                        <rect key="frame" x="0.0" y="616" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="WGG-ck-vcf" id="Kkr-l9-Cyt">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Remind" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7w5-0M-ikY">
+                                                    <rect key="frame" x="18" y="11" width="60" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FZQ-Yl-ntD">
+                                                    <rect key="frame" x="316" y="6" width="51" height="31"/>
+                                                    <color key="onTintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                                </switch>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="7w5-0M-ikY" firstAttribute="centerY" secondItem="Kkr-l9-Cyt" secondAttribute="centerY" id="B43-sj-5bC"/>
+                                                <constraint firstAttribute="trailing" secondItem="FZQ-Yl-ntD" secondAttribute="trailing" constant="10" id="IIJ-cA-mf5"/>
+                                                <constraint firstItem="7w5-0M-ikY" firstAttribute="leading" secondItem="Kkr-l9-Cyt" secondAttribute="leadingMargin" constant="10" id="r49-6c-4DB"/>
+                                                <constraint firstItem="FZQ-Yl-ntD" firstAttribute="centerY" secondItem="Kkr-l9-Cyt" secondAttribute="centerY" id="rnJ-CW-ZLW"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="popCell" rowHeight="242" id="Wxy-ci-b89" userLabel="reminderDatePicker">
+                                        <rect key="frame" x="0.0" y="660" width="375" height="242"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Wxy-ci-b89" id="1EX-mO-7dN">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="241.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="dateAndTime" minuteInterval="5" translatesAutoresizingMaskIntoConstraints="NO" id="TxN-J8-mKW">
+                                                    <rect key="frame" x="0.0" y="0.0" width="375" height="241.5"/>
+                                                    <date key="date" timeIntervalSinceReferenceDate="512885684.502765">
+                                                        <!--2017-04-03 04:14:44 +0000-->
+                                                    </date>
+                                                </datePicker>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="TxN-J8-mKW" firstAttribute="leading" secondItem="1EX-mO-7dN" secondAttribute="leading" id="ibF-SP-r1G"/>
+                                                <constraint firstAttribute="bottom" secondItem="TxN-J8-mKW" secondAttribute="bottom" id="jyp-Vf-Spe"/>
+                                                <constraint firstItem="TxN-J8-mKW" firstAttribute="top" secondItem="1EX-mO-7dN" secondAttribute="top" id="r9W-jE-obu"/>
+                                                <constraint firstAttribute="trailing" secondItem="TxN-J8-mKW" secondAttribute="trailing" id="rs1-85-Llm"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                         </sections>
@@ -366,8 +414,12 @@
                         </connections>
                     </tableView>
                     <nil key="simulatedStatusBarMetrics"/>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="375" height="667"/>
                     <connections>
                         <outlet property="dueDateDP" destination="AMU-9f-5Mg" id="5en-Pg-10T"/>
+                        <outlet property="notificationDateDP" destination="TxN-J8-mKW" id="108-uT-9lJ"/>
+                        <outlet property="notificationSwitch" destination="FZQ-Yl-ntD" id="UTY-Rz-kCb"/>
                         <outlet property="taskNameTF" destination="YjW-2F-EWY" id="x8K-yT-yc6"/>
                         <outlet property="timeToFinishDP" destination="lAn-GJ-FDE" id="q2e-pi-Dz1"/>
                     </connections>

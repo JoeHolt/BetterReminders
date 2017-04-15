@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import UserNotifications
 
 @objc protocol AddTaskDelegate {
     func didAddTask()
@@ -18,6 +19,8 @@ class TaskPopoverVC: UITableViewController {
     @IBOutlet weak var taskNameTF: UITextField!
     @IBOutlet weak var timeToFinishDP: UIDatePicker!
     @IBOutlet weak var dueDateDP: UIDatePicker!
+    @IBOutlet weak var notificationDateDP: UIDatePicker!
+    @IBOutlet weak var notificationSwitch: UISwitch!
     
     internal var delegate: AddTaskDelegate?
     internal var clas: JHSchoolClass!
@@ -36,6 +39,10 @@ class TaskPopoverVC: UITableViewController {
         UI set up
     */
     private func setUp() {
+        
+        notificationSwitch.isOn = false
+        notificationDateDP.minimumDate = Date()
+        
         timeToFinishDP.countDownDuration = 60.0 * 15 //Fifteen minutes
         dueDateDP.minimumDate = Date()
         
@@ -87,7 +94,10 @@ class TaskPopoverVC: UITableViewController {
             var index = 0
             for task in clas.tasks {
                 if task.id == forTask!.id {
+                    //Set new edited task
                     clas.tasks[index] = newTask
+                    //Clear notifications for task
+                    UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["TASK_\(forTask!.id)"])
                 }
                 index += 1
             }
@@ -95,6 +105,12 @@ class TaskPopoverVC: UITableViewController {
         } else {
             clas.addTask(task: newTask)
             delegate?.didAddTask()
+        }
+        if notificationSwitch.isOn {
+            //Create a new notification
+            let outputter = DateFormatter()
+            outputter.dateStyle = .short
+            createNotification(title: clas.name, body: "\(name) is due \(outputter.string(from: dueDate))", launchDate: notificationDateDP.date, repeats: false, id: "TASK_\(newTask.id)")
         }
         dismiss(animated: true, completion: nil)
     }

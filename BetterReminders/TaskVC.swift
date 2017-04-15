@@ -7,57 +7,7 @@
 //
 
 import UIKit
-
-extension UITableView {
-    
-    /**
-        Returns an array of UITableView cells in a given section
-        - parameter section: Section of cells
-        - returns: Array of cells in section, nil if invalid section
-    */
-    func cellsForSection(section: Int) -> [UITableViewCell]? {
-        
-        if section > numberOfSections - 1 {
-            //Invalid section (out of range)
-            return nil
-        }
-        
-        var cells = [UITableViewCell]()
-        var row: Int = 0
-        while row < numberOfRows(inSection: section) {
-            if let cell = cellForRow(at: IndexPath(row: row, section: section)) {
-                cells.append(cell)
-            }
-            row += 1
-        }
-        
-        return cells
-    }
-    
-    
-    /**
-        Returns an array containing indexPaths of all cells in section
-        - parameter section: Section of requested index paths
-        - returns: Array of wanted index paths, nil if invalid section
-    */
-    func indexPathsForSection(section: Int) -> [IndexPath]? {
-        if section > numberOfSections - 1 {
-            //Invalid section (out of range)
-            return nil
-        }
-        
-        var indexPaths = [IndexPath]()
-        var row: Int = 0
-        while row < numberOfRows(inSection: section) {
-            if let _ = cellForRow(at: IndexPath(row: row, section: section)) {
-                indexPaths.append(IndexPath(row: row, section: section))
-            }
-            row += 1
-        }
-        
-        return indexPaths
-    }
-}
+import UserNotifications
 
 enum TaskViewType: String {
     case NotCompleted = "Not Completed"
@@ -71,6 +21,7 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     // MARK: - Properties
     
     
+    let center = UNUserNotificationCenter.current()
     var schedule: JHSchedule!
     var clas: JHSchoolClass!
     var displayTasks: [JHTask]!
@@ -227,9 +178,10 @@ class TaskVC: UITableViewController, AddTaskDelegate, UIPopoverPresentationContr
     */
     private func deleteTask(at indexPath: IndexPath) {
         //Delete task from model and UI
-        print("Deleting")
         print(indexPath)
         clas.removeTask(at: indexPath.row)
+        let requestId =  ("TASK_\(clas.tasks[indexPath.row].id)")
+        center.removePendingNotificationRequests(withIdentifiers: [requestId])
         reloadTasks()
     }
     

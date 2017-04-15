@@ -498,22 +498,7 @@ class MainTableViewController: UITableViewController, UIPopoverPresentationContr
 
     
     // MARK: - Helper Functions
-    
-    
-    /**
-        Creates a string from a given string and an apended date
-        - parameter string: String for body
-        - parameter date: Date to be added to string
-        - returns: String in the format of string.weekday.04:56
-    */
-    private func stringByAppendingDateAndTime(string: String, date: Date) -> String! {
-        //Notificatin ids must be unique so I add the dates and times for id
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        let weekDay = Calendar.current.component(.weekday, from: date)
-        let timeString = formatter.string(from: date)
-        return string + "." + String(weekDay) + "." + timeString
-    }
+
     
     /**
         Finds units for gives hours
